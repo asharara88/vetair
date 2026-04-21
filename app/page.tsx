@@ -1,4 +1,5 @@
-import { serverSupabase, LOGO_DARK } from "@/lib/supabase";
+import { LOGO_DARK } from "@/lib/supabase";
+import { serverSupabase } from "@/lib/supabase-server";
 import { Header } from "@/components/demo/Header";
 import { ControlPanel } from "@/components/demo/ControlPanel";
 import { Panel, Pill } from "@/components/ui/primitives";

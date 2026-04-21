@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { serverSupabase } from "@/lib/supabase";
+import { serverSupabase } from "@/lib/supabase-server";
 import { Header } from "@/components/demo/Header";
 import { LiveCaseView } from "@/components/demo/LiveCaseView";
 import type {
