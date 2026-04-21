@@ -37,6 +37,7 @@ export async function POST(req: Request) {
       script_name: body.script_name,
       case_id: body.case_id,
       speed: body.speed ?? 1,
+      target_whatsapp_number: body.target_whatsapp_number,
     }),
   });
 

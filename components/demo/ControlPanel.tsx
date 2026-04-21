@@ -14,6 +14,7 @@ export function ControlPanel({ scripts }: { scripts: DemoScript[] }) {
     scripts[0]?.name ?? "",
   );
   const [speed, setSpeed] = useState<number>(1);
+  const [targetWhatsapp, setTargetWhatsapp] = useState<string>("");
   const [launching, setLaunching] = useState(false);
 
   const launch = async () => {
@@ -24,7 +25,11 @@ export function ControlPanel({ scripts }: { scripts: DemoScript[] }) {
         const res = await fetch("/api/demo/stream", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ script_name: selectedScript, speed }),
+          body: JSON.stringify({
+            script_name: selectedScript,
+            speed,
+            target_whatsapp_number: targetWhatsapp.trim() || undefined,
+          }),
         });
         const { case_id } = await res.json();
         if (case_id) router.push(`/cases/${case_id}?script=${selectedScript}`);
@@ -132,6 +137,26 @@ export function ControlPanel({ scripts }: { scripts: DemoScript[] }) {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Target WhatsApp number (optional) */}
+            <div>
+              <p className="font-mono text-2xs uppercase tracking-widest text-ink-400 mb-3">
+                Target WhatsApp <span className="text-ink-500">· optional</span>
+              </p>
+              <input
+                type="tel"
+                inputMode="tel"
+                autoComplete="off"
+                value={targetWhatsapp}
+                onChange={(e) => setTargetWhatsapp(e.target.value)}
+                placeholder="+971 50 123 4567"
+                className="w-full px-3 py-2 bg-ink-900/40 border border-ink-700 focus:border-amber-500 focus:outline-none text-ink-100 font-mono text-sm placeholder:text-ink-600 tabular-nums transition-colors"
+              />
+              <p className="font-mono text-2xs text-ink-500 mt-2 leading-relaxed">
+                Leave blank for in-UI only. Fill with a Meta-whitelisted number
+                to fire real WhatsApps during the demo.
+              </p>
             </div>
           </>
         )}
