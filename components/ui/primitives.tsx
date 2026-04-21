@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import type { HTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
 
 export function Panel({
   title,
@@ -70,7 +70,7 @@ export function Button({
   variant?: "primary" | "secondary" | "ghost";
   children: ReactNode;
   className?: string;
-} & Omit<HTMLAttributes<HTMLButtonElement>, "children">) {
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">) {
   const base = "inline-flex items-center justify-center gap-2 px-4 py-2 font-mono text-2xs uppercase tracking-widest transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
   const variants = {
     primary: "bg-amber-500 text-ink-950 hover:bg-amber-400 inset-glow",
