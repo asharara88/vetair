@@ -7,7 +7,9 @@ interface TimelineEntry { date: string; event: string }
 
 export function ConsensusTimeline({ rounds }: { rounds: ConsensusRound[] }) {
   const timelineRound = rounds.find((r) => r.topic === "timeline_feasibility");
-  const plan = (timelineRound?.final_verdict?.plan as TimelineEntry[] | undefined) ?? [];
+  const verdict = timelineRound?.final_verdict as { plan?: TimelineEntry[]; total_duration_days?: number } | null | undefined;
+  const plan: TimelineEntry[] = verdict?.plan ?? [];
+  const totalDuration = typeof verdict?.total_duration_days === "number" ? verdict.total_duration_days : null;
 
   return (
     <Panel eyebrow="05 · Consensus Timeline" title="Plan">
@@ -42,9 +44,9 @@ export function ConsensusTimeline({ rounds }: { rounds: ConsensusRound[] }) {
             })}
           </div>
 
-          {timelineRound?.final_verdict?.total_duration_days && (
+          {totalDuration !== null && (
             <p className="font-mono text-2xs uppercase tracking-widest text-ink-500 mt-4 pt-4 border-t border-ink-700/60">
-              Total duration: {String(timelineRound.final_verdict.total_duration_days)} days
+              Total duration: {totalDuration} days
             </p>
           )}
         </div>
