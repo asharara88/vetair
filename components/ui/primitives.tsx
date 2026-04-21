@@ -7,7 +7,7 @@ export function Panel({
   children,
   className,
   ...rest
-}: { title?: ReactNode; eyebrow?: ReactNode; children: ReactNode } & HTMLAttributes<HTMLDivElement>) {
+}: { title?: ReactNode; eyebrow?: ReactNode; children: ReactNode } & Omit<HTMLAttributes<HTMLDivElement>, "title">) {
   return (
     <div className={cn("panel rounded-none relative", className)} {...rest}>
       {(title || eyebrow) && (
