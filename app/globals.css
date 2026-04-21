@@ -1,0 +1,103 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  background-color: #07090c;
+  color: #e8ecf2;
+  font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-image:
+    linear-gradient(to right, rgba(139,149,166,0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(139,149,166,0.035) 1px, transparent 1px),
+    radial-gradient(ellipse at top, rgba(245,166,35,0.04) 0%, transparent 50%);
+  background-size: 48px 48px, 48px 48px, 100% 100%;
+  min-height: 100vh;
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(245, 166, 35, 0.3);
+  color: #f5f7fa;
+}
+
+/* Scrollbar — minimal, matches control-room aesthetic */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a3441;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a4553;
+}
+
+/* Display serif settings */
+.font-display {
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 48, "SOFT" 25;
+  letter-spacing: -0.02em;
+}
+
+/* Utility: monospace data readout */
+.font-mono {
+  font-feature-settings: "ss01", "ss02", "zero";
+}
+
+/* Custom: panel surface */
+.panel {
+  background-color: rgba(13, 17, 23, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(42, 52, 65, 0.6);
+}
+
+/* Custom: inset glow for active elements */
+.inset-glow {
+  box-shadow:
+    inset 0 1px 0 rgba(232, 236, 242, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Custom: signal dot */
+.signal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Shimmer for loading states */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(42, 52, 65, 0) 0%,
+    rgba(91, 103, 121, 0.15) 50%,
+    rgba(42, 52, 65, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.4s linear infinite;
+}
+
+/* Remove number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
