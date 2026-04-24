@@ -2,14 +2,21 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Vetair — Autonomous Pet Relocation",
+  title: "Vetair â A self-extending Multi-Agent System",
   description:
-    "End-to-end autonomous pet relocation. A polyphonic multi-agent system with three-voice compliance consensus.",
+    "Pet relocation run by agents. An Orchestrator routes cases through Intake, Compliance, and Auditor agents. A Synthesizer writes new country specialists on demand.",
   metadataBase: new URL("https://vetair.vercel.app"),
   openGraph: {
-    title: "Vetair",
-    description: "Autonomous pet relocation, without human operators.",
+    title: "Vetair â Self-extending MAS",
+    description:
+      "An Orchestrator agent routes cases. A Synthesizer writes new specialists at runtime. Every decision cited. Every turn audited.",
     type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Vetair â Self-extending MAS",
+    description:
+      "An Orchestrator agent routes cases. A Synthesizer writes new specialists at runtime.",
   },
 };
 
@@ -20,7 +27,11 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" className="dark">
       <body>{children}</body>
