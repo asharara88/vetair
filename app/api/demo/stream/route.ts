@@ -87,9 +87,11 @@ export async function POST(req: Request) {
 
   try { await reader.cancel(); } catch {}
 
-  // Keep the background branch draining without blocking the response.
-  // This keeps the upstream connection open long enough for the edge
-  // function to complete all its database writes.
+  // Keep the background branch draining without blocking the response. This
+  // holds the upstream connection open long enough for the edge function to
+  // finish all its DB writes. On Vercel edge, waitUntil hangs the lambda;
+  // when absent we just fire-and-forget — Supabase realtime is the source
+  // of truth for the UI either way, so a dropped tail is non-fatal.
   const drain = async () => {
     const r = b.getReader();
     try {
@@ -97,11 +99,17 @@ export async function POST(req: Request) {
         const { done } = await r.read();
         if (done) break;
       }
-    } catch {}
+    } catch {
+      // upstream closed; nothing to do
+    }
   };
-  // @ts-expect-error — waitUntil is present on Vercel edge runtime
-  if (typeof req.waitUntil === "function") { req.waitUntil(drain()); }
-  else { drain(); }
+  type WaitUntilCapable = { waitUntil(p: Promise<unknown>): void };
+  const maybeWaitUntil = (req as unknown as Partial<WaitUntilCapable>).waitUntil;
+  if (typeof maybeWaitUntil === "function") {
+    maybeWaitUntil.call(req, drain());
+  } else {
+    void drain();
+  }
 
   return NextResponse.json({ case_id: caseId ?? null });
 }

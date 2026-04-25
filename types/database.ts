@@ -8,6 +8,19 @@ export type CaseState =
 
 export type Species = "dog" | "cat" | "bird" | "rabbit" | "ferret" | "other";
 
+export type RuleStatus = "satisfied" | "pending" | "blocked" | "not_applicable";
+
+export type RequirementType =
+  | "microchip" | "vaccine" | "titer" | "endorsement" | "permit"
+  | "health_cert" | "breed_restriction" | "age_restriction" | "carrier_rule";
+
+export type AgentName =
+  | "orchestrator"
+  | "intake_agent" | "document_agent"
+  | "compliance_primary" | "compliance_auditor" | "deterministic_engine"
+  | "vet_network_agent" | "airline_crate_agent" | "endorsement_agent"
+  | "comms_agent" | "audit_agent";
+
 export interface Owner {
   id: string;
   full_name: string;
@@ -129,6 +142,70 @@ export interface DemoScript {
   }>;
   is_active: boolean;
   created_at: string;
+}
+
+export interface DocumentRow {
+  id: string;
+  case_id: string;
+  document_type: string;
+  storage_path: string | null;
+  source_url: string | null;
+  mime_type: string | null;
+  extracted_fields: Record<string, unknown>;
+  extraction_confidence: number | null;
+  verified: boolean;
+  uploaded_by_owner: boolean;
+  created_at: string;
+}
+
+export interface CountryRule {
+  id: string;
+  origin_country: string;
+  destination_country: string;
+  species: Species;
+  requirement_code: string;
+  title: string;
+  requirement_type: RequirementType;
+  evidence_schema: Record<string, unknown>;
+  time_constraints: Record<string, unknown> | null;
+  evaluator_fn_name: string | null;
+  authoritative_source: string | null;
+  source_url: string | null;
+  priority: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface RequirementEvaluation {
+  id: string;
+  case_id: string;
+  country_rule_id: string;
+  status: RuleStatus;
+  evidence_document_ids: string[];
+  evaluator: "deterministic" | "compliance_primary" | "compliance_auditor";
+  confidence: number | null;
+  notes: string | null;
+  earliest_legal_date: string | null;
+  blocking_reason: string | null;
+  created_at: string;
+}
+
+export type TaskStatus = "queued" | "in_progress" | "completed" | "failed" | "cancelled";
+
+export interface TaskQueueItem {
+  id: string;
+  case_id: string;
+  source_agent: AgentName | null;
+  target_agent: AgentName;
+  task_type: string;
+  priority: number;
+  payload: Record<string, unknown>;
+  status: TaskStatus;
+  attempts: number;
+  last_error: string | null;
+  created_at: string;
+  started_at: string | null;
+  completed_at: string | null;
 }
 
 export interface StreamEvent {

@@ -4,6 +4,12 @@ import type { AgentLog } from "@/types/database";
 import { agentMeta, formatTime, formatMs, formatCost } from "@/lib/utils";
 import { Panel, Pill } from "@/components/ui/primitives";
 
+// Strip "claude-" prefix and any trailing 8-digit Anthropic snapshot date.
+// Both old style (claude-sonnet-4-20250514) and new aliases (claude-sonnet-4-6) collapse cleanly.
+function formatModel(model: string): string {
+  return model.replace(/^claude-/, "").replace(/-\d{8}$/, "");
+}
+
 export function AgentChatter({ logs }: { logs: AgentLog[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -47,7 +53,7 @@ export function AgentChatter({ logs }: { logs: AgentLog[] }) {
               <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                 {log.model && (
                   <span className="font-mono text-2xs text-ink-500">
-                    {log.model.replace("claude-", "").replace("-20250514", "")}
+                    {formatModel(log.model)}
                   </span>
                 )}
                 {log.latency_ms != null && log.latency_ms > 0 && (

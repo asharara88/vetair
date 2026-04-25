@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useRef } from "react";
 import type { CommsMessage } from "@/types/database";
-import { formatTime } from "@/lib/utils";
+import { cn, formatTime } from "@/lib/utils";
 import { Panel } from "@/components/ui/primitives";
-import { cn } from "@/lib/utils";
 
 export function WhatsAppPanel({ messages }: { messages: CommsMessage[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
