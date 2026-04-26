@@ -3,6 +3,8 @@ import { serverSupabase } from "@/lib/supabase-server";
 import { Header } from "@/components/demo/Header";
 import { LiveReceipts } from "@/components/demo/LiveReceipts";
 import { AgentRegistry } from "@/components/demo/AgentRegistry";
+import { AutoRefresh } from "@/components/demo/AutoRefresh";
+import { RunDemoButton } from "@/components/demo/RunDemoButton";
 import { Panel, Pill } from "@/components/ui/primitives";
 import Link from "next/link";
 import Image from "next/image";
@@ -25,10 +27,7 @@ export default async function Home() {
   const specialistsCount = specialistsRes.count ?? 0;
   const runsCompleted = runsRes.count ?? 0;
   const casesCount = casesRes.count ?? 0;
-  const totalCost = (costRes.data ?? []).reduce(
-    (acc, r) => acc + Number(r.total_cost_usd ?? 0),
-    0,
-  );
+  const totalCost = (costRes.data ?? []).reduce((acc, r) => acc + Number(r.total_cost_usd ?? 0), 0);
 
   return (
     <>
@@ -37,11 +36,9 @@ export default async function Home() {
         <section className="mb-12 max-w-3xl">
           <div className="mb-8 flex items-center gap-4">
             <Image src={LOGO_DARK} alt="" width={40} height={40} className="opacity-90" />
-            <div>
-              <p className="font-mono text-2xs uppercase tracking-widest text-amber-400">
-                Self-extending Multi-Agent System
-              </p>
-            </div>
+            <p className="font-mono text-2xs uppercase tracking-widest text-amber-400">
+              Self-extending Multi-Agent System
+            </p>
           </div>
           <h1 className="font-display text-5xl lg:text-6xl leading-[1.05] text-ink-100 tracking-tight">
             Pet relocation, run by agents.{" "}
@@ -54,7 +51,7 @@ export default async function Home() {
             Claude’s tool-use API. Every decision cited. Every turn audited.
           </p>
           <div className="flex items-center gap-2 mt-6 flex-wrap">
-            <Pill tone="go" dot>{agentsLive} agents live</Pill>
+            <AutoRefresh intervalMs={5000} label={agentsLive + " agents live"} />
             <Pill tone="amber">{specialistsCount} specialist{specialistsCount === 1 ? "" : "s"} synthesized</Pill>
             <Pill tone="neutral">{runsCompleted} runs completed</Pill>
             <Pill tone="neutral">${totalCost.toFixed(2)} total compute</Pill>
@@ -69,6 +66,10 @@ export default async function Home() {
           </div>
 
           <div className="space-y-5">
+            <Panel eyebrow="Try it" title="Spawn a real case">
+              <RunDemoButton />
+            </Panel>
+
             <Panel eyebrow="01 — 04" title="How it works">
               <div className="space-y-5 text-sm text-ink-300 leading-relaxed">
                 <div>
@@ -90,9 +91,9 @@ export default async function Home() {
               </div>
             </Panel>
 
-            <Panel eyebrow="Interactive" title="Walkthrough">
+            <Panel eyebrow="Walkthrough" title="Deep dives">
               <div className="space-y-2">
-                <WalkthroughRow num="01" href="/theater" title="Case Theater" note="Watch agents run a real case · coming" status="soon" />
+                <WalkthroughRow num="01" href="/theater" title="Case Theater" note="Watch a case run turn-by-turn" status="live" />
                 <WalkthroughRow num="02" href="/factory" title="Factory" note="Synthesize a new country specialist · coming" status="soon" />
                 <WalkthroughRow num="03" href="/architecture" title="Architecture" note="Schema, agents, tools, dispatch chain · coming" status="soon" />
               </div>
@@ -106,7 +107,14 @@ export default async function Home() {
           <p className="font-mono text-2xs uppercase tracking-widest text-ink-500">
             Vetair · Next.js 15 · Supabase · Claude Sonnet 4.5 / Opus 4.5 / Haiku 4.5 · Deployed on Vercel
           </p>
-          <a href="https://github.com/asharara88/vetair" target="_blank" rel="noopener noreferrer" className="font-mono text-2xs uppercase tracking-widest text-ink-500 hover:text-amber-400 transition-colors">Source →</a>
+          <a
+            href="https://github.com/asharara88/vetair"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-2xs uppercase tracking-widest text-ink-500 hover:text-amber-400 transition-colors"
+          >
+            Source →
+          </a>
         </div>
       </footer>
     </>
