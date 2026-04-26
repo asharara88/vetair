@@ -116,6 +116,50 @@ export const updateCaseState: ToolImpl = async (input, { supabase, caseId }) => 
   return ok({ updated: true, state: next });
 };
 
+// ---------- synthesizer tools ----------
+
+export const listTemplates: ToolImpl = async (input, { supabase }) => {
+  const species = typeof input.species === "string" ? input.species : null;
+  let q = supabase
+    .from("agent_templates")
+    .select("id, name, species, locale, parameters, base_model, summary")
+    .eq("is_active", true);
+  if (species) q = q.eq("species", species);
+  const { data, error } = await q;
+  if (error) return err(error.message);
+  return ok(data ?? []);
+};
+
+export const readTemplate: ToolImpl = async (input, { supabase }) => {
+  const id = String(input.template_id ?? "");
+  if (!id) return err("template_id required");
+  const { data, error } = await supabase
+    .from("agent_templates")
+    .select("id, name, species, locale, parameters, base_model, summary, system_prompt_template, tools_manifest")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) return err(error.message);
+  if (!data) return err(`template ${id} not found`);
+  return ok(data);
+};
+
+export const checkExisting: ToolImpl = async (input, { supabase }) => {
+  const origin = String(input.origin_country ?? "");
+  const destination = String(input.destination_country ?? "");
+  const species = String(input.species ?? "");
+  if (!origin || !destination || !species) {
+    return err("origin_country, destination_country, species all required");
+  }
+  // synthesis_params is JSONB; @> matches a containment (safe & indexable).
+  const { data, error } = await supabase
+    .from("agent_registry")
+    .select("agent_name, model, status, template_id, synthesis_params, created_at")
+    .eq("status", "active")
+    .contains("synthesis_params", { origin_country: origin, destination_country: destination, species });
+  if (error) return err(error.message);
+  return ok({ exists: (data?.length ?? 0) > 0, matches: data ?? [] });
+};
+
 // ---------- tool registry + manifests ----------
 
 export const TOOLS: Record<string, ToolImpl> = {
@@ -125,6 +169,9 @@ export const TOOLS: Record<string, ToolImpl> = {
   query_rules: queryRules,
   post_agent_message: postAgentMessage,
   update_case_state: updateCaseState,
+  list_templates: listTemplates,
+  read_template: readTemplate,
+  check_existing: checkExisting,
 };
 
 // Reusable manifest fragments — any agent can import these and merge with its
