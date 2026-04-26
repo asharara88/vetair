@@ -28,22 +28,36 @@ export function formatCost(usd: number | null | undefined): string {
   return `$${usd.toFixed(4)}`;
 }
 
-// Agent → display name + signal color
+// Agent → display name + signal color. Keys cover both the legacy demo agents
+// (intake_agent, compliance_primary, …) and the new MAS naming
+// (orchestrator, synthesizer, specialist_*).
 export const AGENT_META: Record<string, { label: string; color: string; short: string }> = {
   orchestrator:        { label: "Orchestrator",         color: "#fbbe4c", short: "ORC" },
+  synthesizer:         { label: "Synthesizer",          color: "#fbbe4c", short: "SYN" },
   intake_agent:        { label: "Intake Agent",         color: "#60a5fa", short: "INT" },
+  intake:              { label: "Intake Agent",         color: "#60a5fa", short: "INT" },
   document_agent:      { label: "Document Agent",       color: "#60a5fa", short: "DOC" },
   compliance_agent:    { label: "Compliance (Primary)", color: "#34d399", short: "C-1" },
   compliance_primary:  { label: "Compliance (Primary)", color: "#34d399", short: "C-1" },
+  compliance:          { label: "Compliance (Primary)", color: "#34d399", short: "C-1" },
   deterministic_engine:{ label: "Deterministic Engine", color: "#c5ccd6", short: "DET" },
   compliance_auditor:  { label: "Compliance (Auditor)", color: "#f87171", short: "C-2" },
+  auditor:             { label: "Compliance (Auditor)", color: "#f87171", short: "C-2" },
   vet_network_agent:   { label: "Vet Network",          color: "#60a5fa", short: "VET" },
   airline_crate_agent: { label: "Airline & Crate",      color: "#60a5fa", short: "AIR" },
   endorsement_agent:   { label: "Endorsement",          color: "#60a5fa", short: "END" },
   comms_agent:         { label: "Comms",                color: "#fbbe4c", short: "CMS" },
+  comms:               { label: "Comms",                color: "#fbbe4c", short: "CMS" },
   audit_agent:         { label: "Audit",                color: "#8b95a6", short: "AUD" },
+  audit:               { label: "Audit",                color: "#8b95a6", short: "AUD" },
 };
 
 export function agentMeta(name: string) {
-  return AGENT_META[name] ?? { label: name, color: "#8b95a6", short: name.slice(0, 3).toUpperCase() };
+  if (AGENT_META[name]) return AGENT_META[name];
+  // Specialist agents are registered as `specialist_<corridor>` (e.g. specialist_jp_dog).
+  // Render them with the specialist colour rather than the fallback grey.
+  if (name.startsWith("specialist_") || name.startsWith("specialist:")) {
+    return { label: name.replace(/^specialist[_:]/, "Specialist · "), color: "#fbbe4c", short: "SPC" };
+  }
+  return { label: name, color: "#8b95a6", short: name.slice(0, 3).toUpperCase() };
 }
