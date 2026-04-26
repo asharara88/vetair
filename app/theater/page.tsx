@@ -18,11 +18,6 @@ interface CaseListRow {
   state: string;
 }
 
-interface AgentRunRow {
-  case_id: string;
-  total_cost_usd: number | string | null;
-}
-
 export default async function TheaterIndex({ searchParams }: { searchParams: Promise<{ case?: string }> }) {
   const { case: caseIdParam } = await searchParams;
   const supabase = await serverSupabase();
@@ -50,7 +45,10 @@ export default async function TheaterIndex({ searchParams }: { searchParams: Pro
     .from("agent_runs")
     .select("total_cost_usd")
     .eq("case_id", targetCaseId);
-  const totalCost = (costs ?? []).reduce((a: number, r: AgentRunRow) => a + Number(r.total_cost_usd ?? 0), 0);
+  const totalCost = (costs ?? []).reduce(
+    (a: number, r: { total_cost_usd: number | string | null }) => a + Number(r.total_cost_usd ?? 0),
+    0,
+  );
 
   return (
     <>
