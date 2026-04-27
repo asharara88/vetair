@@ -18,12 +18,17 @@ interface CaseListRow {
   state: string;
 }
 
+const FALLBACK_CASE_ID = "0afd24a9-b274-4985-97a8-8b18d9640d36";
+
 export default async function TheaterIndex({ searchParams }: { searchParams: Promise<{ case?: string }> }) {
   const { case: caseIdParam } = await searchParams;
   const supabase = await serverSupabase();
 
-  let targetCaseId = caseIdParam;
-  if (!targetCaseId) {
+  // Resolve target case: query param > most recent non-demo > XL Bully fallback
+  let targetCaseId: string;
+  if (caseIdParam) {
+    targetCaseId = caseIdParam;
+  } else {
     const { data: latest } = await supabase
       .from("cases")
       .select("id")
@@ -31,7 +36,7 @@ export default async function TheaterIndex({ searchParams }: { searchParams: Pro
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    targetCaseId = latest?.id ?? "0afd24a9-b274-4985-97a8-8b18d9640d36";
+    targetCaseId = (latest?.id as string | undefined) ?? FALLBACK_CASE_ID;
   }
 
   const { data: recentCases } = await supabase
