@@ -10,7 +10,6 @@
 //   within a few seconds — Meta retries aggressively on non-200.
 
 import type { NextRequest } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import {
   verifyMetaSignature,
   type MetaWebhookPayload,
@@ -18,16 +17,10 @@ import {
   type MetaStatusUpdate,
   extractInboundMedia,
 } from "@/lib/whatsapp";
-import { SUPABASE_URL } from "@/lib/supabase";
+import { serviceSupabase } from "@/lib/supabase-server";
 
 export const runtime = "nodejs"; // need Web Crypto + service role
 export const dynamic = "force-dynamic";
-
-function serviceClient() {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!key) throw new Error("SUPABASE_SERVICE_ROLE_KEY not set");
-  return createClient(SUPABASE_URL, key, { auth: { persistSession: false } });
-}
 
 // ---------- GET: subscription verification ----------
 export async function GET(req: NextRequest) {
@@ -61,7 +54,7 @@ export async function POST(req: NextRequest) {
 
   // Always audit-log first, even if signature is invalid — we want forensic
   // trail for every hit to this endpoint.
-  const supabase = serviceClient();
+  const supabase = serviceSupabase();
   const eventRows: Array<Record<string, unknown>> = [];
   for (const entry of payload.entry ?? []) {
     for (const change of entry.changes ?? []) {
@@ -125,7 +118,7 @@ export async function POST(req: NextRequest) {
 }
 
 async function handleInboundMessage(
-  supabase: ReturnType<typeof serviceClient>,
+  supabase: ReturnType<typeof serviceSupabase>,
   msg: MetaInboundMessage,
   contacts: { profile?: { name?: string }; wa_id?: string }[],
 ) {
@@ -187,7 +180,7 @@ async function handleInboundMessage(
 }
 
 async function handleStatusUpdate(
-  supabase: ReturnType<typeof serviceClient>,
+  supabase: ReturnType<typeof serviceSupabase>,
   st: MetaStatusUpdate,
 ) {
   const patch: Record<string, unknown> = { status: st.status };

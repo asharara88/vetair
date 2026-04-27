@@ -105,7 +105,7 @@ export default async function Home() {
       <footer className="max-w-[1400px] mx-auto px-6 py-10 mt-10 border-t border-ink-700/40">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <p className="font-mono text-2xs uppercase tracking-widest text-ink-500">
-            Vetair · Next.js 15 · Supabase · Claude Sonnet 4.5 / Opus 4.5 / Haiku 4.5 · Deployed on Vercel
+            Vetair · Next.js 15 · Supabase · Claude Sonnet 4.6 / Opus 4.7 / Haiku 4.5 · Deployed on Vercel
           </p>
           <a
             href="https://github.com/asharara88/vetair"

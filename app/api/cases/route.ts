@@ -1,19 +1,16 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { SUPABASE_URL } from "@/lib/supabase";
+import { serviceSupabase } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceKey) {
-    return NextResponse.json(
-      { error: "SUPABASE_SERVICE_ROLE_KEY not configured" },
-      { status: 500 },
-    );
+  let supabase: ReturnType<typeof serviceSupabase>;
+  try {
+    supabase = serviceSupabase();
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
-  const supabase = createClient(SUPABASE_URL, serviceKey);
 
   // Real-case-mode stub — blank owner/pet seeded, intake agent will populate via WhatsApp
   const { data: owner, error: ownerErr } = await supabase
