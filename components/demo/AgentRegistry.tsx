@@ -1,5 +1,6 @@
 import { serverSupabase } from "@/lib/supabase-server";
 import { Panel, Pill } from "@/components/ui/primitives";
+import { modelFamily } from "@/lib/utils";
 
 interface RegistryRow {
   agent_name: string;
@@ -21,13 +22,6 @@ const TYPE_ACCENT: Record<string, "amber" | "go" | "ping" | "neutral"> = {
   orchestrator: "amber", synthesizer: "amber", auditor: "ping",
   compliance: "go", intake: "neutral", specialist: "amber",
 };
-
-function modelFamily(model: string): string {
-  if (model.includes("opus")) return "Opus";
-  if (model.includes("sonnet")) return "Sonnet";
-  if (model.includes("haiku")) return "Haiku";
-  return model;
-}
 
 export async function AgentRegistry() {
   const supabase = await serverSupabase();

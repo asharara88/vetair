@@ -5,6 +5,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// ---------- date / time ----------
+
 export function formatTime(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -22,15 +24,84 @@ export function formatMs(ms: number | null | undefined): string {
   return `${(ms / 1000).toFixed(2)}s`;
 }
 
-export function formatCost(usd: number | null | undefined): string {
-  if (usd == null) return "—";
-  if (usd < 0.01) return `$${(usd * 100).toFixed(3)}¢`;
-  return `$${usd.toFixed(4)}`;
+export function timeAgo(iso: string): string {
+  const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
 }
 
-// Agent → display name + signal color
+export function durationBetween(start: string, end: string | null): string {
+  const s = Math.floor((new Date(end ?? Date.now()).getTime() - new Date(start).getTime()) / 1000);
+  if (s < 60) return `${s}s`;
+  return `${Math.floor(s / 60)}m ${s % 60}s`;
+}
+
+// ---------- numbers ----------
+
+export function formatCost(usd: number | string | null | undefined): string {
+  if (usd == null) return "—";
+  const n = Number(usd);
+  if (n < 0.001) return `$${n.toFixed(5)}`;
+  if (n < 0.01) return `$${n.toFixed(4)}`;
+  return `$${n.toFixed(3)}`;
+}
+
+export function formatTokens(n: number | null | undefined): string {
+  const v = n ?? 0;
+  if (v < 1000) return String(v);
+  return `${(v / 1000).toFixed(1)}k`;
+}
+
+// ---------- models ----------
+
+// Compact display family for any Anthropic model id (claude-sonnet-4-5 → "Sonnet").
+export function modelFamily(model: string | null | undefined): string {
+  if (!model) return "—";
+  if (model.includes("opus")) return "Opus";
+  if (model.includes("sonnet")) return "Sonnet";
+  if (model.includes("haiku")) return "Haiku";
+  return model;
+}
+
+// ---------- terminal tools ----------
+// Pill tone for `agent_runs.terminal_tool` and equivalent fields.
+
+export type SignalTone = "go" | "hold" | "stop" | "ping" | "amber" | "neutral";
+
+export const TERMINAL_TONE: Record<string, SignalTone> = {
+  emit_assessment: "go",
+  handoff_to_compliance: "go",
+  dispatch_to_agent: "amber",
+  ask_user_for_input: "ping",
+  close_case: "go",
+  concur: "go",
+  dissent: "stop",
+  escalate_to_human: "stop",
+  register_specialist: "amber",
+  send_reply: "neutral",
+  request_document: "neutral",
+  acknowledge_and_wait: "neutral",
+  fail_synthesis: "stop",
+};
+
+// ---------- agent display metadata ----------
+// Covers BOTH the new MAS agent_registry agents (intake, compliance, auditor,
+// orchestrator, synthesizer, *_compliance_specialist) AND the legacy demo
+// agent_logs names still emitted by the dramatized demo-stream pipeline.
+
 export const AGENT_META: Record<string, { label: string; color: string; short: string }> = {
-  orchestrator:        { label: "Orchestrator",         color: "#fbbe4c", short: "ORC" },
+  // New MAS roster
+  orchestrator:        { label: "Case Coordinator",     color: "#fbbe4c", short: "ORC" },
+  intake:              { label: "Intake Team",          color: "#60a5fa", short: "INT" },
+  compliance:          { label: "Compliance Team",      color: "#34d399", short: "CMP" },
+  auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
+  synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
+
+  // Legacy / dramatized demo names
   intake_agent:        { label: "Intake Agent",         color: "#60a5fa", short: "INT" },
   document_agent:      { label: "Document Agent",       color: "#60a5fa", short: "DOC" },
   compliance_agent:    { label: "Compliance (Primary)", color: "#34d399", short: "C-1" },
@@ -45,5 +116,11 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
 };
 
 export function agentMeta(name: string) {
-  return AGENT_META[name] ?? { label: name, color: "#8b95a6", short: name.slice(0, 3).toUpperCase() };
+  if (AGENT_META[name]) return AGENT_META[name];
+  // Synthesized specialists arrive as e.g. "jp_compliance_specialist".
+  if (name.endsWith("_compliance_specialist")) {
+    const cc = name.slice(0, 2).toUpperCase();
+    return { label: `${cc} Specialist`, color: "#fbbe4c", short: cc };
+  }
+  return { label: name, color: "#8b95a6", short: name.slice(0, 3).toUpperCase() };
 }

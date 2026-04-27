@@ -1,5 +1,6 @@
 import { serverSupabase } from "@/lib/supabase-server";
 import { Panel, Pill } from "@/components/ui/primitives";
+import { formatCost, timeAgo, TERMINAL_TONE } from "@/lib/utils";
 
 interface RunRow {
   id: string;
@@ -13,30 +14,6 @@ interface RunRow {
   total_cost_usd: number | string | null;
   completed_at: string | null;
   started_at: string;
-}
-
-const TERMINAL_TONE: Record<string, "go" | "ping" | "stop" | "amber" | "neutral"> = {
-  emit_assessment: "go", handoff_to_compliance: "go", dispatch_to_agent: "amber",
-  ask_user_for_input: "ping", close_case: "go", concur: "go", dissent: "stop",
-  escalate_to_human: "stop", register_specialist: "amber", send_reply: "neutral",
-  request_document: "neutral", acknowledge_and_wait: "neutral", fail_synthesis: "stop",
-};
-
-function timeAgo(iso: string): string {
-  const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (s < 60) return s + "s ago";
-  const m = Math.floor(s / 60);
-  if (m < 60) return m + "m ago";
-  const h = Math.floor(m / 60);
-  if (h < 24) return h + "h ago";
-  const d = Math.floor(h / 24);
-  return d + "d ago";
-}
-
-function fmtCost(v: number | string | null): string {
-  const n = Number(v ?? 0);
-  if (n < 0.01) return "$" + n.toFixed(4);
-  return "$" + n.toFixed(3);
 }
 
 export async function LiveReceipts() {
@@ -67,7 +44,7 @@ export async function LiveReceipts() {
           return (
             <div key={r.id} className="flex items-center gap-3 py-2.5">
               <span className="font-mono text-2xs text-ink-500 w-20 flex-shrink-0 tabular-nums">
-                {r.completed_at ? timeAgo(r.completed_at) : timeAgo(r.started_at)}
+                {timeAgo(r.completed_at ?? r.started_at)}
               </span>
               <span className="font-display text-ink-100 text-sm w-36 flex-shrink-0 truncate">
                 {r.agent_name}
@@ -76,7 +53,7 @@ export async function LiveReceipts() {
                 {r.state === "complete" ? r.terminal_tool ?? "done" : r.state.replace("_", " ")}
               </Pill>
               <span className="font-mono text-2xs text-ink-500 ml-auto flex-shrink-0 tabular-nums">
-                {r.turn_count}t · {fmtCost(r.total_cost_usd)}
+                {r.turn_count}t · {formatCost(r.total_cost_usd)}
               </span>
             </div>
           );

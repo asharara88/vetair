@@ -22,8 +22,10 @@ export default async function TheaterIndex({ searchParams }: { searchParams: Pro
   const { case: caseIdParam } = await searchParams;
   const supabase = await serverSupabase();
 
-  let targetCaseId = caseIdParam;
-  if (!targetCaseId) {
+  let targetCaseId: string;
+  if (caseIdParam) {
+    targetCaseId = caseIdParam;
+  } else {
     const { data: latest } = await supabase
       .from("cases")
       .select("id")
