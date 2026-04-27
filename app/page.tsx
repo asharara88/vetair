@@ -94,8 +94,8 @@ export default async function Home() {
             <Panel eyebrow="Walkthrough" title="Deep dives">
               <div className="space-y-2">
                 <WalkthroughRow num="01" href="/theater" title="Case Theater" note="Watch a case run turn-by-turn" status="live" />
-                <WalkthroughRow num="02" href="/factory" title="Factory" note="Synthesize a new country specialist · coming" status="soon" />
-                <WalkthroughRow num="03" href="/architecture" title="Architecture" note="Schema, agents, tools, dispatch chain · coming" status="soon" />
+                <WalkthroughRow num="02" href="/factory" title="Factory" note="Templates, synthesized specialists, history" status="live" />
+                <WalkthroughRow num="03" href="/architecture" title="Architecture" note="Schema, agents, dispatch chain" status="live" />
               </div>
             </Panel>
           </div>

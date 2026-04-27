@@ -1,5 +1,8 @@
 import { serverSupabase } from "@/lib/supabase-server";
 import { Panel, Pill } from "@/components/ui/primitives";
+import {
+  formatCost, formatTokens, modelFamily, durationBetween, TERMINAL_TONE,
+} from "@/lib/utils";
 
 interface RunRow {
   id: string;
@@ -60,53 +63,6 @@ interface CaseRow {
 interface OwnerRow { full_name: string; whatsapp_number: string; }
 interface PetRow { name: string; species: string; breed: string | null; microchip_id: string | null; }
 
-const MODEL_FAMILY: Record<string, string> = {
-  "claude-haiku-4-5": "Haiku",
-  "claude-sonnet-4-5": "Sonnet",
-  "claude-opus-4-5": "Opus",
-  "claude-sonnet-4-6": "Sonnet",
-  "claude-opus-4-7": "Opus",
-};
-
-const TERMINAL_TONE: Record<string, "go" | "ping" | "stop" | "amber" | "neutral"> = {
-  emit_assessment: "go",
-  handoff_to_compliance: "go",
-  dispatch_to_agent: "amber",
-  ask_user_for_input: "ping",
-  close_case: "go",
-  concur: "go",
-  dissent: "stop",
-  escalate_to_human: "stop",
-  register_specialist: "amber",
-  send_reply: "neutral",
-  request_document: "neutral",
-  acknowledge_and_wait: "neutral",
-  fail_synthesis: "stop",
-};
-
-function modelLabel(model: string): string {
-  return MODEL_FAMILY[model] ?? model;
-}
-
-function fmtCost(v: number | string | null): string {
-  const n = Number(v ?? 0);
-  if (n < 0.001) return "$" + n.toFixed(5);
-  if (n < 0.01) return "$" + n.toFixed(4);
-  return "$" + n.toFixed(3);
-}
-
-function fmtSecs(start: string, end: string | null): string {
-  const s = Math.floor((new Date(end ?? Date.now()).getTime() - new Date(start).getTime()) / 1000);
-  if (s < 60) return s + "s";
-  return Math.floor(s / 60) + "m " + (s % 60) + "s";
-}
-
-function fmtToken(n: number | null): string {
-  const v = n ?? 0;
-  if (v < 1000) return String(v);
-  return (v / 1000).toFixed(1) + "k";
-}
-
 export async function CaseTimeline({ caseId }: { caseId: string }) {
   const supabase = await serverSupabase();
 
@@ -161,8 +117,8 @@ export async function CaseTimeline({ caseId }: { caseId: string }) {
         <div className="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-ink-700/40">
           <Pill tone="amber">{runs.length} agent runs</Pill>
           <Pill tone="neutral">{totalTurns} total turns</Pill>
-          <Pill tone="neutral">{fmtToken(totalTokens)} tokens</Pill>
-          <Pill tone="neutral">{fmtCost(totalCost)} compute</Pill>
+          <Pill tone="neutral">{formatTokens(totalTokens)} tokens</Pill>
+          <Pill tone="neutral">{formatCost(totalCost)} compute</Pill>
         </div>
       </Panel>
 
@@ -192,7 +148,7 @@ export async function CaseTimeline({ caseId }: { caseId: string }) {
                       <Pill tone={tone}>{stateLabel}</Pill>
                     </div>
                     <span className="font-mono text-2xs text-ink-500 tabular-nums">
-                      {modelLabel(r.model)} · {r.turn_count}t · {fmtToken(r.total_input_tokens)}/{fmtToken(r.total_output_tokens)} · {fmtCost(r.total_cost_usd)} · {fmtSecs(r.started_at, r.completed_at)}
+                      {modelFamily(r.model)} · {r.turn_count}t · {formatTokens(r.total_input_tokens)}/{formatTokens(r.total_output_tokens)} · {formatCost(r.total_cost_usd)} · {durationBetween(r.started_at, r.completed_at)}
                     </span>
                   </div>
                   {r.terminal_reason && r.terminal_reason !== ("agent_chose_" + r.terminal_tool) && (
