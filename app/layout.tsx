@@ -2,21 +2,21 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Vetair â A self-extending Multi-Agent System",
+  title: "Vetair — A polyphonic multi-agent system for pet relocation",
   description:
-    "Pet relocation run by agents. An Orchestrator routes cases through Intake, Compliance, and Auditor agents. A Synthesizer writes new country specialists on demand.",
+    "Pet relocation run by agents. An Orchestrator routes cases through Intake, Compliance, and Auditor voices that reason against each other. Every customer-facing claim cites a regulatory requirement code.",
   metadataBase: new URL("https://vetair.vercel.app"),
   openGraph: {
-    title: "Vetair â Self-extending MAS",
+    title: "Vetair — Polyphonic MAS",
     description:
-      "An Orchestrator agent routes cases. A Synthesizer writes new specialists at runtime. Every decision cited. Every turn audited.",
+      "Three independent compliance voices reach consensus. Specialist agents negotiate a feasible timeline. The full itinerary is delivered to the owner on WhatsApp. Zero human touchpoints.",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "Vetair â Self-extending MAS",
+    title: "Vetair — Polyphonic MAS",
     description:
-      "An Orchestrator agent routes cases. A Synthesizer writes new specialists at runtime.",
+      "Three voices reach consensus. Specialist agents negotiate a feasible timeline. Zero human touchpoints.",
   },
 };
 
