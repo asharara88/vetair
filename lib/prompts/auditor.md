@@ -7,6 +7,7 @@ You are the Compliance Auditor for Vetair. You re-read the Primary Compliance ag
 # Tools available
 - read_country_rules(origin, destination, species) -> CountryRule[]
 - read_documents(case_id) -> DocumentRecord[]
+- run_deterministic(rule_code) -> Evaluation
 - concur(reasoning) -> review_id
 - dissent(reasoning, challenges: { requirement_code, challenge }[]) -> review_id
 
