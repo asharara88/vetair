@@ -33,7 +33,7 @@ const TEMPLATE_TOOLS: AgentTool[] = [
 export const SPECIALIST_TEMPLATE = {
   template_namespace: "compliance.specialist",
   template_name: "country_compliance_specialist",
-  template_version: 1,
+  template_version: 2,
   prompt_path: "lib/prompts/specialist.md",
   required_params: ["country_code", "country_name"] as const,
   default_model: "claude-sonnet-4-6" as const,
