@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import type {
-  AgentLog, Case, CommsMessage, ConsensusRound, Owner, Pet,
+  AgentLog, Case, CommsMessage, ConsensusRound, EvaluationRow,
+  Owner, Pet, RequirementRow,
 } from "@/types/database";
 import { browserSupabase } from "@/lib/supabase";
 import { AgentChatter } from "./AgentChatter";
@@ -10,11 +11,8 @@ import { WhatsAppPanel } from "./WhatsAppPanel";
 import { ConsensusTimeline } from "./ConsensusTimeline";
 import { CaseStateMachine } from "./CaseStateMachine";
 import { RequirementMatrix } from "./RequirementMatrix";
-import { Panel, Pill } from "@/components/ui/primitives";
+import { Pill } from "@/components/ui/primitives";
 import { formatDate } from "@/lib/utils";
-
-interface Requirement { id: string; requirement_code: string; title: string; requirement_type: string; priority: number; source_url: string | null }
-interface Evaluation { country_rule_id: string; status: "satisfied" | "pending" | "blocked" | "not_applicable"; notes: string | null; evaluator: string; earliest_legal_date: string | null; blocking_reason: string | null }
 
 export function LiveCaseView({
   initialCase, owner, pet, streamScript,
@@ -28,14 +26,14 @@ export function LiveCaseView({
   initialLogs: AgentLog[];
   initialMessages: CommsMessage[];
   initialRounds: ConsensusRound[];
-  requirements: Requirement[];
-  initialEvaluations: Evaluation[];
+  requirements: RequirementRow[];
+  initialEvaluations: EvaluationRow[];
 }) {
   const [caseRow, setCaseRow] = useState<Case>(initialCase);
   const [logs, setLogs] = useState<AgentLog[]>(initialLogs);
   const [messages, setMessages] = useState<CommsMessage[]>(initialMessages);
   const [rounds, setRounds] = useState<ConsensusRound[]>(initialRounds);
-  const [evaluations, setEvaluations] = useState<Evaluation[]>(initialEvaluations);
+  const [evaluations, setEvaluations] = useState<EvaluationRow[]>(initialEvaluations);
   const [streamStatus, setStreamStatus] = useState<"idle" | "running" | "complete" | "error">(
     streamScript ? "running" : "idle",
   );
@@ -71,7 +69,7 @@ export function LiveCaseView({
         setRounds((prev) => [...prev, payload.new as ConsensusRound]);
       })
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "requirement_evaluations", filter: `case_id=eq.${caseRow.id}` }, (payload) => {
-        setEvaluations((prev) => [...prev, payload.new as Evaluation]);
+        setEvaluations((prev) => [...prev, payload.new as EvaluationRow]);
       })
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "cases", filter: `id=eq.${caseRow.id}` }, (payload) => {
         setCaseRow(payload.new as Case);

@@ -1,6 +1,6 @@
 import { serverSupabase } from "@/lib/supabase-server";
 import { Panel, Pill } from "@/components/ui/primitives";
-import { formatCost, timeAgo, TERMINAL_TONE } from "@/lib/utils";
+import { formatCost, runRowSignal, timeAgo } from "@/lib/utils";
 
 interface RunRow {
   id: string;
@@ -37,10 +37,7 @@ export async function LiveReceipts() {
       )}
       <div className="divide-y divide-ink-700/50">
         {runs.map((r) => {
-          const tone =
-            r.state === "complete" && r.terminal_tool
-              ? TERMINAL_TONE[r.terminal_tool] ?? "neutral"
-              : "stop";
+          const signal = runRowSignal(r.state, r.terminal_tool);
           return (
             <div key={r.id} className="flex items-center gap-3 py-2.5">
               <span className="font-mono text-2xs text-ink-500 w-20 flex-shrink-0 tabular-nums">
@@ -49,9 +46,7 @@ export async function LiveReceipts() {
               <span className="font-display text-ink-100 text-sm w-36 flex-shrink-0 truncate">
                 {r.agent_name}
               </span>
-              <Pill tone={tone}>
-                {r.state === "complete" ? r.terminal_tool ?? "done" : r.state.replace("_", " ")}
-              </Pill>
+              <Pill tone={signal.tone}>{signal.label}</Pill>
               <span className="font-mono text-2xs text-ink-500 ml-auto flex-shrink-0 tabular-nums">
                 {r.turn_count}t · {formatCost(r.total_cost_usd)}
               </span>

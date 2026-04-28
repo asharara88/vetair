@@ -1,7 +1,7 @@
 import { serverSupabase } from "@/lib/supabase-server";
 import { Panel, Pill } from "@/components/ui/primitives";
 import {
-  formatCost, formatTokens, modelFamily, durationBetween, TERMINAL_TONE,
+  formatCost, formatTokens, modelFamily, durationBetween, runRowSignal,
 } from "@/lib/utils";
 
 interface RunRow {
@@ -130,11 +130,7 @@ export async function CaseTimeline({ caseId }: { caseId: string }) {
         )}
         <div className="space-y-3">
           {runs.map((r, i) => {
-            const tone = r.state === "complete" && r.terminal_tool ? TERMINAL_TONE[r.terminal_tool] ?? "neutral" :
-                         r.state === "running" ? "amber" : "stop";
-            const stateLabel = r.state === "complete" ? r.terminal_tool ?? "done" :
-                              r.state === "running" ? "running…" :
-                              r.state.replace(/_/g, " ");
+            const signal = runRowSignal(r.state, r.terminal_tool);
             return (
               <div key={r.id} className="relative pl-7">
                 <span className="absolute left-0 top-3 w-3 h-3 rounded-full bg-amber-500" />
@@ -145,7 +141,7 @@ export async function CaseTimeline({ caseId }: { caseId: string }) {
                   <div className="flex items-baseline justify-between gap-3 flex-wrap">
                     <div className="flex items-baseline gap-3">
                       <span className="font-display text-ink-100">{r.agent_name}</span>
-                      <Pill tone={tone}>{stateLabel}</Pill>
+                      <Pill tone={signal.tone}>{signal.label}</Pill>
                     </div>
                     <span className="font-mono text-2xs text-ink-500 tabular-nums">
                       {modelFamily(r.model)} · {r.turn_count}t · {formatTokens(r.total_input_tokens)}/{formatTokens(r.total_output_tokens)} · {formatCost(r.total_cost_usd)} · {durationBetween(r.started_at, r.completed_at)}

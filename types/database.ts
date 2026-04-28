@@ -131,6 +131,28 @@ export interface DemoScript {
   created_at: string;
 }
 
+// Compliance UI types — shared between Case page, LiveCaseView, and RequirementMatrix.
+
+export interface RequirementRow {
+  id: string;
+  requirement_code: string;
+  title: string;
+  requirement_type: string;
+  priority: number;
+  source_url: string | null;
+}
+
+export type EvaluationStatus = "satisfied" | "pending" | "blocked" | "not_applicable";
+
+export interface EvaluationRow {
+  country_rule_id: string;
+  status: EvaluationStatus;
+  notes: string | null;
+  evaluator: string;
+  earliest_legal_date: string | null;
+  blocking_reason: string | null;
+}
+
 export interface StreamEvent {
   type: "start" | "step" | "complete" | "warning";
   case_id?: string;

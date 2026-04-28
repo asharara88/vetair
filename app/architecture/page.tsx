@@ -3,21 +3,16 @@ import { AutoRefresh } from "@/components/demo/AutoRefresh";
 import { Panel, Pill } from "@/components/ui/primitives";
 import { serverSupabase } from "@/lib/supabase-server";
 import { formatCost, modelFamily } from "@/lib/utils";
+import {
+  AGENT_TYPE_BLURB,
+  AGENT_TYPE_TONE,
+  compareAgentRows,
+  type AgentRegistryRow,
+} from "@/lib/agents/registry-meta";
 
 export const metadata = { title: "Architecture · Vetair" };
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-
-interface RegistryRow {
-  agent_name: string;
-  agent_type: string;
-  model: string;
-  user_facing_label: string | null;
-  invocation_count: number;
-  template_id: string | null;
-  synthesis_params: Record<string, unknown> | null;
-  status: string;
-}
 
 interface RunStat {
   agent_name: string;
@@ -26,24 +21,6 @@ interface RunStat {
   avg_turns: number;
   total_cost: number;
 }
-
-const TYPE_ORDER: Record<string, number> = {
-  orchestrator: 0, intake: 1, compliance: 2, auditor: 3, synthesizer: 4, specialist: 5,
-};
-
-const TYPE_TONE: Record<string, "amber" | "go" | "ping" | "neutral"> = {
-  orchestrator: "amber", synthesizer: "amber", auditor: "ping",
-  compliance: "go", intake: "neutral", specialist: "amber",
-};
-
-const TYPE_BLURB: Record<string, string> = {
-  orchestrator: "Reads case state from the queue and decides which agent to dispatch next. Enforces the per-case budget (turns, dissent rounds, total tokens).",
-  intake: "Conversational onboarding via WhatsApp. Captures owner + pet + intent. One question per turn, never multi-prompts.",
-  compliance: "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
-  auditor: "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
-  synthesizer: "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
-  specialist: "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
-};
 
 const TABLE_GROUPS: { title: string; description: string; tables: { name: string; note: string }[] }[] = [
   {
@@ -100,13 +77,7 @@ export default async function Architecture() {
       .select("agent_name, state, turn_count, total_cost_usd"),
   ]);
 
-  const registry = (regRes.data ?? []) as RegistryRow[];
-  registry.sort((a, b) => {
-    const ao = TYPE_ORDER[a.agent_type] ?? 99;
-    const bo = TYPE_ORDER[b.agent_type] ?? 99;
-    if (ao !== bo) return ao - bo;
-    return a.agent_name.localeCompare(b.agent_name);
-  });
+  const registry = ((regRes.data ?? []) as AgentRegistryRow[]).slice().sort(compareAgentRows);
 
   const stats = new Map<string, RunStat>();
   type RawRun = { agent_name: string; state: string; turn_count: number | null; total_cost_usd: number | string | null };
@@ -187,7 +158,7 @@ export default async function Architecture() {
           <div className="space-y-3">
             {registry.map((a) => {
               const stat = stats.get(a.agent_name);
-              const tone = TYPE_TONE[a.agent_type] ?? "neutral";
+              const tone = AGENT_TYPE_TONE[a.agent_type] ?? "neutral";
               const cc = (a.synthesis_params?.country_code as string | undefined)?.toUpperCase();
               return (
                 <div key={a.agent_name} className="border border-ink-700/50 bg-ink-900/20 p-4">
@@ -206,9 +177,9 @@ export default async function Architecture() {
                     </span>
                   </div>
                   <p className="font-mono text-2xs text-ink-500 mt-1">{a.agent_name}</p>
-                  {TYPE_BLURB[a.agent_type] && (
+                  {AGENT_TYPE_BLURB[a.agent_type] && (
                     <p className="text-sm text-ink-300 leading-relaxed mt-3">
-                      {TYPE_BLURB[a.agent_type]}
+                      {AGENT_TYPE_BLURB[a.agent_type]}
                     </p>
                   )}
                   {stat && stat.completed_runs > 0 && (
