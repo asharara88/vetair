@@ -1,31 +1,15 @@
 "use client";
 import { Panel, Pill } from "@/components/ui/primitives";
+import type { EvaluationRow, EvaluationStatus, RequirementRow } from "@/types/database";
 
-interface Requirement {
-  requirement_code: string;
-  title: string;
-  requirement_type: string;
-  priority: number;
-  source_url: string | null;
-}
-
-interface Evaluation {
-  country_rule_id: string;
-  status: "satisfied" | "pending" | "blocked" | "not_applicable";
-  notes: string | null;
-  evaluator: string;
-  earliest_legal_date: string | null;
-  blocking_reason: string | null;
-}
-
-const STATUS_TONE = {
-  satisfied: "go" as const,
-  pending: "hold" as const,
-  blocked: "stop" as const,
-  not_applicable: "neutral" as const,
+const STATUS_TONE: Record<EvaluationStatus, "go" | "hold" | "stop" | "neutral"> = {
+  satisfied: "go",
+  pending: "hold",
+  blocked: "stop",
+  not_applicable: "neutral",
 };
 
-const STATUS_LABEL = {
+const STATUS_LABEL: Record<EvaluationStatus, string> = {
   satisfied: "✓ OK",
   pending: "• wait",
   blocked: "✕ block",
@@ -36,8 +20,8 @@ export function RequirementMatrix({
   requirements,
   evaluations,
 }: {
-  requirements: (Requirement & { id: string })[];
-  evaluations: Evaluation[];
+  requirements: RequirementRow[];
+  evaluations: EvaluationRow[];
 }) {
   if (requirements.length === 0) return null;
 

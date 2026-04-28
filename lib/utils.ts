@@ -88,6 +88,20 @@ export const TERMINAL_TONE: Record<string, SignalTone> = {
   fail_synthesis: "stop",
 };
 
+// Map an agent_runs row's (state, terminal_tool) to a pill tone + display label.
+// Centralizes the LiveReceipts / CaseTimeline branching that was duplicated.
+export function runRowSignal(
+  state: string,
+  terminalTool: string | null,
+): { tone: SignalTone; label: string } {
+  if (state === "complete") {
+    const tool = terminalTool ?? "done";
+    return { tone: TERMINAL_TONE[tool] ?? "neutral", label: tool };
+  }
+  if (state === "running") return { tone: "amber", label: "running…" };
+  return { tone: "stop", label: state.replace(/_/g, " ") };
+}
+
 // ---------- agent display metadata ----------
 // Covers BOTH the new MAS agent_registry agents (intake, compliance, auditor,
 // orchestrator, synthesizer, *_compliance_specialist) AND the legacy demo

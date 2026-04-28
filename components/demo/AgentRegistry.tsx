@@ -1,27 +1,11 @@
 import { serverSupabase } from "@/lib/supabase-server";
 import { Panel, Pill } from "@/components/ui/primitives";
 import { modelFamily } from "@/lib/utils";
-
-interface RegistryRow {
-  agent_name: string;
-  agent_type: string;
-  model: string;
-  status: string;
-  user_facing_label: string | null;
-  invocation_count: number;
-  template_id: string | null;
-  synthesis_params: Record<string, unknown> | null;
-  created_at: string;
-}
-
-const TYPE_ORDER: Record<string, number> = {
-  orchestrator: 0, intake: 1, compliance: 2, auditor: 3, synthesizer: 4, specialist: 5,
-};
-
-const TYPE_ACCENT: Record<string, "amber" | "go" | "ping" | "neutral"> = {
-  orchestrator: "amber", synthesizer: "amber", auditor: "ping",
-  compliance: "go", intake: "neutral", specialist: "amber",
-};
+import {
+  AGENT_TYPE_TONE,
+  compareAgentRows,
+  type AgentRegistryRow,
+} from "@/lib/agents/registry-meta";
 
 export async function AgentRegistry() {
   const supabase = await serverSupabase();
@@ -30,13 +14,7 @@ export async function AgentRegistry() {
     .select("agent_name, agent_type, model, status, user_facing_label, invocation_count, template_id, synthesis_params, created_at")
     .eq("status", "active");
 
-  const agents: RegistryRow[] = (data ?? []) as RegistryRow[];
-  agents.sort((a, b) => {
-    const ao = TYPE_ORDER[a.agent_type] ?? 99;
-    const bo = TYPE_ORDER[b.agent_type] ?? 99;
-    if (ao !== bo) return ao - bo;
-    return a.agent_name.localeCompare(b.agent_name);
-  });
+  const agents = ((data ?? []) as AgentRegistryRow[]).slice().sort(compareAgentRows);
 
   return (
     <Panel eyebrow="Registry" title="Agents live in production">
@@ -49,7 +27,7 @@ export async function AgentRegistry() {
       <div className="divide-y divide-ink-700/50">
         {agents.map((a) => {
           const isSynth = a.template_id !== null;
-          const accent = TYPE_ACCENT[a.agent_type] ?? "neutral";
+          const accent = AGENT_TYPE_TONE[a.agent_type] ?? "neutral";
           return (
             <div key={a.agent_name} className="flex items-center gap-4 py-3">
               <div className="w-28 flex-shrink-0">
