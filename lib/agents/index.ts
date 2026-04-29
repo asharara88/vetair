@@ -5,17 +5,22 @@
 import type { AgentDefinition } from "./types";
 import { ORCHESTRATOR } from "./orchestrator";
 import { INTAKE } from "./intake";
+import { DOCUMENT } from "./document";
 import { COMPLIANCE } from "./compliance";
 import { AUDITOR } from "./auditor";
+import { COMMS } from "./comms";
 import { SYNTHESIZER } from "./synthesizer";
 
-export { ORCHESTRATOR, INTAKE, COMPLIANCE, AUDITOR, SYNTHESIZER };
+export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
 export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
 export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
 export {
   AGENT_TYPE_BLURB,
   AGENT_TYPE_ORDER,
   AGENT_TYPE_TONE,
+  agentTypeBlurb,
+  agentTypeOrder,
+  agentTypeTone,
   compareAgentRows,
   type AgentRegistryRow,
   type AgentType,
@@ -25,13 +30,19 @@ export {
 export const STATIC_AGENTS: readonly AgentDefinition[] = [
   ORCHESTRATOR,
   INTAKE,
+  DOCUMENT,
   COMPLIANCE,
   AUDITOR,
+  COMMS,
   SYNTHESIZER,
 ] as const;
 
+const BY_NAME: Record<string, AgentDefinition> = Object.fromEntries(
+  STATIC_AGENTS.map((a) => [a.name, a]),
+);
+
 export const STATIC_AGENTS_BY_NAME: Readonly<Record<string, AgentDefinition>> =
-  Object.freeze(Object.fromEntries(STATIC_AGENTS.map((a) => [a.name, a])));
+  Object.freeze(BY_NAME);
 
 /**
  * Resolve an agent definition by `agent_runs.agent_name`.

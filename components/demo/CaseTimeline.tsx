@@ -1,7 +1,7 @@
 import { serverSupabase } from "@/lib/supabase-server";
 import { Panel, Pill } from "@/components/ui/primitives";
 import {
-  formatCost, formatTokens, modelFamily, durationBetween, runRowSignal,
+  formatCost, formatTokens, modelFamily, durationBetween, runRowSignal, verdictTone,
 } from "@/lib/utils";
 
 interface RunRow {
@@ -147,7 +147,7 @@ export async function CaseTimeline({ caseId }: { caseId: string }) {
                       {modelFamily(r.model)} · {r.turn_count}t · {formatTokens(r.total_input_tokens)}/{formatTokens(r.total_output_tokens)} · {formatCost(r.total_cost_usd)} · {durationBetween(r.started_at, r.completed_at)}
                     </span>
                   </div>
-                  {r.terminal_reason && r.terminal_reason !== ("agent_chose_" + r.terminal_tool) && (
+                  {r.terminal_reason && !isDefaultTerminalReason(r.terminal_reason, r.terminal_tool) && (
                     <p className="font-mono text-2xs text-ink-500 mt-2">{r.terminal_reason}</p>
                   )}
                   {r.error_message && (
@@ -162,6 +162,11 @@ export async function CaseTimeline({ caseId }: { caseId: string }) {
 
       {assessment && (
         <Panel eyebrow="Compliance" title={"Verdict: " + assessment.verdict.replace(/_/g, " ") + (assessment.round > 1 ? (" · round " + assessment.round) : "")}>
+          <div className="mb-4">
+            <Pill tone={verdictTone(assessment.verdict)} dot>
+              {assessment.verdict.replace(/_/g, " ")}
+            </Pill>
+          </div>
           {assessment.summary && (
             <p className="text-sm text-ink-300 leading-relaxed mb-4">{assessment.summary}</p>
           )}
@@ -195,6 +200,11 @@ export async function CaseTimeline({ caseId }: { caseId: string }) {
 
       {audit && (
         <Panel eyebrow="Audit" title={(audit.verdict === "concur" ? "Concurred" : "Dissented") + (audit.round > 1 ? (" · round " + audit.round) : "")}>
+          <div className="mb-3">
+            <Pill tone={verdictTone(audit.verdict)} dot>
+              {audit.verdict === "concur" ? "concur" : "dissent"}
+            </Pill>
+          </div>
           {audit.reasoning && (
             <p className="text-sm text-ink-300 leading-relaxed">{audit.reasoning}</p>
           )}
@@ -249,4 +259,11 @@ function Field({ label, value, mono = false }: { label: string; value: string; m
       <p className={mono ? "font-mono text-sm text-ink-100" : "text-sm text-ink-100"}>{value}</p>
     </div>
   );
+}
+
+// The orchestrator stamps `agent_chose_<tool>` as the default terminal_reason
+// when the agent had no further explanation. Hide that — only show meaningful
+// reasons (failures, escalations, custom notes).
+function isDefaultTerminalReason(reason: string, tool: string | null): boolean {
+  return tool != null && reason === `agent_chose_${tool}`;
 }

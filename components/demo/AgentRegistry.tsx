@@ -2,7 +2,7 @@ import { serverSupabase } from "@/lib/supabase-server";
 import { Panel, Pill } from "@/components/ui/primitives";
 import { modelFamily } from "@/lib/utils";
 import {
-  AGENT_TYPE_TONE,
+  agentTypeTone,
   compareAgentRows,
   type AgentRegistryRow,
 } from "@/lib/agents/registry-meta";
@@ -27,7 +27,7 @@ export async function AgentRegistry() {
       <div className="divide-y divide-ink-700/50">
         {agents.map((a) => {
           const isSynth = a.template_id !== null;
-          const accent = AGENT_TYPE_TONE[a.agent_type] ?? "neutral";
+          const accent = agentTypeTone(a.agent_type);
           return (
             <div key={a.agent_name} className="flex items-center gap-4 py-3">
               <div className="w-28 flex-shrink-0">

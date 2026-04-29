@@ -4,8 +4,8 @@ import { Panel, Pill } from "@/components/ui/primitives";
 import { serverSupabase } from "@/lib/supabase-server";
 import { formatCost, modelFamily } from "@/lib/utils";
 import {
-  AGENT_TYPE_BLURB,
-  AGENT_TYPE_TONE,
+  agentTypeBlurb,
+  agentTypeTone,
   compareAgentRows,
   type AgentRegistryRow,
 } from "@/lib/agents/registry-meta";
@@ -158,7 +158,8 @@ export default async function Architecture() {
           <div className="space-y-3">
             {registry.map((a) => {
               const stat = stats.get(a.agent_name);
-              const tone = AGENT_TYPE_TONE[a.agent_type] ?? "neutral";
+              const tone = agentTypeTone(a.agent_type);
+              const blurb = agentTypeBlurb(a.agent_type);
               const cc = (a.synthesis_params?.country_code as string | undefined)?.toUpperCase();
               return (
                 <div key={a.agent_name} className="border border-ink-700/50 bg-ink-900/20 p-4">
@@ -177,9 +178,9 @@ export default async function Architecture() {
                     </span>
                   </div>
                   <p className="font-mono text-2xs text-ink-500 mt-1">{a.agent_name}</p>
-                  {AGENT_TYPE_BLURB[a.agent_type] && (
+                  {blurb && (
                     <p className="text-sm text-ink-300 leading-relaxed mt-3">
-                      {AGENT_TYPE_BLURB[a.agent_type]}
+                      {blurb}
                     </p>
                   )}
                   {stat && stat.completed_runs > 0 && (

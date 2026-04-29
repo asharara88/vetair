@@ -81,11 +81,14 @@ export const TERMINAL_TONE: Record<string, SignalTone> = {
   concur: "go",
   dissent: "stop",
   escalate_to_human: "stop",
-  register_specialist: "amber",
+  register_specialist: "go",
   send_reply: "neutral",
+  send_outbound: "neutral",
   request_document: "neutral",
   acknowledge_and_wait: "neutral",
+  emit_extraction: "go",
   fail_synthesis: "stop",
+  fail_extraction: "stop",
 };
 
 // Map an agent_runs row's (state, terminal_tool) to a pill tone + display label.
@@ -102,6 +105,37 @@ export function runRowSignal(
   return { tone: "stop", label: state.replace(/_/g, " ") };
 }
 
+// ---------- verdicts & states ----------
+// Pill tone for compliance verdicts (assessments + audits + synth runs).
+
+export function verdictTone(verdict: string | null | undefined): SignalTone {
+  switch (verdict) {
+    case "approved":
+    case "concur":
+    case "satisfied":
+      return "go";
+    case "blocked":
+    case "rejected":
+    case "dissent":
+    case "escalated_to_human":
+    case "fail_synthesis":
+      return "stop";
+    case "pending":
+    case "needs_info":
+      return "ping";
+    case "conditionally_approved":
+      return "go";
+    default:
+      return "neutral";
+  }
+}
+
+// Pill tone for `cases.assessment_state` (a superset of verdicts with case-level states).
+export function assessmentStateTone(state: string | null | undefined): SignalTone {
+  if (!state) return "neutral";
+  return verdictTone(state);
+}
+
 // ---------- agent display metadata ----------
 // Covers BOTH the new MAS agent_registry agents (intake, compliance, auditor,
 // orchestrator, synthesizer, *_compliance_specialist) AND the legacy demo
@@ -111,8 +145,10 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   // New MAS roster
   orchestrator:        { label: "Case Coordinator",     color: "#fbbe4c", short: "ORC" },
   intake:              { label: "Intake Team",          color: "#60a5fa", short: "INT" },
+  document:            { label: "Document Team",        color: "#60a5fa", short: "DOC" },
   compliance:          { label: "Compliance Team",      color: "#34d399", short: "CMP" },
   auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
+  comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
   synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
 
   // Legacy / dramatized demo names
