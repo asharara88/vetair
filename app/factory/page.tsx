@@ -2,7 +2,7 @@ import { Header } from "@/components/demo/Header";
 import { AutoRefresh } from "@/components/demo/AutoRefresh";
 import { Panel, Pill } from "@/components/ui/primitives";
 import { serverSupabase } from "@/lib/supabase-server";
-import { formatCost, modelFamily, timeAgo } from "@/lib/utils";
+import { formatCost, modelFamily, runRowSignal, timeAgo } from "@/lib/utils";
 
 export const metadata = { title: "Factory · Vetair" };
 export const dynamic = "force-dynamic";
@@ -218,25 +218,20 @@ export default async function Factory() {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {synthRuns.map((r) => (
-                    <div key={r.id} className="flex items-center gap-3 py-1.5">
-                      <span className="font-mono text-2xs text-ink-500 w-20 flex-shrink-0 tabular-nums">
-                        {timeAgo(r.completed_at ?? r.started_at)}
-                      </span>
-                      <Pill
-                        tone={
-                          r.terminal_tool === "register_specialist" ? "go" :
-                          r.terminal_tool === "fail_synthesis" ? "stop" :
-                          r.state === "running" ? "amber" : "neutral"
-                        }
-                      >
-                        {r.terminal_tool ?? r.state}
-                      </Pill>
-                      <span className="font-mono text-2xs text-ink-500 ml-auto flex-shrink-0 tabular-nums">
-                        {r.turn_count}t · {formatCost(r.total_cost_usd)}
-                      </span>
-                    </div>
-                  ))}
+                  {synthRuns.map((r) => {
+                    const signal = runRowSignal(r.state, r.terminal_tool);
+                    return (
+                      <div key={r.id} className="flex items-center gap-3 py-1.5">
+                        <span className="font-mono text-2xs text-ink-500 w-20 flex-shrink-0 tabular-nums">
+                          {timeAgo(r.completed_at ?? r.started_at)}
+                        </span>
+                        <Pill tone={signal.tone}>{signal.label}</Pill>
+                        <span className="font-mono text-2xs text-ink-500 ml-auto flex-shrink-0 tabular-nums">
+                          {r.turn_count}t · {formatCost(r.total_cost_usd)}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </Panel>

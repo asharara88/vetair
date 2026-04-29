@@ -3,6 +3,7 @@ import { AutoRefresh } from "@/components/demo/AutoRefresh";
 import { CaseTimeline } from "@/components/demo/CaseTimeline";
 import { Panel, Pill } from "@/components/ui/primitives";
 import { serverSupabase } from "@/lib/supabase-server";
+import { assessmentStateTone } from "@/lib/utils";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -92,12 +93,7 @@ export default async function TheaterIndex({ searchParams }: { searchParams: Pro
                       <span className={"font-mono text-2xs uppercase tracking-widest " + (active ? "text-amber-400" : "text-ink-400")}>
                         {c.case_number}
                       </span>
-                      <Pill tone={
-                        c.assessment_state === "approved" || c.assessment_state === "conditionally_approved" ? "go" :
-                        c.assessment_state === "rejected" ? "stop" :
-                        c.assessment_state === "escalated_to_human" ? "stop" :
-                        c.assessment_state === "needs_info" ? "ping" : "neutral"
-                      }>
+                      <Pill tone={assessmentStateTone(c.assessment_state)}>
                         {c.assessment_state.replace(/_/g, " ")}
                       </Pill>
                     </div>
