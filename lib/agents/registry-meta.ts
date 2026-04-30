@@ -10,7 +10,10 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "vet_network"
+  | "logistics"
+  | "watchdog";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,9 +35,12 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  watchdog: 5,
+  vet_network: 6,
+  logistics: 7,
+  comms: 8,
+  synthesizer: 9,
+  specialist: 10,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,10 +48,13 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  watchdog: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  logistics: "neutral",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -59,6 +68,12 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  watchdog:
+    "Async read-only monitor. Flags citation gaps, deterministic disagreements, low extraction confidence, SLA breach, and budget warnings.",
+  vet_network:
+    "Matches the owner to an approved vet and proposes microchip / vaccine / titer / endorsement appointments for the consensus timeline.",
+  logistics:
+    "Flight + crate + endorsement scheduling. IATA LAR-compliant routes, CR-82 sizing, and country-specific endorsement windows.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
   synthesizer:
