@@ -24,6 +24,7 @@ Key changes from v3:
 ### 3. ControlPanel UI exposes the target number
 
 `components/demo/ControlPanel.tsx`:
+
 - New `targetWhatsapp` state (string; empty → `undefined` in request body).
 - New input field below the speed selector inside the dramatized-mode section. `type="tel"` with an AE-formatted placeholder. Helper text explains the Meta-whitelist requirement.
 - Cold control room styling: ink-900 bg, ink-700 border, amber focus ring, JetBrains Mono tabular-nums.
