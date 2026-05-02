@@ -148,7 +148,11 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   document:            { label: "Document Team",        color: "#60a5fa", short: "DOC" },
   compliance:          { label: "Compliance Team",      color: "#34d399", short: "CMP" },
   auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
+  vet_network:         { label: "Vet Network",          color: "#60a5fa", short: "VET" },
+  airline_crate:       { label: "Airline & Crate",      color: "#60a5fa", short: "AIR" },
+  endorsement:         { label: "Endorsement Desk",     color: "#60a5fa", short: "END" },
   comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
+  audit:               { label: "Audit Watchdog",       color: "#8b95a6", short: "AWD" },
   synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
 
   // Legacy / dramatized demo names
