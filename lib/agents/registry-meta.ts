@@ -8,9 +8,13 @@ export type AgentType =
   | "document"
   | "compliance"
   | "auditor"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "audit";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,9 +36,13 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  synthesizer: 9,
+  specialist: 10,
+  audit: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,9 +50,13 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  audit: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
+  endorsement: "neutral",
   comms: "neutral",
 };
 
@@ -59,12 +71,20 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Matches the owner to an approved vet on the active corridor and books microchip / vaccine / titer / endorsement appointments. Proposes dates that the timeline consensus round reconciles.",
+  airline_crate:
+    "IATA LAR routing, CR-82 crate sizing, temperature-embargo screening. Proposes flight + crate options that respect the earliest legal departure and the owner's target window.",
+  endorsement:
+    "Owns the 7-10 day pre-flight endorsement window: schedules the OV appointment, files MOCCAE / APHA submissions, tracks the courier delivering the wet-stamp packet.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  audit:
+    "Read-only watchdog. Monitors every agent's output for citation gaps, deterministic vs LLM disagreement, SLA breach risk, and document extraction confidence < 0.95.",
 };
 
 const FALLBACK_ORDER = 99;

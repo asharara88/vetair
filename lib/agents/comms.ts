@@ -3,6 +3,11 @@
 // blocks free-text regulatory advice. Tone is warm, never breezy.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import {
+  ACKNOWLEDGE_AND_WAIT_TOOL,
+  DOCUMENT_KIND_FULL,
+  requestDocumentTool,
+} from "./shared-tools";
 
 export const COMMS: AgentDefinition = validateAgent({
   name: "comms",
@@ -53,31 +58,12 @@ export const COMMS: AgentDefinition = validateAgent({
         required: ["case_id", "channel", "body", "cited_rules"],
       },
     },
-    {
-      name: "request_document",
+    requestDocumentTool(DOCUMENT_KIND_FULL, {
       description: "Terminal: send the owner a templated request for a specific document type.",
-      input_schema: {
-        type: "object",
-        properties: {
-          case_id: { type: "string" },
-          channel: { type: "string", enum: ["whatsapp", "email"] },
-          kind: {
-            type: "string",
-            enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement"],
-          },
-        },
-        required: ["case_id", "channel", "kind"],
-      },
-    },
-    {
-      name: "acknowledge_and_wait",
-      description: "Terminal: yield without sending. Use when the assessment is final and no owner-facing nudge is needed.",
-      input_schema: {
-        type: "object",
-        properties: { reason: { type: "string" } },
-        required: ["reason"],
-      },
-    },
+      requireCaseId: true,
+      requireChannel: true,
+    }),
+    ACKNOWLEDGE_AND_WAIT_TOOL,
   ],
   terminal_tools: ["send_outbound", "request_document", "acknowledge_and_wait"],
   budget: { max_turns: 4, max_input_tokens: 30_000 },
