@@ -3,6 +3,7 @@
 // dispatch it like any other agent, with structured emit_extraction output.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import { CASE_ID_INPUT } from "./shared-tools";
 
 export const DOCUMENT: AgentDefinition = validateAgent({
   name: "document",
@@ -25,11 +26,7 @@ export const DOCUMENT: AgentDefinition = validateAgent({
     {
       name: "read_pet_facts",
       description: "Read the case's pet row so you can flag mismatches between the document and the existing record.",
-      input_schema: {
-        type: "object",
-        properties: { case_id: { type: "string" } },
-        required: ["case_id"],
-      },
+      input_schema: CASE_ID_INPUT,
     },
     {
       name: "emit_extraction",
