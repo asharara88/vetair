@@ -8,6 +8,7 @@ import {
   COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
 } from "./compliance";
+import { DOC_KINDS } from "./shared-tools";
 
 export interface SpecialistParams {
   country_code: string; // ISO-3166 alpha-2 uppercase
@@ -23,7 +24,7 @@ const TEMPLATE_TOOLS: AgentTool[] = [
     input_schema: {
       type: "object",
       properties: {
-        kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement", "confirm_destination"] },
+        kind: { type: "string", enum: [...DOC_KINDS, "confirm_destination"] },
       },
       required: ["kind"],
     },
