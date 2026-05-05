@@ -10,7 +10,10 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "vet_network"
+  | "endorsement"
+  | "airline";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,9 +35,12 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  endorsement: 6,
+  airline: 7,
+  comms: 8,
+  synthesizer: 9,
+  specialist: 10,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -46,6 +52,9 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  endorsement: "neutral",
+  airline: "neutral",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -65,6 +74,12 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  vet_network:
+    "Books the pre-flight vet appointment. Matches the case to a partner clinic licensed for the destination corridor and proposes a slot.",
+  endorsement:
+    "Submits the signed health certificate to the destination's endorsement authority and tracks its return into the case documents.",
+  airline:
+    "Picks an IATA-compliant crate from the pet's measurements and books a cargo slot on an airline whose breed policy permits the pet.",
 };
 
 const FALLBACK_ORDER = 99;

@@ -10,8 +10,22 @@ import { COMPLIANCE } from "./compliance";
 import { AUDITOR } from "./auditor";
 import { COMMS } from "./comms";
 import { SYNTHESIZER } from "./synthesizer";
+import { VET_NETWORK } from "./vet_network";
+import { ENDORSEMENT } from "./endorsement";
+import { AIRLINE } from "./airline";
 
-export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
+export {
+  ORCHESTRATOR,
+  INTAKE,
+  DOCUMENT,
+  COMPLIANCE,
+  AUDITOR,
+  COMMS,
+  SYNTHESIZER,
+  VET_NETWORK,
+  ENDORSEMENT,
+  AIRLINE,
+};
 export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
 export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
 export {
@@ -26,6 +40,16 @@ export {
   type AgentType,
   type AgentTypeTone,
 } from "./registry-meta";
+export {
+  BASE_DOCUMENT_KINDS,
+  COMPLIANCE_DOCUMENT_KINDS,
+  SPECIALIST_DOCUMENT_KINDS,
+  OUTBOUND_CHANNELS,
+  TEMPLATED_CHANNELS,
+  MODEL_IDS,
+  type DocumentKind,
+  type OutboundChannel,
+} from "./shared";
 
 export const STATIC_AGENTS: readonly AgentDefinition[] = [
   ORCHESTRATOR,
@@ -33,6 +57,9 @@ export const STATIC_AGENTS: readonly AgentDefinition[] = [
   DOCUMENT,
   COMPLIANCE,
   AUDITOR,
+  VET_NETWORK,
+  ENDORSEMENT,
+  AIRLINE,
   COMMS,
   SYNTHESIZER,
 ] as const;

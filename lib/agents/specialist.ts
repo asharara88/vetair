@@ -8,6 +8,7 @@ import {
   COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
 } from "./compliance";
+import { SPECIALIST_DOCUMENT_KINDS, requestDocumentTool } from "./shared";
 
 export interface SpecialistParams {
   country_code: string; // ISO-3166 alpha-2 uppercase
@@ -17,17 +18,7 @@ export interface SpecialistParams {
 const TEMPLATE_TOOLS: AgentTool[] = [
   ...COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
-  {
-    name: "request_document",
-    description: "Terminal: ask the owner via Comms for a missing document.",
-    input_schema: {
-      type: "object",
-      properties: {
-        kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement", "confirm_destination"] },
-      },
-      required: ["kind"],
-    },
-  },
+  requestDocumentTool(SPECIALIST_DOCUMENT_KINDS),
 ];
 
 export const SPECIALIST_TEMPLATE = {
@@ -38,12 +29,15 @@ export const SPECIALIST_TEMPLATE = {
   required_params: ["country_code", "country_name"] as const,
   default_model: "claude-sonnet-4-6" as const,
   tools: TEMPLATE_TOOLS,
-  terminal_tools: ["emit_assessment", "request_document"],
+  terminal_tools: ["emit_assessment", "request_document"] as const,
 };
 
 // Build a concrete AgentDefinition for a synthesized specialist.
 // Called at dispatch time once the row in synthesized_specialists is loaded.
-export function buildSpecialist(params: SpecialistParams, model = SPECIALIST_TEMPLATE.default_model): AgentDefinition {
+export function buildSpecialist(
+  params: SpecialistParams,
+  model = SPECIALIST_TEMPLATE.default_model,
+): AgentDefinition {
   const cc = params.country_code.toUpperCase();
   return validateAgent({
     name: `${cc.toLowerCase()}_compliance_specialist`,
