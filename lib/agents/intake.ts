@@ -1,6 +1,7 @@
 // Intake — conversational onboarding via WhatsApp. One question per turn.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import { ASK_USER_FOR_INPUT_TOOL } from "./shared-tools";
 
 export const INTAKE: AgentDefinition = validateAgent({
   name: "intake",
@@ -49,18 +50,7 @@ export const INTAKE: AgentDefinition = validateAgent({
         required: ["patch"],
       },
     },
-    {
-      name: "ask_user_for_input",
-      description: "Terminal: send a single-question prompt and yield until the owner replies.",
-      input_schema: {
-        type: "object",
-        properties: {
-          field: { type: "string" },
-          question: { type: "string" },
-        },
-        required: ["field", "question"],
-      },
-    },
+    ASK_USER_FOR_INPUT_TOOL,
     {
       name: "handoff_to_compliance",
       description: "Terminal: enqueue the compliance assessment task.",
