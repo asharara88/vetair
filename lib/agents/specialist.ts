@@ -8,6 +8,7 @@ import {
   COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
 } from "./compliance";
+import { requestDocumentTool, SPECIALIST_DOCUMENT_KINDS } from "./shared-tools";
 
 export interface SpecialistParams {
   country_code: string; // ISO-3166 alpha-2 uppercase
@@ -17,17 +18,7 @@ export interface SpecialistParams {
 const TEMPLATE_TOOLS: AgentTool[] = [
   ...COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
-  {
-    name: "request_document",
-    description: "Terminal: ask the owner via Comms for a missing document.",
-    input_schema: {
-      type: "object",
-      properties: {
-        kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement", "confirm_destination"] },
-      },
-      required: ["kind"],
-    },
-  },
+  requestDocumentTool(SPECIALIST_DOCUMENT_KINDS),
 ];
 
 export const SPECIALIST_TEMPLATE = {
