@@ -1,6 +1,11 @@
 // Intake — conversational onboarding via WhatsApp. One question per turn.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import { askUserForInputTool, caseIdInput } from "./tool-schemas";
+
+// Intake only asks for the four basic owner-supplied artifacts. Permits and
+// endorsements are downstream concerns handled by Compliance / Endorsement.
+const INTAKE_DOCUMENT_KINDS = ["rabies", "microchip", "passport", "vet_records"] as const;
 
 export const INTAKE: AgentDefinition = validateAgent({
   name: "intake",
@@ -25,9 +30,7 @@ export const INTAKE: AgentDefinition = validateAgent({
       description: "Ask the owner to upload a specific document type.",
       input_schema: {
         type: "object",
-        properties: {
-          kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records"] },
-        },
+        properties: { kind: { type: "string", enum: [...INTAKE_DOCUMENT_KINDS] } },
         required: ["kind"],
       },
     },
@@ -49,26 +52,11 @@ export const INTAKE: AgentDefinition = validateAgent({
         required: ["patch"],
       },
     },
-    {
-      name: "ask_user_for_input",
-      description: "Terminal: send a single-question prompt and yield until the owner replies.",
-      input_schema: {
-        type: "object",
-        properties: {
-          field: { type: "string" },
-          question: { type: "string" },
-        },
-        required: ["field", "question"],
-      },
-    },
+    askUserForInputTool,
     {
       name: "handoff_to_compliance",
       description: "Terminal: enqueue the compliance assessment task.",
-      input_schema: {
-        type: "object",
-        properties: { case_id: { type: "string" } },
-        required: ["case_id"],
-      },
+      input_schema: caseIdInput(),
     },
   ],
   terminal_tools: ["ask_user_for_input", "handoff_to_compliance"],

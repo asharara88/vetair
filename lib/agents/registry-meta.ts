@@ -10,7 +10,11 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
+  | "watchdog";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,9 +36,13 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  watchdog: 9,
+  synthesizer: 10,
+  specialist: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,10 +50,14 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  watchdog: "ping",
   compliance: "go",
+  endorsement: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -59,8 +71,16 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Books microchip / vaccine / titer / endorsement appointments with an approved vet near the owner. Holds slots, confirms cost, hands the booking back to the orchestrator.",
+  airline_crate:
+    "IATA LAR + CR-82 sizing + temperature embargo. Proposes a flight and crate spec the corridor permits and the destination accepts.",
+  endorsement:
+    "Owns the 7–10 day pre-flight endorsement window. Files MOCCAE / APHA / origin-government paperwork and tracks the courier leg.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  watchdog:
+    "Read-only async watchdog. Flags citation gaps, deterministic-vs-LLM disagreement, low extraction confidence, and SLA risk back to the orchestrator.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
