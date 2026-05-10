@@ -2,6 +2,7 @@
 // Reads the queue, decides which agent runs next, enforces the per-case budget.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import { acknowledgeAndWaitTool, caseIdInput } from "./tool-schemas";
 
 export const ORCHESTRATOR: AgentDefinition = validateAgent({
   name: "orchestrator",
@@ -14,17 +15,14 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
   tools: [
     {
       name: "list_active_agents",
-      description: "Read the agent_registry table for all active agents (active dispatch targets).",
+      description:
+        "Read the agent_registry table for all active agents (active dispatch targets).",
       input_schema: { type: "object", properties: {} },
     },
     {
       name: "read_case",
       description: "Read a case row by id, including state and budget counters.",
-      input_schema: {
-        type: "object",
-        properties: { case_id: { type: "string" } },
-        required: ["case_id"],
-      },
+      input_schema: caseIdInput(),
     },
     {
       name: "read_recent_runs",
@@ -53,7 +51,8 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
     },
     {
       name: "escalate_to_human",
-      description: "Route the case to the human break-glass queue. Use when budget is exhausted or the auditor has dissented twice.",
+      description:
+        "Route the case to the human break-glass queue. Use when budget is exhausted or the auditor has dissented twice.",
       input_schema: {
         type: "object",
         properties: {
@@ -75,16 +74,13 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
         required: ["case_id", "outcome"],
       },
     },
-    {
-      name: "acknowledge_and_wait",
-      description: "Terminal: yield the loop without dispatch (e.g. waiting on owner reply).",
-      input_schema: {
-        type: "object",
-        properties: { reason: { type: "string" } },
-        required: ["reason"],
-      },
-    },
+    acknowledgeAndWaitTool,
   ],
-  terminal_tools: ["dispatch_to_agent", "escalate_to_human", "close_case", "acknowledge_and_wait"],
+  terminal_tools: [
+    "dispatch_to_agent",
+    "escalate_to_human",
+    "close_case",
+    "acknowledge_and_wait",
+  ],
   budget: { max_turns: 8, max_input_tokens: 80_000, max_dissent_rounds: 2 },
 });
