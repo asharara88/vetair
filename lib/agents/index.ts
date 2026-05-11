@@ -37,9 +37,13 @@ export const STATIC_AGENTS: readonly AgentDefinition[] = [
   SYNTHESIZER,
 ] as const;
 
-const BY_NAME: Record<string, AgentDefinition> = Object.fromEntries(
-  STATIC_AGENTS.map((a) => [a.name, a]),
-);
+const BY_NAME: Record<string, AgentDefinition> = {};
+for (const agent of STATIC_AGENTS) {
+  if (BY_NAME[agent.name]) {
+    throw new Error(`Duplicate static agent name: ${agent.name}`);
+  }
+  BY_NAME[agent.name] = agent;
+}
 
 export const STATIC_AGENTS_BY_NAME: Readonly<Record<string, AgentDefinition>> =
   Object.freeze(BY_NAME);
