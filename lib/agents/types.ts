@@ -52,9 +52,16 @@ export interface AgentDefinition {
   budget: AgentBudget;
 }
 
-// Convenience: assert at module load that terminal_tools ⊆ tools.
+// Convenience: assert at module load that terminal_tools ⊆ tools and that
+// tool names are unique within the agent.
 export function validateAgent(def: AgentDefinition): AgentDefinition {
-  const toolNames = new Set(def.tools.map((t) => t.name));
+  const toolNames = new Set<string>();
+  for (const tool of def.tools) {
+    if (toolNames.has(tool.name)) {
+      throw new Error(`Agent "${def.name}" has duplicate tool: ${tool.name}`);
+    }
+    toolNames.add(tool.name);
+  }
   const missing = def.terminal_tools.filter((t) => !toolNames.has(t));
   if (missing.length > 0) {
     throw new Error(
