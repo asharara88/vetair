@@ -8,7 +8,7 @@ import {
   agentTypeTone,
   compareAgentRows,
   type AgentRegistryRow,
-} from "@/lib/agents/registry-meta";
+} from "@/lib/agents";
 
 export const metadata = { title: "Architecture · Vetair" };
 export const dynamic = "force-dynamic";
@@ -106,6 +106,8 @@ export default async function Architecture() {
     { label: "Compliance", tone: "go", mono: false },
     { label: "Auditor", tone: "ping", mono: false },
     { label: "Specialist (synthesized)", tone: "amber", mono: false },
+    { label: "Endorsement", tone: "ping", mono: false },
+    { label: "Logistics", tone: "neutral", mono: false },
     { label: "Comms → owner", tone: "neutral", mono: true },
   ];
 
