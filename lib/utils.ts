@@ -81,14 +81,20 @@ export const TERMINAL_TONE: Record<string, SignalTone> = {
   concur: "go",
   dissent: "stop",
   escalate_to_human: "stop",
+  escalate_to_specialist: "amber",
   register_specialist: "go",
   send_reply: "neutral",
   send_outbound: "neutral",
   request_document: "neutral",
+  request_crate_specs: "neutral",
   acknowledge_and_wait: "neutral",
   emit_extraction: "go",
   fail_synthesis: "stop",
   fail_extraction: "stop",
+  confirm_booking: "go",
+  abort_booking: "stop",
+  submit_for_endorsement: "go",
+  record_endorsement_outcome: "go",
 };
 
 // Map an agent_runs row's (state, terminal_tool) to a pill tone + display label.
@@ -150,6 +156,8 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
   comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
   synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
+  logistics:           { label: "Logistics Team",       color: "#60a5fa", short: "LOG" },
+  endorsement:         { label: "Endorsement Team",     color: "#f87171", short: "END" },
 
   // Legacy / dramatized demo names
   intake_agent:        { label: "Intake Agent",         color: "#60a5fa", short: "INT" },

@@ -1,6 +1,6 @@
 // Shared metadata for `agent_registry.agent_type`.
-// Single source of truth — referenced from the AgentRegistry panel on the
-// home page and the Architecture page roster.
+// Owns the type union, dispatch order, and UI tone. Blurbs are derived from
+// AgentDefinition.description in lib/agents/index.ts — single source of truth.
 
 export type AgentType =
   | "orchestrator"
@@ -10,7 +10,9 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "logistics"
+  | "endorsement";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -35,6 +37,8 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   comms: 5,
   synthesizer: 6,
   specialist: 7,
+  logistics: 8,
+  endorsement: 9,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -46,25 +50,8 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
-};
-
-export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
-  orchestrator:
-    "Reads case state from the queue and decides which agent to dispatch next. Enforces the per-case budget (turns, dissent rounds, total tokens).",
-  intake:
-    "Conversational onboarding via WhatsApp. Captures owner + pet + intent. One question per turn, never multi-prompts.",
-  document:
-    "Native vision extraction. Reads uploaded rabies certificates, microchip records, permits — emits structured fields with confidence.",
-  compliance:
-    "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
-  auditor:
-    "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
-  comms:
-    "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
-  synthesizer:
-    "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
-  specialist:
-    "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  logistics: "neutral",
+  endorsement: "ping",
 };
 
 const FALLBACK_ORDER = 99;
@@ -78,10 +65,6 @@ export function agentTypeOrder(type: string): number {
 
 export function agentTypeTone(type: string): AgentTypeTone {
   return AGENT_TYPE_TONE[type as AgentType] ?? "neutral";
-}
-
-export function agentTypeBlurb(type: string): string | undefined {
-  return AGENT_TYPE_BLURB[type as AgentType];
 }
 
 export function compareAgentRows<T extends { agent_type: string; agent_name: string }>(
