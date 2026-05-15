@@ -276,11 +276,12 @@ When continuing work on Vetair:
 ## 12. Session log (build progress)
 
 - **Session 1** (complete): Supabase project, 11-table schema, 37 country_rules across 5 corridor+species combos, 2 demo scripts (Sarah+Max blocked-then-resolved, James+Luna happy-path)
-- **Session 2** (in progress): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
-- **Session 3** (planned): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
-- **Session 4** (planned): WhatsApp Business API sandbox wiring
-- **Session 5** (planned): Full end-to-end dry run + polish
+- **Session 2** (complete): Deterministic TS compliance engine + Edge Functions (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
+- **Session 3** (complete): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
+- **Session 4** (complete): WhatsApp Business API sandbox wiring
+- **Session 5** (complete): `demo-stream` → `whatsapp-send` outbound routing; ControlPanel target-number field
+- **Session 6** (in progress): Roster completion + shared-tool refactor — extracted `lib/agents/_shared.ts` (compliance read tools + assessment tool + document kinds, removing the back-import from `auditor.ts`/`specialist.ts` into `compliance.ts`). Added the four missing agents: `vet_network`, `airline_crate`, `endorsement`, `audit`. Each has a `lib/agents/<name>.ts` definition + a versioned `lib/prompts/<name>.md` prompt, and is wired through `STATIC_AGENTS`, the registry-meta tone/order tables, and `AGENT_META` / `TERMINAL_TONE` in `lib/utils.ts`.
 
 ---
 
-*Last updated: Session 1 close. Bump this date whenever you add a major section.*
+*Last updated: Session 6. Bump this date whenever you add a major section.*

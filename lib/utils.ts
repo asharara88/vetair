@@ -89,6 +89,19 @@ export const TERMINAL_TONE: Record<string, SignalTone> = {
   emit_extraction: "go",
   fail_synthesis: "stop",
   fail_extraction: "stop",
+  // vet_network
+  propose_appointments: "go",
+  request_owner_input: "ping",
+  escalate_no_coverage: "stop",
+  // airline_crate
+  propose_flight: "go",
+  flag_embargo: "stop",
+  // endorsement
+  submit_endorsement: "go",
+  schedule_endorsement: "hold",
+  block_endorsement: "stop",
+  // audit
+  emit_findings: "amber",
 };
 
 // Map an agent_runs row's (state, terminal_tool) to a pill tone + display label.
@@ -148,7 +161,11 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   document:            { label: "Document Team",        color: "#60a5fa", short: "DOC" },
   compliance:          { label: "Compliance Team",      color: "#34d399", short: "CMP" },
   auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
+  vet_network:         { label: "Vet Network",          color: "#60a5fa", short: "VET" },
+  airline_crate:       { label: "Airline & Crate",      color: "#60a5fa", short: "AIR" },
+  endorsement:         { label: "Endorsement",          color: "#60a5fa", short: "END" },
   comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
+  audit:               { label: "Audit",                color: "#8b95a6", short: "WCH" },
   synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
 
   // Legacy / dramatized demo names
