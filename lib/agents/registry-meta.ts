@@ -8,7 +8,11 @@ export type AgentType =
   | "document"
   | "compliance"
   | "auditor"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
   | "comms"
+  | "audit"
   | "synthesizer"
   | "specialist";
 
@@ -32,9 +36,13 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  audit: 9,
+  synthesizer: 10,
+  specialist: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,7 +50,11 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  audit: "ping",
   compliance: "go",
+  vet_network: "go",
+  airline_crate: "go",
+  endorsement: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
@@ -59,8 +71,16 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Matches the owner to an approved in-corridor vet and proposes appointment dates for microchip, rabies, titer, and endorsement visits.",
+  airline_crate:
+    "IATA LAR breed lookup, CR-82 crate sizing, embargo-aware route selection. Proposes a single feasible flight + crate spec.",
+  endorsement:
+    "Computes the pre-flight endorsement window, submits to MOCCAE (UAE) or APHA (UK), and tracks the courier.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  audit:
+    "Read-only watchdog. Enforces 100% citation coverage on customer-facing claims, cross-checks deterministic vs LLM verdicts, and flags SLA risk.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
