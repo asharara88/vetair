@@ -2,6 +2,7 @@
 // Reads the queue, decides which agent runs next, enforces the per-case budget.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import { ACKNOWLEDGE_AND_WAIT_TOOL, READ_CASE_TOOL } from "./tools-shared";
 
 export const ORCHESTRATOR: AgentDefinition = validateAgent({
   name: "orchestrator",
@@ -17,15 +18,7 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
       description: "Read the agent_registry table for all active agents (active dispatch targets).",
       input_schema: { type: "object", properties: {} },
     },
-    {
-      name: "read_case",
-      description: "Read a case row by id, including state and budget counters.",
-      input_schema: {
-        type: "object",
-        properties: { case_id: { type: "string" } },
-        required: ["case_id"],
-      },
-    },
+    READ_CASE_TOOL,
     {
       name: "read_recent_runs",
       description: "Read the last N agent_runs for a case to inspect dispatch history.",
@@ -75,15 +68,7 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
         required: ["case_id", "outcome"],
       },
     },
-    {
-      name: "acknowledge_and_wait",
-      description: "Terminal: yield the loop without dispatch (e.g. waiting on owner reply).",
-      input_schema: {
-        type: "object",
-        properties: { reason: { type: "string" } },
-        required: ["reason"],
-      },
-    },
+    ACKNOWLEDGE_AND_WAIT_TOOL,
   ],
   terminal_tools: ["dispatch_to_agent", "escalate_to_human", "close_case", "acknowledge_and_wait"],
   budget: { max_turns: 8, max_input_tokens: 80_000, max_dissent_rounds: 2 },
