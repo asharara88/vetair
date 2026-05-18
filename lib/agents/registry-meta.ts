@@ -8,9 +8,13 @@ export type AgentType =
   | "document"
   | "compliance"
   | "auditor"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "audit";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -26,15 +30,20 @@ export interface AgentRegistryRow {
   created_at?: string;
 }
 
+// Display order: orchestrator → intake → compliance loop → operations → comms → factory → watchdog.
 export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   orchestrator: 0,
   intake: 1,
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  synthesizer: 9,
+  specialist: 10,
+  audit: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,9 +51,13 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  audit: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
+  endorsement: "neutral",
   comms: "neutral",
 };
 
@@ -59,12 +72,20 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Matches the owner to an approved partner vet and proposes a chronologically valid sequence of procedures into the consensus timeline.",
+  airline_crate:
+    "Selects an IATA-LAR-compliant carrier + route, sizes a CR-82 crate, and screens the travel date for temperature embargoes.",
+  endorsement:
+    "Handles the 7–10 day pre-flight endorsement window: assembles the packet, submits to MOCCAE / APHA / USDA-APHIS, tracks the courier.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  audit:
+    "Read-only watchdog. Async-monitors every agent's output for citation gaps, deterministic-vs-LLM disagreement, SLA breach risk, low-confidence extractions.",
 };
 
 const FALLBACK_ORDER = 99;
