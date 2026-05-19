@@ -228,7 +228,7 @@ export default async function Home() {
                 See the architecture →
               </h3>
               <p className="text-sm text-ink-400 leading-relaxed">
-                14-agent system. Self-extending: Synthesizer agent writes new
+                11-agent static roster plus a Synthesizer that writes new
                 country specialists at runtime. Postgres is the bus.
               </p>
             </Link>
