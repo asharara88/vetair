@@ -103,10 +103,13 @@ export default async function Architecture() {
     { label: "orchestrator_queue", tone: "neutral", mono: true },
     { label: "Orchestrator", tone: "amber", mono: false },
     { label: "Intake", tone: "neutral", mono: false },
+    { label: "Document", tone: "neutral", mono: false },
     { label: "Compliance", tone: "go", mono: false },
     { label: "Auditor", tone: "ping", mono: false },
     { label: "Specialist (synthesized)", tone: "amber", mono: false },
+    { label: "Vet · Airline · Endorsement", tone: "neutral", mono: false },
     { label: "Comms → owner", tone: "neutral", mono: true },
+    { label: "Watchdog (async)", tone: "ping", mono: false },
   ];
 
   return (

@@ -8,9 +8,13 @@ export type AgentType =
   | "document"
   | "compliance"
   | "auditor"
-  | "comms"
+  | "specialist"
   | "synthesizer"
-  | "specialist";
+  | "vet"
+  | "airline"
+  | "endorsement"
+  | "comms"
+  | "watchdog";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -26,15 +30,22 @@ export interface AgentRegistryRow {
   created_at?: string;
 }
 
+// Dispatch order — drives the registry sort + Architecture page roster.
+// Lower = earlier in the typical case lifecycle. Watchdog is last because
+// it runs async over everything else.
 export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   orchestrator: 0,
   intake: 1,
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
+  specialist: 5,
   synthesizer: 6,
-  specialist: 7,
+  vet: 7,
+  airline: 8,
+  endorsement: 9,
+  comms: 10,
+  watchdog: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,9 +53,13 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  watchdog: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
+  vet: "neutral",
+  airline: "neutral",
+  endorsement: "neutral",
   comms: "neutral",
 };
 
@@ -59,12 +74,20 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
-  comms:
-    "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
-  synthesizer:
-    "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  synthesizer:
+    "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
+  vet:
+    "Matches the owner to an approved clinic and proposes appointment dates for the procedures the assessment flagged as pending.",
+  airline:
+    "Selects IATA LAR-compliant crate + airline + route. Honors temperature embargoes, breed-on-aircraft restrictions, and the earliest legal departure.",
+  endorsement:
+    "Schedules the 10-day pre-flight health certificate endorsement with the right competent authority (MOCCAE / APHA / USDA / DEFRA / EU TRACES).",
+  comms:
+    "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  watchdog:
+    "Read-only async monitor. Flags citation gaps, deterministic-vs-LLM disagreement, SLA breach risk, and low-confidence document extractions.",
 };
 
 const FALLBACK_ORDER = 99;
