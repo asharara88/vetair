@@ -63,3 +63,26 @@ export function validateAgent(def: AgentDefinition): AgentDefinition {
   }
   return def;
 }
+
+// ---------- shared document kinds ----------
+// Canonical set of document types the owner may be asked for. Agents pick the
+// subset that makes sense for their role: Intake covers the basics, Compliance
+// adds permits + endorsements, Specialist adds "confirm_destination" for the
+// runtime country-check, etc.
+
+export const DOCUMENT_KIND_BASIC = ["rabies", "microchip", "passport", "vet_records"] as const;
+
+export const DOCUMENT_KIND_COMPLIANCE = [
+  ...DOCUMENT_KIND_BASIC,
+  "import_permit",
+  "endorsement",
+] as const;
+
+export const DOCUMENT_KIND_SPECIALIST = [
+  ...DOCUMENT_KIND_COMPLIANCE,
+  "confirm_destination",
+] as const;
+
+export type DocumentKindBasic = (typeof DOCUMENT_KIND_BASIC)[number];
+export type DocumentKindCompliance = (typeof DOCUMENT_KIND_COMPLIANCE)[number];
+export type DocumentKindSpecialist = (typeof DOCUMENT_KIND_SPECIALIST)[number];

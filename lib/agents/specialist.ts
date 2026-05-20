@@ -3,7 +3,12 @@
 // with name `{country_code}_compliance_specialist` and parameters
 // { country_code, country_name } substituted into the prompt.
 
-import { type AgentDefinition, type AgentTool, validateAgent } from "./types";
+import {
+  type AgentDefinition,
+  type AgentTool,
+  validateAgent,
+  DOCUMENT_KIND_SPECIALIST,
+} from "./types";
 import {
   COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
@@ -23,7 +28,7 @@ const TEMPLATE_TOOLS: AgentTool[] = [
     input_schema: {
       type: "object",
       properties: {
-        kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement", "confirm_destination"] },
+        kind: { type: "string", enum: [...DOCUMENT_KIND_SPECIALIST] },
       },
       required: ["kind"],
     },

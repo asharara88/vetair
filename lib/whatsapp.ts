@@ -83,14 +83,15 @@ export async function verifyMetaSignature(
   const expectedHex = match[1].toLowerCase();
 
   // Web Crypto API — available on Node 20+, Edge runtime, Deno
+  const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
-    new TextEncoder().encode(secret),
+    enc.encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign"],
   );
-  const sigBytes = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(rawBody));
+  const sigBytes = await crypto.subtle.sign("HMAC", key, enc.encode(rawBody));
   const actualHex = Array.from(new Uint8Array(sigBytes))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");

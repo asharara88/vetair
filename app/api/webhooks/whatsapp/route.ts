@@ -156,7 +156,7 @@ async function handleInboundMessage(
     msg.text?.body ??
     msg.image?.caption ??
     msg.document?.caption ??
-    (media ? `[${msg.type}]` : `[${msg.type}]`);
+    `[${msg.type}]`;
 
   const { data: inserted } = await supabase
     .from("comms_messages")

@@ -2,7 +2,11 @@
 // Every customer-facing claim must trace back to a requirement_code; the prompt
 // blocks free-text regulatory advice. Tone is warm, never breezy.
 
-import { type AgentDefinition, validateAgent } from "./types";
+import {
+  type AgentDefinition,
+  validateAgent,
+  DOCUMENT_KIND_COMPLIANCE,
+} from "./types";
 
 export const COMMS: AgentDefinition = validateAgent({
   name: "comms",
@@ -63,7 +67,7 @@ export const COMMS: AgentDefinition = validateAgent({
           channel: { type: "string", enum: ["whatsapp", "email"] },
           kind: {
             type: "string",
-            enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement"],
+            enum: [...DOCUMENT_KIND_COMPLIANCE],
           },
         },
         required: ["case_id", "channel", "kind"],
