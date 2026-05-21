@@ -2,6 +2,15 @@
 // Reads the queue, decides which agent runs next, enforces the per-case budget.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import { ACKNOWLEDGE_AND_WAIT_TOOL } from "./tools";
+
+// Per-case budget enforced across the whole case lifetime; this is separate
+// from the per-invocation budget below (which caps a single orchestrator turn).
+export const ORCHESTRATOR_CASE_BUDGET = {
+  max_invocations: 20,
+  max_input_tokens: 500_000,
+  max_dissent_rounds: 2,
+} as const;
 
 export const ORCHESTRATOR: AgentDefinition = validateAgent({
   name: "orchestrator",
@@ -9,7 +18,7 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
   model: "claude-sonnet-4-6",
   user_facing_label: "Case Coordinator",
   description:
-    "Reads case state from the queue and decides which agent to dispatch next. Enforces the per-case budget (20 invocations, 500K tokens, 2 dissent rounds).",
+    `Reads case state from the queue and decides which agent to dispatch next. Enforces the per-case budget (${ORCHESTRATOR_CASE_BUDGET.max_invocations} invocations, ${ORCHESTRATOR_CASE_BUDGET.max_input_tokens / 1000}K tokens, ${ORCHESTRATOR_CASE_BUDGET.max_dissent_rounds} dissent rounds).`,
   prompt_path: "lib/prompts/orchestrator.md",
   tools: [
     {
@@ -75,16 +84,10 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
         required: ["case_id", "outcome"],
       },
     },
-    {
-      name: "acknowledge_and_wait",
-      description: "Terminal: yield the loop without dispatch (e.g. waiting on owner reply).",
-      input_schema: {
-        type: "object",
-        properties: { reason: { type: "string" } },
-        required: ["reason"],
-      },
-    },
+    ACKNOWLEDGE_AND_WAIT_TOOL,
   ],
   terminal_tools: ["dispatch_to_agent", "escalate_to_human", "close_case", "acknowledge_and_wait"],
+  // Per-invocation budget — the orchestrator turn itself. Case-wide budget
+  // lives in ORCHESTRATOR_CASE_BUDGET above.
   budget: { max_turns: 8, max_input_tokens: 80_000, max_dissent_rounds: 2 },
 });

@@ -6,11 +6,11 @@
 // - POST: message events (incoming messages, delivery/read receipts). We verify
 //   the X-Hub-Signature-256 against WHATSAPP_APP_SECRET, persist the raw
 //   payload to whatsapp_webhook_events for audit, then fan out to comms_messages
-//   and (for media) trigger async document extraction. We ALWAYS return 200
+//   and (for media) enqueue async document extraction. We ALWAYS return 200
 //   within a few seconds — Meta retries aggressively on non-200.
 
 import type { NextRequest } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import {
   verifyMetaSignature,
   type MetaWebhookPayload,
@@ -19,9 +19,17 @@ import {
   extractInboundMedia,
 } from "@/lib/whatsapp";
 import { SUPABASE_URL } from "@/lib/supabase";
+import { enqueueTask } from "@/lib/queue";
 
 export const runtime = "nodejs"; // need Web Crypto + service role
 export const dynamic = "force-dynamic";
+
+type Contact = { profile?: { name?: string }; wa_id?: string };
+
+interface FlattenedEvents {
+  messages: Array<{ msg: MetaInboundMessage; contacts: Contact[] }>;
+  statuses: MetaStatusUpdate[];
+}
 
 function serviceClient() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -48,88 +56,95 @@ export async function POST(req: NextRequest) {
   // automatically if we call .json(), but the HMAC must be computed over the
   // exact bytes Meta sent us. Read as text, then JSON.parse ourselves.
   const raw = await req.text();
-  const signatureHeader = req.headers.get("x-hub-signature-256");
-  const signatureValid = await verifyMetaSignature(raw, signatureHeader);
+  const signatureValid = await verifyMetaSignature(raw, req.headers.get("x-hub-signature-256"));
 
   let payload: MetaWebhookPayload = {};
   try {
     payload = JSON.parse(raw);
   } catch {
-    // not JSON — still 200 so Meta doesn't retry garbage forever
+    // Not JSON. Still 200 so Meta doesn't retry garbage forever.
     return new Response("ok", { status: 200 });
   }
 
+  const events = flattenWebhook(payload);
+  const supabase = serviceClient();
+
   // Always audit-log first, even if signature is invalid — we want forensic
   // trail for every hit to this endpoint.
-  const supabase = serviceClient();
-  const eventRows: Array<Record<string, unknown>> = [];
+  await auditLog(supabase, payload, events, signatureValid);
+
+  // If the signature is bad, we've audited the attempt but refuse to act on it.
+  if (!signatureValid) return new Response("ok", { status: 200 });
+
+  // Process the events. We do this inline but fast: the slow work (doc
+  // extraction via Claude Vision) is enqueued as a task_queue row that a
+  // worker picks up later.
+  const work: Promise<unknown>[] = [
+    ...events.messages.map(({ msg, contacts }) => handleInboundMessage(supabase, msg, contacts)),
+    ...events.statuses.map((st) => handleStatusUpdate(supabase, st)),
+  ];
+  await Promise.allSettled(work);
+
+  return new Response("ok", { status: 200 });
+}
+
+// ---------- helpers ----------
+
+function flattenWebhook(payload: MetaWebhookPayload): FlattenedEvents {
+  const out: FlattenedEvents = { messages: [], statuses: [] };
   for (const entry of payload.entry ?? []) {
     for (const change of entry.changes ?? []) {
       const value = change.value ?? {};
-      for (const msg of value.messages ?? []) {
-        eventRows.push({
-          signature_valid: signatureValid,
-          event_type: "message",
-          from_phone: msg.from,
-          whatsapp_message_id: msg.id,
-          payload: msg,
-          processed: false,
-        });
-      }
-      for (const st of value.statuses ?? []) {
-        eventRows.push({
-          signature_valid: signatureValid,
-          event_type: "status",
-          from_phone: st.recipient_id,
-          whatsapp_message_id: st.id,
-          payload: st,
-          processed: false,
-        });
-      }
+      const contacts = value.contacts ?? [];
+      for (const msg of value.messages ?? []) out.messages.push({ msg, contacts });
+      for (const st of value.statuses ?? []) out.statuses.push(st);
     }
   }
-  if (eventRows.length === 0) {
-    eventRows.push({
+  return out;
+}
+
+async function auditLog(
+  supabase: SupabaseClient,
+  payload: MetaWebhookPayload,
+  events: FlattenedEvents,
+  signatureValid: boolean,
+) {
+  const rows: Array<Record<string, unknown>> = [
+    ...events.messages.map(({ msg }) => ({
+      signature_valid: signatureValid,
+      event_type: "message",
+      from_phone: msg.from,
+      whatsapp_message_id: msg.id,
+      payload: msg,
+      processed: false,
+    })),
+    ...events.statuses.map((st) => ({
+      signature_valid: signatureValid,
+      event_type: "status",
+      from_phone: st.recipient_id,
+      whatsapp_message_id: st.id,
+      payload: st,
+      processed: false,
+    })),
+  ];
+  if (rows.length === 0) {
+    rows.push({
       signature_valid: signatureValid,
       event_type: "unknown",
       payload,
       processed: false,
     });
   }
-  await supabase.from("whatsapp_webhook_events").insert(eventRows);
-
-  // If the signature is bad, we've audited the attempt but refuse to act on it.
-  if (!signatureValid) {
-    return new Response("ok", { status: 200 });
-  }
-
-  // Signature valid — process the events. We do this inline but fast: the
-  // slow work (doc extraction via Claude Vision) is enqueued async and not
-  // awaited here.
-  const work: Promise<unknown>[] = [];
-  for (const entry of payload.entry ?? []) {
-    for (const change of entry.changes ?? []) {
-      const value = change.value ?? {};
-      for (const msg of value.messages ?? []) {
-        work.push(handleInboundMessage(supabase, msg, value.contacts ?? []));
-      }
-      for (const st of value.statuses ?? []) {
-        work.push(handleStatusUpdate(supabase, st));
-      }
-    }
-  }
-  // Await so we're honest about any DB write failure, but keep the deadline tight.
-  await Promise.allSettled(work);
-
-  return new Response("ok", { status: 200 });
+  await supabase.from("whatsapp_webhook_events").insert(rows);
 }
 
 async function handleInboundMessage(
-  supabase: ReturnType<typeof serviceClient>,
+  supabase: SupabaseClient,
   msg: MetaInboundMessage,
-  contacts: { profile?: { name?: string }; wa_id?: string }[],
+  contacts: Contact[],
 ) {
-  // Find owner by whatsapp_number (Meta sends E.164 without leading +)
+  // Find owner by whatsapp_number. Meta sends E.164 without the leading `+`,
+  // but our seed data sometimes stores it with one — match either form.
   const waNumber = msg.from;
   const { data: owner } = await supabase
     .from("owners")
@@ -137,26 +152,15 @@ async function handleInboundMessage(
     .or(`whatsapp_number.eq.${waNumber},whatsapp_number.eq.+${waNumber}`)
     .maybeSingle();
 
-  // Find active case for that owner (most recent open case)
-  let caseId: string | null = null;
-  if (owner?.id) {
-    const { data: activeCase } = await supabase
-      .from("cases")
-      .select("id")
-      .eq("owner_id", owner.id)
-      .not("state", "in", "(closed,cancelled)")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    caseId = activeCase?.id ?? null;
-  }
+  // Active case for the owner (most recent open).
+  const caseId = owner?.id ? await findActiveCase(supabase, owner.id) : null;
 
   const media = extractInboundMedia(msg);
   const body =
     msg.text?.body ??
     msg.image?.caption ??
     msg.document?.caption ??
-    (media ? `[${msg.type}]` : `[${msg.type}]`);
+    `[${msg.type}]`;
 
   const { data: inserted } = await supabase
     .from("comms_messages")
@@ -168,28 +172,71 @@ async function handleInboundMessage(
       thread_id: waNumber,
       whatsapp_message_id: msg.id,
       body,
-      media_urls: media ? [{ media_id: media.media_id, mime: media.mime, filename: media.filename }] : [],
+      media_urls: media
+        ? [{ media_id: media.media_id, mime: media.mime, filename: media.filename }]
+        : [],
       status: "received",
       raw_payload: msg,
     })
     .select("id")
     .single();
 
-  // Mark the matching webhook event row as processed + linked
+  // Mark the matching webhook event row as processed + linked.
   await supabase
     .from("whatsapp_webhook_events")
     .update({ processed: true, linked_comms_message_id: inserted?.id ?? null })
     .eq("whatsapp_message_id", msg.id)
     .eq("event_type", "message");
 
-  // TODO (Session 4.5): if media is present, enqueue a task_queue row for the
-  // Document Agent to run Claude Vision extraction. For now we only persist.
+  // Inter-agent dispatch — fire-and-forget enqueues.
+  // (Failures are logged inside enqueueTask; they never block the webhook 200.)
+  if (media && inserted?.id) {
+    await enqueueTask(supabase, {
+      source_agent: "webhook",
+      target_agent: "document",
+      task_type: "document_extract",
+      case_id: caseId,
+      priority: "high",
+      payload: {
+        comms_message_id: inserted.id,
+        media_id: media.media_id,
+        mime: media.mime,
+        filename: media.filename ?? null,
+      },
+    });
+  }
+
+  // First-touch from an unknown number → start an intake conversation.
+  if (!owner) {
+    const profileName = contacts.find((c) => c.wa_id === waNumber)?.profile?.name ?? null;
+    await enqueueTask(supabase, {
+      source_agent: "webhook",
+      target_agent: "intake",
+      task_type: "intake",
+      priority: "high",
+      payload: {
+        whatsapp_number: waNumber,
+        profile_name: profileName,
+        first_message: body,
+        first_message_id: msg.id,
+      },
+    });
+  }
 }
 
-async function handleStatusUpdate(
-  supabase: ReturnType<typeof serviceClient>,
-  st: MetaStatusUpdate,
-) {
+async function findActiveCase(supabase: SupabaseClient, ownerId: string): Promise<string | null> {
+  const { data } = await supabase
+    .from("cases")
+    .select("id")
+    .eq("owner_id", ownerId)
+    .not("state", "in", "(closed,cancelled)")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
+async function handleStatusUpdate(supabase: SupabaseClient, st: MetaStatusUpdate) {
   const patch: Record<string, unknown> = { status: st.status };
   const nowIso = new Date(Number(st.timestamp) * 1000).toISOString();
   if (st.status === "sent") patch.sent_at = nowIso;

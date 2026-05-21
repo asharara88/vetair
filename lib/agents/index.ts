@@ -3,7 +3,7 @@
 // synthesized_specialists table and are loaded on demand via buildSpecialist().
 
 import type { AgentDefinition } from "./types";
-import { ORCHESTRATOR } from "./orchestrator";
+import { ORCHESTRATOR, ORCHESTRATOR_CASE_BUDGET } from "./orchestrator";
 import { INTAKE } from "./intake";
 import { DOCUMENT } from "./document";
 import { COMPLIANCE } from "./compliance";
@@ -11,8 +11,16 @@ import { AUDITOR } from "./auditor";
 import { COMMS } from "./comms";
 import { SYNTHESIZER } from "./synthesizer";
 
-export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
+export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER, ORCHESTRATOR_CASE_BUDGET };
 export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
+export {
+  ACKNOWLEDGE_AND_WAIT_TOOL,
+  ASK_USER_FOR_INPUT_TOOL,
+  COMPLIANCE_DOC_KINDS,
+  OWNER_DOC_KINDS,
+  SPECIALIST_DOC_KINDS,
+  requestDocumentTool,
+} from "./tools";
 export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
 export {
   AGENT_TYPE_BLURB,
