@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { serverSupabase } from "@/lib/supabase-server";
 import { Header } from "@/components/demo/Header";
 import { AutoRefresh } from "@/components/demo/AutoRefresh";
