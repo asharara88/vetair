@@ -73,22 +73,40 @@ export function modelFamily(model: string | null | undefined): string {
 export type SignalTone = "go" | "hold" | "stop" | "ping" | "amber" | "neutral";
 
 export const TERMINAL_TONE: Record<string, SignalTone> = {
+  // Compliance family
   emit_assessment: "go",
-  handoff_to_compliance: "go",
-  dispatch_to_agent: "amber",
-  ask_user_for_input: "ping",
-  close_case: "go",
   concur: "go",
   dissent: "stop",
+  // Orchestrator
+  dispatch_to_agent: "amber",
+  close_case: "go",
   escalate_to_human: "stop",
-  register_specialist: "go",
+  acknowledge_and_wait: "neutral",
+  // Intake
+  handoff_to_compliance: "go",
+  ask_user_for_input: "ping",
   send_reply: "neutral",
+  // Comms
   send_outbound: "neutral",
   request_document: "neutral",
-  acknowledge_and_wait: "neutral",
+  // Document
   emit_extraction: "go",
-  fail_synthesis: "stop",
   fail_extraction: "stop",
+  // Synthesizer
+  register_specialist: "go",
+  fail_synthesis: "stop",
+  // Vet Network
+  book_appointment: "go",
+  no_match_found: "stop",
+  // Airline & Crate
+  lock_routing: "go",
+  embargo_blocked: "stop",
+  // Endorsement
+  submit_endorsement: "go",
+  window_infeasible: "stop",
+  // Audit
+  post_finding: "ping",
+  all_clear: "go",
 };
 
 // Map an agent_runs row's (state, terminal_tool) to a pill tone + display label.
@@ -137,40 +155,54 @@ export function assessmentStateTone(state: string | null | undefined): SignalTon
 }
 
 // ---------- agent display metadata ----------
-// Covers BOTH the new MAS agent_registry agents (intake, compliance, auditor,
-// orchestrator, synthesizer, *_compliance_specialist) AND the legacy demo
-// agent_logs names still emitted by the dramatized demo-stream pipeline.
+// Covers the MAS agent_registry agents (canonical names) plus the legacy
+// dramatized demo names still emitted by the demo-stream pipeline.
 
-export const AGENT_META: Record<string, { label: string; color: string; short: string }> = {
-  // New MAS roster
-  orchestrator:        { label: "Case Coordinator",     color: "#fbbe4c", short: "ORC" },
-  intake:              { label: "Intake Team",          color: "#60a5fa", short: "INT" },
-  document:            { label: "Document Team",        color: "#60a5fa", short: "DOC" },
-  compliance:          { label: "Compliance Team",      color: "#34d399", short: "CMP" },
-  auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
-  comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
-  synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
+interface AgentDisplay { label: string; color: string; short: string }
+
+const COLOR = {
+  amber: "#fbbe4c",
+  blue:  "#60a5fa",
+  green: "#34d399",
+  red:   "#f87171",
+  grey:  "#c5ccd6",
+  slate: "#8b95a6",
+} as const;
+
+export const AGENT_META: Record<string, AgentDisplay> = {
+  // Canonical MAS roster (agent_registry.agent_name)
+  orchestrator:   { label: "Case Coordinator",   color: COLOR.amber, short: "ORC" },
+  intake:         { label: "Intake Team",        color: COLOR.blue,  short: "INT" },
+  document:       { label: "Document Team",      color: COLOR.blue,  short: "DOC" },
+  compliance:     { label: "Compliance Team",    color: COLOR.green, short: "CMP" },
+  auditor:        { label: "Senior Auditor",     color: COLOR.red,   short: "AUD" },
+  vet_network:    { label: "Vet Network Team",   color: COLOR.blue,  short: "VET" },
+  airline_crate:  { label: "Airline Cargo Team", color: COLOR.blue,  short: "AIR" },
+  endorsement:    { label: "Government Liaison", color: COLOR.blue,  short: "END" },
+  comms:          { label: "Comms Team",         color: COLOR.amber, short: "CMS" },
+  audit:          { label: "Audit Watchdog",     color: COLOR.slate, short: "WDG" },
+  synthesizer:    { label: "Specialist Factory", color: COLOR.amber, short: "SYN" },
 
   // Legacy / dramatized demo names
-  intake_agent:        { label: "Intake Agent",         color: "#60a5fa", short: "INT" },
-  document_agent:      { label: "Document Agent",       color: "#60a5fa", short: "DOC" },
-  compliance_agent:    { label: "Compliance (Primary)", color: "#34d399", short: "C-1" },
-  compliance_primary:  { label: "Compliance (Primary)", color: "#34d399", short: "C-1" },
-  deterministic_engine:{ label: "Deterministic Engine", color: "#c5ccd6", short: "DET" },
-  compliance_auditor:  { label: "Compliance (Auditor)", color: "#f87171", short: "C-2" },
-  vet_network_agent:   { label: "Vet Network",          color: "#60a5fa", short: "VET" },
-  airline_crate_agent: { label: "Airline & Crate",      color: "#60a5fa", short: "AIR" },
-  endorsement_agent:   { label: "Endorsement",          color: "#60a5fa", short: "END" },
-  comms_agent:         { label: "Comms",                color: "#fbbe4c", short: "CMS" },
-  audit_agent:         { label: "Audit",                color: "#8b95a6", short: "AUD" },
+  intake_agent:        { label: "Intake Agent",         color: COLOR.blue,  short: "INT" },
+  document_agent:      { label: "Document Agent",       color: COLOR.blue,  short: "DOC" },
+  compliance_agent:    { label: "Compliance (Primary)", color: COLOR.green, short: "C-1" },
+  compliance_primary:  { label: "Compliance (Primary)", color: COLOR.green, short: "C-1" },
+  deterministic_engine:{ label: "Deterministic Engine", color: COLOR.grey,  short: "DET" },
+  compliance_auditor:  { label: "Compliance (Auditor)", color: COLOR.red,   short: "C-2" },
+  vet_network_agent:   { label: "Vet Network",          color: COLOR.blue,  short: "VET" },
+  airline_crate_agent: { label: "Airline & Crate",      color: COLOR.blue,  short: "AIR" },
+  endorsement_agent:   { label: "Endorsement",          color: COLOR.blue,  short: "END" },
+  comms_agent:         { label: "Comms",                color: COLOR.amber, short: "CMS" },
+  audit_agent:         { label: "Audit",                color: COLOR.slate, short: "AUD" },
 };
 
-export function agentMeta(name: string) {
+export function agentMeta(name: string): AgentDisplay {
   if (AGENT_META[name]) return AGENT_META[name];
   // Synthesized specialists arrive as e.g. "jp_compliance_specialist".
   if (name.endsWith("_compliance_specialist")) {
     const cc = name.slice(0, 2).toUpperCase();
-    return { label: `${cc} Specialist`, color: "#fbbe4c", short: cc };
+    return { label: `${cc} Specialist`, color: COLOR.amber, short: cc };
   }
-  return { label: name, color: "#8b95a6", short: name.slice(0, 3).toUpperCase() };
+  return { label: name, color: COLOR.slate, short: name.slice(0, 3).toUpperCase() };
 }
