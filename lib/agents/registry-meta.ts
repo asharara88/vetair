@@ -8,6 +8,10 @@ export type AgentType =
   | "document"
   | "compliance"
   | "auditor"
+  | "watchdog"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
   | "comms"
   | "synthesizer"
   | "specialist";
@@ -26,15 +30,22 @@ export interface AgentRegistryRow {
   created_at?: string;
 }
 
+// Ordered roughly by case lifecycle: orchestrator → intake → assessment
+// (document, compliance, auditor, watchdog) → operations (vet, airline,
+// endorsement) → comms → meta (synthesizer, specialist).
 export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   orchestrator: 0,
   intake: 1,
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  watchdog: 5,
+  vet_network: 6,
+  airline_crate: 7,
+  endorsement: 8,
+  comms: 9,
+  synthesizer: 10,
+  specialist: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,9 +53,13 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  watchdog: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
+  endorsement: "neutral",
   comms: "neutral",
 };
 
@@ -59,6 +74,14 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  watchdog:
+    "Read-only auditor. Monitors every agent's output for citation drift, voice disagreement, low-confidence extractions, and SLA risk. Flags only — never fixes.",
+  vet_network:
+    "Matches the owner to a partner vet and books the medical events the corridor requires. Capability-matched; proposes >= 2 slots per appointment.",
+  airline_crate:
+    "IATA LAR crate sizing and carrier/route selection. Excludes embargoed routes and breed-restricted carriers; proposes >= 2 options when feasible.",
+  endorsement:
+    "Compiles the health-certificate packet and submits it to the origin country's veterinary authority. Tracks to courier delivery within the corridor's pre-flight window.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
   synthesizer:
