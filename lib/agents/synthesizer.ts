@@ -1,7 +1,7 @@
 // Synthesizer — compiles a parameterized template into a runtime specialist
 // when a case opens for a country no specialist covers.
 
-import { type AgentDefinition, validateAgent } from "./types";
+import { type AgentDefinition, MODEL_IDS, validateAgent } from "./types";
 
 export const SYNTHESIZER: AgentDefinition = validateAgent({
   name: "synthesizer",
@@ -46,10 +46,7 @@ export const SYNTHESIZER: AgentDefinition = validateAgent({
         properties: {
           template_id: { type: "string" },
           params: { type: "object" },
-          model: {
-            type: "string",
-            enum: ["claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5"],
-          },
+          model: { type: "string", enum: [...MODEL_IDS] },
         },
         required: ["template_id", "params"],
       },

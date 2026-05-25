@@ -20,10 +20,13 @@ export interface AgentTool {
 
 // Model handles match Anthropic's published model ids exactly.
 // We pin the *family*; the dispatcher resolves the active alias at call time.
-export type ModelId =
-  | "claude-opus-4-7"
-  | "claude-sonnet-4-6"
-  | "claude-haiku-4-5";
+export const MODEL_IDS = [
+  "claude-opus-4-7",
+  "claude-sonnet-4-6",
+  "claude-haiku-4-5",
+] as const;
+
+export type ModelId = (typeof MODEL_IDS)[number];
 
 export interface AgentBudget {
   max_turns: number;
