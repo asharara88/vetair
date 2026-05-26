@@ -150,6 +150,8 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
   comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
   synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
+  status_watchdog:     { label: "Status Watchdog",      color: "#f87171", short: "WDG" },
+  exception_handler:   { label: "Exception Handler",    color: "#f87171", short: "EXC" },
 
   // Legacy / dramatized demo names
   intake_agent:        { label: "Intake Agent",         color: "#60a5fa", short: "INT" },
