@@ -83,7 +83,7 @@ export function Header() {
         <div className="flex items-center gap-3 flex-shrink-0">
           <span className="hidden sm:inline-flex items-center gap-1.5 text-2xs uppercase tracking-widest text-ink-400 font-mono">
             <span className="signal-dot text-brand-500 animate-pulse-ping" />
-            Operational
+            Pre-launch
           </span>
           <ThemeToggle />
         </div>

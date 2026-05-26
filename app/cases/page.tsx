@@ -77,17 +77,26 @@ export default async function CasesIndex({
             Live cases
           </p>
           <h1 className="text-3xl md:text-4xl font-semibold leading-[1.1] tracking-tight text-ink-100">
-            Real pets. Real outcomes.
+            Synthetic test cases.
           </h1>
           <p className="text-lg text-ink-300 mt-4 leading-relaxed">
-            Every case here is a real pet, real owner, real route. The state pill
-            shows what stage the system is at. Click any case to see the agents
-            run turn by turn.
+            Every case here is a test scenario used to validate the system &mdash;
+            not a real pet or customer. The state pill shows what stage the
+            system reached. Click any case to see the agents run turn by turn.
           </p>
           <div className="mt-5">
             <AutoRefresh intervalMs={6000} label="Live · 6s" />
           </div>
         </section>
+
+        {/* Persistent banner clarifying these are test cases, not real customers. */}
+        <div
+          role="note"
+          className="mb-6 border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200"
+        >
+          <span className="font-mono text-2xs uppercase tracking-widest text-amber-300 mr-2">Notice</span>
+          Synthetic test cases. Every case here is a test scenario used to validate the system &mdash; not a real pet or customer.
+        </div>
 
         {/* Filter tabs */}
         <div className="border-b border-ink-700/60 mb-6 overflow-x-auto">

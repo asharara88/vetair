@@ -76,8 +76,8 @@ export default async function Home() {
           </h1>
           <p className="text-lg md:text-xl text-ink-300 mt-6 leading-relaxed max-w-2xl">
             AI agents handle compliance, vet bookings, and airline cargo end-to-end.
-            We&apos;ve handled <span className="text-ink-100 font-medium">{casesHandled} cases</span> across{" "}
-            <span className="text-ink-100 font-medium">{corridors} corridors</span> with zero human dispatchers.
+            We&apos;ve run <span className="text-ink-100 font-medium">{casesHandled} synthetic test cases</span> across{" "}
+            <span className="text-ink-100 font-medium">{corridors} corridors</span> to validate the system end-to-end &mdash; zero real relocations yet. The first live case is the milestone.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 mt-8">
@@ -102,7 +102,7 @@ export default async function Home() {
               <p className="font-mono text-2xs uppercase tracking-widest text-ink-400 mb-1">
                 Recent activity
               </p>
-              <h2 className="text-lg font-medium text-ink-100">Real cases, real outcomes</h2>
+              <h2 className="text-lg font-medium text-ink-100">Synthetic validation runs</h2>
             </div>
             <div className="flex items-center gap-2">
               <AutoRefresh intervalMs={6000} label="Live · 6s" />
@@ -215,8 +215,8 @@ export default async function Home() {
                 Watch the system run →
               </h3>
               <p className="text-sm text-ink-400 leading-relaxed">
-                Live cases. Real money, real pets, real outcomes.
-                {" "}{agentRuns} completed agent runs and counting.
+                Watch the system run on synthetic test cases. No real money or pets yet &mdash; validated capability, pre-first-case.
+                {" "}400+ agent runs on test cases.
               </p>
             </Link>
 
@@ -228,7 +228,7 @@ export default async function Home() {
                 See the architecture →
               </h3>
               <p className="text-sm text-ink-400 leading-relaxed">
-                14-agent system. Self-extending: Synthesizer agent writes new
+                21-agent system. Self-extending: Synthesizer agent writes new
                 country specialists at runtime. Postgres is the bus.
               </p>
             </Link>
