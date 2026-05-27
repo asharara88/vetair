@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vetair · Clinic Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F4EF; --card:#FFFFFF; --ink:#1C2A2E; --ink-soft:#52605F;
+    --line:#DDE3DF; --accent:#0E7C6B; --accent-soft:#E3F0ED; --brand:#FE4B2D;
+    --warn:#B5610F; --good:#0E7C6B; --shadow:0 1px 3px rgba(28,42,46,0.06),0 8px 24px rgba(28,42,46,0.05);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:680px;margin:0 auto;padding:28px 18px 120px}
+  header{margin-bottom:8px}
+  .brandrow{display:flex;align-items:center;gap:9px;margin-bottom:22px}
+  .brandmark{width:26px;height:26px;border-radius:7px;background:var(--brand);display:grid;place-items:center;color:#fff;font-weight:600;font-size:15px;font-family:'Newsreader',serif}
+  .brandname{font-weight:600;font-size:15px;letter-spacing:0.01em}
+  h1{font-family:'Newsreader',serif;font-weight:500;font-size:30px;line-height:1.15;letter-spacing:-0.01em;margin-bottom:10px}
+  .intro{color:var(--ink-soft);font-size:15px;margin-bottom:6px}
+  .intro b{color:var(--ink);font-weight:600}
+  .time-note{font-size:13px;color:var(--accent);font-weight:500;margin-bottom:26px;display:flex;align-items:center;gap:6px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 20px;margin-bottom:16px;box-shadow:var(--shadow)}
+  .card .sec-num{font-family:'Newsreader',serif;font-size:13px;color:var(--accent);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:3px}
+  .card h2{font-family:'Newsreader',serif;font-weight:500;font-size:21px;margin-bottom:3px;letter-spacing:-0.01em}
+  .card .sec-sub{color:var(--ink-soft);font-size:13.5px;margin-bottom:18px}
+  .q{margin-bottom:20px}
+  .q:last-child{margin-bottom:0}
+  label.qlabel{display:block;font-weight:500;font-size:14.5px;margin-bottom:8px}
+  .qhint{font-weight:400;color:var(--ink-soft);font-size:13px;margin-top:-3px;margin-bottom:8px}
+  input[type=text],input[type=tel],input[type=email],input[type=number],textarea,select{
+    width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:15px;color:var(--ink);background:#FCFBF9;transition:border-color .15s,box-shadow .15s}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  textarea{resize:vertical;min-height:72px}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;cursor:pointer;background:#FCFBF9;transition:all .12s}
+  .opt:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .opt input{margin-top:2px;accent-color:var(--accent);width:17px;height:17px;flex-shrink:0;cursor:pointer}
+  .opt.checked{border-color:var(--accent);background:var(--accent-soft)}
+  .opt .ot{font-size:14.5px}
+  .opt .od{font-size:12.5px;color:var(--ink-soft);margin-top:1px}
+  .opt-extra{margin-top:8px;padding-left:2px;display:none}
+  .opt-extra.show{display:block}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:520px){.row2{grid-template-columns:1fr}}
+  .save-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(246,244,239,0.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:14px 18px;display:flex;justify-content:center;gap:10px;z-index:10}
+  .save-inner{max-width:680px;width:100%;display:flex;gap:10px;align-items:center}
+  button.primary{flex:1;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:10px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s}
+  button.primary:hover{background:#0a6757}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink-soft);padding:13px 16px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer}
+  .saved-tag{font-size:12.5px;color:var(--good);text-align:center;margin-top:7px;height:16px}
+  .summary{background:var(--ink);color:#E8EDEC;border-radius:14px;padding:22px 20px;margin-top:8px;display:none}
+  .summary.show{display:block}
+  .summary h2{font-family:'Newsreader',serif;color:#fff;font-weight:500;font-size:20px;margin-bottom:14px}
+  .summary pre{white-space:pre-wrap;font-family:'IBM Plex Sans',monospace;font-size:13px;line-height:1.6;color:#C8D2D0;background:rgba(255,255,255,0.04);padding:14px;border-radius:9px;border:1px solid rgba(255,255,255,0.08)}
+  .summary .copyhint{font-size:12.5px;color:#8DA09C;margin-top:10px}
+  .req{color:var(--brand);font-weight:600}
+  .footnote{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:20px;line-height:1.6}
+  /* chat widget */
+  .askfab{position:fixed;bottom:88px;right:18px;background:var(--accent);color:#fff;border:none;border-radius:26px;padding:13px 20px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 20px rgba(14,124,107,.35);z-index:20;display:flex;align-items:center;gap:8px}
+  .askfab:hover{background:#0a6757}
+  .chatpanel{position:fixed;inset:0;background:rgba(28,42,46,.4);z-index:30;display:none;align-items:flex-end;justify-content:center}
+  .chatpanel.open{display:flex}
+  .chatbox{background:var(--bg);width:100%;max-width:680px;height:82vh;border-radius:16px 16px 0 0;display:flex;flex-direction:column;overflow:hidden}
+  .chathead{padding:14px 18px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .chathead .mk{width:28px;height:28px;border-radius:7px;background:var(--brand);display:grid;place-items:center;color:#fff;font-weight:600;font-family:'IBM Plex Sans';font-size:15px}
+  .chathead .ct{font-weight:600;font-size:15px}.chathead .cs{font-size:12px;color:var(--ink-soft)}
+  .chathead .close{margin-left:auto;background:none;border:none;font-size:22px;color:var(--ink-soft);cursor:pointer;line-height:1}
+  .chatmsgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:13px}
+  .cmsg{display:flex;gap:9px;max-width:90%}.cmsg.user{align-self:flex-end;flex-direction:row-reverse}
+  .cav{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:grid;place-items:center;font-size:12px;font-weight:600;color:#fff}
+  .cav.bot{background:var(--accent)}.cav.user{background:var(--ink)}
+  .cbub{padding:10px 13px;border-radius:11px;font-size:14.5px;line-height:1.5}
+  .cmsg.bot .cbub{background:var(--card);border:1px solid var(--line);border-top-left-radius:3px}
+  .cmsg.user .cbub{background:var(--ink);color:#F4F1ED;border-top-right-radius:3px}
+  .cbub p{margin:0 0 8px}.cbub p:last-child{margin:0}.cbub strong{font-weight:600}.cbub ul{margin:5px 0 8px;padding-left:17px}.cbub li{margin-bottom:3px}
+  .cwelcome{font-size:14px;color:var(--ink-soft);line-height:1.55;padding:4px 2px 0}
+  .cchips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+  .cchip{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:7px 12px;font-size:12.5px;cursor:pointer;font-family:inherit;color:var(--ink)}
+  .cchip:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .chatinput{border-top:1px solid var(--line);background:var(--card);padding:12px 14px;display:flex;gap:9px;align-items:flex-end;flex-shrink:0}
+  .chatinput textarea{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14.5px;resize:none;max-height:100px;background:#FCFBF9}
+  .chatinput textarea:focus{outline:none;border-color:var(--accent)}
+  .chatinput button{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit}
+  .chatinput button:disabled{opacity:.5}
+  .ctyping{display:flex;gap:4px;padding:3px 0}.ctyping span{width:6px;height:6px;border-radius:50%;background:var(--ink-soft);animation:cb 1.2s infinite}
+  .ctyping span:nth-child(2){animation-delay:.2s}.ctyping span:nth-child(3){animation-delay:.4s}
+  @keyframes cb{0%,60%,100%{opacity:.3}30%{opacity:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brandrow"><div class="brandmark">V</div><div class="brandname">Vetair</div></div>
+    <h1>A few details to set up the clinic side</h1>
+    <p class="intro">Hi Mohamed — to route real relocation cases to your clinic, the system needs a bit of operational detail. <b>There are no wrong answers</b>; where you're unsure, pick "not sure yet" and we'll sort it together.</p>
+    <p class="time-note">◷ About 5 minutes · your answers save automatically as you go</p>
+  </header>
+
+  <!-- SECTION 1 — CONTACT -->
+  <div class="card">
+    <div class="sec-num">Section 1</div>
+    <h2>How cases reach you</h2>
+    <p class="sec-sub">When a case is ready, the system sends a clinic-ready summary (owner, pet, dates, what's needed). Where should it go?</p>
+    <div class="q">
+      <label class="qlabel">Name of who receives case notifications <span class="req">*</span></label>
+      <div class="qhint">You, or a clinic coordinator</div>
+      <input type="text" id="contact_name" placeholder="e.g. Dr. Mohamed Manzalawi">
+    </div>
+    <div class="q">
+      <label class="qlabel">WhatsApp number for the clinic <span class="req">*</span></label>
+      <div class="qhint">This is the single most important field — without it the system can't notify you. Include country code.</div>
+      <input type="tel" id="contact_whatsapp" placeholder="+971 5X XXX XXXX">
+    </div>
+    <div class="q">
+      <label class="qlabel">Backup email (optional)</label>
+      <input type="email" id="contact_email" placeholder="clinic@example.com">
+    </div>
+    <div class="q">
+      <label class="qlabel">Best channel for these notifications</label>
+      <div class="opts" data-single="notify_channel">
+        <label class="opt"><input type="radio" name="notify_channel" value="whatsapp"><span><span class="ot">WhatsApp</span><span class="od">Fastest, recommended</span></span></label>
+        <label class="opt"><input type="radio" name="notify_channel" value="email"><span><span class="ot">Email</span></span></label>
+        <label class="opt"><input type="radio" name="notify_channel" value="both"><span><span class="ot">Both</span></span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 — SERVICES -->
+  <div class="card">
+    <div class="sec-num">Section 2</div>
+    <h2>What your clinic can do in-house</h2>
+    <p class="sec-sub">Tick everything your clinic performs directly. Anything you don't tick, we'll arrange another way — just tells us where the line is.</p>
+    <div class="q">
+      <div class="opts" data-multi="services">
+        <label class="opt"><input type="checkbox" value="export_exam"><span><span class="ot">Pre-export veterinary examination + health certificate</span><span class="od">The core requirement for most outbound pets</span></span></label>
+        <label class="opt"><input type="checkbox" value="microchip_vacc"><span><span class="ot">Microchip + vaccination administration / verification</span></span></label>
+        <label class="opt"><input type="checkbox" value="moccae_docs"><span><span class="ot">MOCCAE export permit / documentation filing</span><span class="od">Filing through the MOCCAE portal on the owner's behalf</span></span></label>
+        <label class="opt"><input type="checkbox" value="arrival_exam"><span><span class="ot">Arrival exam for pets coming INTO the UAE</span><span class="od">Some destinations require a clinic exam within 48h of landing</span></span></label>
+        <label class="opt"><input type="checkbox" value="blood_draw"><span><span class="ot">Blood draw for rabies titer (FAVN) test</span><span class="od">Only needed for a few strict destinations</span></span></label>
+        <label class="opt"><input type="checkbox" value="boarding"><span><span class="ot">Short-term boarding / holding</span><span class="od">If a pet needs to stay before a flight</span></span></label>
+      </div>
+    </div>
+    <div class="q">
+      <label class="qlabel">Anything else you offer that's relevant, or notes on the above?</label>
+      <textarea id="services_notes" placeholder="Optional — e.g. 'I refer titer blood draws to a partner lab' or 'I can do MOCCAE docs but need 2 days notice'"></textarea>
+    </div>
+  </div>
+
+  <!-- SECTION 3 — OFFICIAL CERTIFICATION (OV + MOCCAE) -->
+  <div class="card" style="border-color:var(--accent)">
+    <div class="sec-num">Section 3 · most important</div>
+    <h2>Official certification authority</h2>
+    <p class="sec-sub">These two are the make-or-break for actually shipping a pet. A government export needs an <b>Official Veterinarian</b> to sign the health certificate, and a <b>MOCCAE</b> export endorsement. We need the honest situation on both.</p>
+    <div class="q">
+      <label class="qlabel">Are you a UAE-authorised Official Veterinarian (OV) — able to sign/endorse government export health certificates? <span class="req">*</span></label>
+      <div class="qhint">For a UK (and most) export, the health certificate must be signed by a government-authorised Official Vet. This is the single most important thing to confirm.</div>
+      <div class="opts" data-single="ov_status">
+        <label class="opt"><input type="radio" name="ov_status" value="yes_ov"><span><span class="ot">Yes — I am an authorised Official Vet and can sign export health certificates</span></span></label>
+        <label class="opt"><input type="radio" name="ov_status" value="clinic_has_ov"><span><span class="ot">My clinic has an Official Vet (not me, but in-house)</span></span></label>
+        <label class="opt"><input type="radio" name="ov_status" value="refer_ov"><span><span class="ot">No, but I refer to / work with an Official Vet I can name</span></span></label>
+        <label class="opt"><input type="radio" name="ov_status" value="no_ov"><span><span class="ot">No — would need to find an Official Vet</span></span></label>
+        <label class="opt"><input type="radio" name="ov_status" value="unsure_ov"><span><span class="ot">Not sure what an Official Vet is / need to check</span></span></label>
+      </div>
+    </div>
+    <div class="q">
+      <label class="qlabel">If you refer to an Official Vet, who / where? (optional)</label>
+      <input type="text" id="ov_referral" placeholder="Name or clinic, if applicable">
+    </div>
+    <div class="q">
+      <label class="qlabel">Can your clinic currently file MOCCAE export documentation? <span class="req">*</span></label>
+      <div class="qhint">The MOCCAE export permit + endorsement is the other government step. Often the slowest part.</div>
+      <div class="opts" data-single="moccae_access">
+        <label class="opt"><input type="radio" name="moccae_access" value="yes_active"><span><span class="ot">Yes — we have active MOCCAE portal access and file regularly</span></span></label>
+        <label class="opt"><input type="radio" name="moccae_access" value="yes_rare"><span><span class="ot">Yes, but we rarely use it / would need to refresh access</span></span></label>
+        <label class="opt"><input type="radio" name="moccae_access" value="can_get"><span><span class="ot">Not yet, but I can register the clinic for it</span></span></label>
+        <label class="opt"><input type="radio" name="moccae_access" value="need_help"><span><span class="ot">No — would need help setting this up</span></span></label>
+        <label class="opt"><input type="radio" name="moccae_access" value="unsure"><span><span class="ot">Not sure</span></span></label>
+      </div>
+    </div>
+    <div class="q">
+      <label class="qlabel">If you file MOCCAE docs, how long does a permit usually take?</label>
+      <div class="opts" data-single="moccae_time">
+        <label class="opt"><input type="radio" name="moccae_time" value="same_day"><span><span class="ot">Same day</span></span></label>
+        <label class="opt"><input type="radio" name="moccae_time" value="1_3_days"><span><span class="ot">1–3 days</span></span></label>
+        <label class="opt"><input type="radio" name="moccae_time" value="up_to_week"><span><span class="ot">Up to a week</span></span></label>
+        <label class="opt"><input type="radio" name="moccae_time" value="na"><span><span class="ot">Don't know / not applicable</span></span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 — TURNAROUND -->
+  <div class="card">
+    <div class="sec-num">Section 4</div>
+    <h2>Timing &amp; availability</h2>
+    <p class="sec-sub">The system proposes appointment times that fit the pet's travel date. It needs to know your real lead time.</p>
+    <div class="q">
+      <label class="qlabel">How much notice do you need to book an export exam? <span class="req">*</span></label>
+      <div class="opts" data-single="lead_time">
+        <label class="opt"><input type="radio" name="lead_time" value="same_next"><span><span class="ot">Same or next day</span></span></label>
+        <label class="opt"><input type="radio" name="lead_time" value="2_3_days"><span><span class="ot">2–3 days</span></span></label>
+        <label class="opt"><input type="radio" name="lead_time" value="about_week"><span><span class="ot">About a week</span></span></label>
+        <label class="opt"><input type="radio" name="lead_time" value="varies"><span><span class="ot">Varies — depends on the week</span></span></label>
+      </div>
+    </div>
+    <div class="q">
+      <label class="qlabel">Any days you typically can't do exams?</label>
+      <input type="text" id="closed_days" placeholder="e.g. Fridays, or 'none — flexible'">
+    </div>
+    <div class="q">
+      <label class="qlabel">Roughly how many relocation-related cases could you comfortably handle per month?</label>
+      <div class="qhint">A rough sense is fine — helps us not over-promise volume</div>
+      <input type="number" id="capacity" placeholder="e.g. 10" min="0">
+    </div>
+  </div>
+
+  <!-- SECTION 5 — PRICING -->
+  <div class="card">
+    <div class="sec-num">Section 5</div>
+    <h2>Your fees</h2>
+    <p class="sec-sub">So a customer quote uses your real numbers, not a placeholder. Rough figures are fine — we can refine later. All in AED.</p>
+    <div class="q">
+      <div class="row2">
+        <div>
+          <label class="qlabel">Pre-export exam + health cert</label>
+          <input type="number" id="fee_exam" placeholder="AED" min="0">
+        </div>
+        <div>
+          <label class="qlabel">Arrival exam (inbound pets)</label>
+          <input type="number" id="fee_arrival" placeholder="AED" min="0">
+        </div>
+      </div>
+    </div>
+    <div class="q">
+      <div class="row2">
+        <div>
+          <label class="qlabel">MOCCAE filing (if you do it)</label>
+          <input type="number" id="fee_moccae" placeholder="AED" min="0">
+        </div>
+        <div>
+          <label class="qlabel">Microchip / vaccination</label>
+          <input type="number" id="fee_chip" placeholder="AED" min="0">
+        </div>
+      </div>
+    </div>
+    <div class="q">
+      <label class="qlabel">Would you rather discuss pricing directly instead of listing it here?</label>
+      <div class="opts" data-single="pricing_pref">
+        <label class="opt"><input type="radio" name="pricing_pref" value="listed"><span><span class="ot">The figures above are fine</span></span></label>
+        <label class="opt"><input type="radio" name="pricing_pref" value="discuss"><span><span class="ot">Let's discuss — these are rough</span></span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6 — ANYTHING ELSE -->
+  <div class="card">
+    <div class="sec-num">Section 6</div>
+    <h2>Anything else</h2>
+    <div class="q">
+      <label class="qlabel">Questions, concerns, or things you want me to know?</label>
+      <textarea id="freeform" placeholder="Anything at all — what would make this easy on your side?"></textarea>
+    </div>
+  </div>
+
+  <div class="summary" id="summary">
+    <h2>Your answers — send this back to Ahmed</h2>
+    <pre id="summaryText"></pre>
+    <p class="copyhint">Tap "Copy summary" below, then paste it into WhatsApp to Ahmed. Your answers are also saved on this page if you close it.</p>
+  </div>
+
+  <p class="footnote">This form is just for setup — it doesn't share anything until you send it back to Ahmed yourself.</p>
+</div>
+
+<div class="save-bar">
+  <div class="save-inner">
+    <button class="ghost" id="resetBtn">Clear</button>
+    <button class="primary" id="reviewBtn">Review &amp; generate summary</button>
+  </div>
+</div>
+<div class="saved-tag" id="savedTag" style="position:fixed;bottom:74px;left:0;right:0;"></div>
+
+<script>
+const FIELDS_TEXT = ['contact_name','contact_whatsapp','contact_email','ov_referral','services_notes','closed_days','capacity','fee_exam','fee_arrival','fee_moccae','fee_chip','freeform'];
+const FIELDS_RADIO = ['notify_channel','ov_status','moccae_access','moccae_time','lead_time','pricing_pref'];
+const STORAGE_KEY = 'mohamed_clinic_intake_v1';
+
+function save(){
+  const data = {};
+  FIELDS_TEXT.forEach(id=>{ const el=document.getElementById(id); if(el) data[id]=el.value; });
+  FIELDS_RADIO.forEach(name=>{ const el=document.querySelector(`input[name="${name}"]:checked`); data[name]=el?el.value:''; });
+  data.services = Array.from(document.querySelectorAll('[data-multi="services"] input:checked')).map(i=>i.value);
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const t=document.getElementById('savedTag'); t.textContent='✓ saved'; setTimeout(()=>t.textContent='',1400);
+  }catch(e){ /* storage unavailable (private mode) — form still works for this session */ }
+}
+
+function load(){
+  let data=null;
+  try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw) data=JSON.parse(raw); }catch(e){}
+  if(!data) return;
+  FIELDS_TEXT.forEach(id=>{ const el=document.getElementById(id); if(el&&data[id]!=null) el.value=data[id]; });
+  FIELDS_RADIO.forEach(name=>{ if(data[name]){ const el=document.querySelector(`input[name="${name}"][value="${data[name]}"]`); if(el){el.checked=true; el.closest('.opt').classList.add('checked');} } });
+  if(Array.isArray(data.services)) data.services.forEach(v=>{ const el=document.querySelector(`[data-multi="services"] input[value="${v}"]`); if(el){el.checked=true; el.closest('.opt').classList.add('checked');} });
+}
+
+function buildSummary(){
+  const g=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
+  const r=name=>{const el=document.querySelector(`input[name="${name}"]:checked`);return el?el.value:'—';};
+  const svc=Array.from(document.querySelectorAll('[data-multi="services"] input:checked')).map(i=>i.parentElement.querySelector('.ot').textContent);
+  const L=[];
+  L.push('VETAIR — CLINIC SETUP (Mohamed)');
+  L.push('================================');
+  L.push('CONTACT');
+  L.push('  Name: '+(g('contact_name')||'—'));
+  L.push('  WhatsApp: '+(g('contact_whatsapp')||'—'));
+  L.push('  Email: '+(g('contact_email')||'—'));
+  L.push('  Notify via: '+r('notify_channel'));
+  L.push('');
+  L.push('OFFICIAL CERTIFICATION (critical)');
+  L.push('  Official Vet status: '+r('ov_status'));
+  if(g('ov_referral')) L.push('  OV referral: '+g('ov_referral'));
+  L.push('  MOCCAE access: '+r('moccae_access'));
+  L.push('  MOCCAE permit time: '+r('moccae_time'));
+  L.push('');
+  L.push('SERVICES IN-HOUSE');
+  svc.length?svc.forEach(s=>L.push('  ✓ '+s)):L.push('  (none ticked)');
+  if(g('services_notes')) L.push('  Notes: '+g('services_notes'));
+  L.push('');
+  L.push('TIMING');
+  L.push('  Lead time: '+r('lead_time'));
+  L.push('  Closed days: '+(g('closed_days')||'—'));
+  L.push('  Monthly capacity: '+(g('capacity')||'—'));
+  L.push('');
+  L.push('FEES (AED)');
+  L.push('  Export exam+cert: '+(g('fee_exam')||'—'));
+  L.push('  Arrival exam: '+(g('fee_arrival')||'—'));
+  L.push('  MOCCAE filing: '+(g('fee_moccae')||'—'));
+  L.push('  Microchip/vacc: '+(g('fee_chip')||'—'));
+  L.push('  Pricing pref: '+r('pricing_pref'));
+  L.push('');
+  if(g('freeform')){ L.push('NOTES'); L.push('  '+g('freeform')); }
+  return L.join('\n');
+}
+
+document.querySelectorAll('.opt input').forEach(inp=>{
+  inp.addEventListener('change',()=>{
+    if(inp.type==='radio'){ inp.closest('.opts').querySelectorAll('.opt').forEach(o=>o.classList.remove('checked')); }
+    inp.closest('.opt').classList.toggle('checked', inp.checked);
+    save();
+  });
+});
+document.querySelectorAll('input[type=text],input[type=tel],input[type=email],input[type=number],textarea').forEach(el=>{
+  el.addEventListener('input', ()=>{ clearTimeout(window.__st); window.__st=setTimeout(save,500); });
+});
+
+document.getElementById('reviewBtn').addEventListener('click', ()=>{
+  save();
+  const s=document.getElementById('summary'); const t=document.getElementById('summaryText');
+  t.textContent=buildSummary(); s.classList.add('show');
+  s.scrollIntoView({behavior:'smooth'});
+  // swap button to copy
+  const btn=document.getElementById('reviewBtn'); btn.textContent='Copy summary';
+  btn.onclick=async()=>{ try{ await navigator.clipboard.writeText(buildSummary()); btn.textContent='✓ Copied — paste to Ahmed'; setTimeout(()=>btn.textContent='Copy summary',2200);}catch(e){ btn.textContent='Select the text above to copy'; } };
+});
+
+document.getElementById('resetBtn').addEventListener('click', async ()=>{
+  if(!confirm('Clear all answers?')) return;
+  FIELDS_TEXT.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('.opt input').forEach(i=>{i.checked=false;i.closest('.opt').classList.remove('checked');});
+  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  document.getElementById('summary').classList.remove('show');
+});
+
+load();
+</script>
+<button class="askfab" id="askfab">💬 Ask a question</button>
+<div class="chatpanel" id="chatpanel">
+  <div class="chatbox">
+    <div class="chathead">
+      <div class="mk">V</div>
+      <div><div class="ct">Ask Vetair</div><div class="cs">Stuck on something? Ask — your form is saved.</div></div>
+      <button class="close" id="chatclose">×</button>
+    </div>
+    <div class="chatmsgs" id="chatmsgs">
+      <div class="cwelcome">Hi Mohamed 👋 Ask me anything about Vetair, this form, or how a relocation works. I'll answer honestly from where the business actually is.
+        <div class="cchips" id="cchips">
+          <button class="cchip">What's an Official Vet — am I one?</button>
+          <button class="cchip">What do you need from me?</button>
+          <button class="cchip">How does a UK case work?</button>
+          <button class="cchip">How does Vetair make money?</button>
+        </div>
+      </div>
+    </div>
+    <div class="chatinput">
+      <textarea id="cinput" rows="1" placeholder="Ask anything…"></textarea>
+      <button id="csend">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const panel=document.getElementById('chatpanel'), msgs=document.getElementById('chatmsgs');
+  const ci=document.getElementById('cinput'), cs=document.getElementById('csend');
+  let hist=[], busy=false;
+  document.getElementById('askfab').onclick=()=>{panel.classList.add('open');ci.focus();};
+  document.getElementById('chatclose').onclick=()=>panel.classList.remove('open');
+  panel.addEventListener('click',e=>{if(e.target===panel)panel.classList.remove('open');});
+  function md(t){t=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    return t.split(/\n\n+/).map(b=>{if(/^\s*[-*]\s/m.test(b)){return '<ul>'+b.split(/\n/).filter(l=>/^\s*[-*]\s/.test(l)).map(l=>'<li>'+l.replace(/^\s*[-*]\s/,'')+'</li>').join('')+'</ul>';}return '<p>'+b.replace(/\n/g,'<br>')+'</p>';}).join('');}
+  function add(role,text){const m=document.createElement('div');m.className='cmsg '+(role==='user'?'user':'bot');
+    m.innerHTML='<div class="cav '+(role==='user'?'user':'bot')+'">'+(role==='user'?'M':'V')+'</div><div class="cbub">'+(role==='user'?text.replace(/</g,'&lt;'):md(text))+'</div>';
+    msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight;}
+  function typing(on){let t=document.getElementById('ctyping');if(on&&!t){const m=document.createElement('div');m.className='cmsg bot';m.id='ctyping';m.innerHTML='<div class="cav bot">V</div><div class="cbub"><div class="ctyping"><span></span><span></span><span></span></div></div>';msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight;}else if(!on&&t)t.remove();}
+  async function send(text){if(busy||!text.trim())return;busy=true;cs.disabled=true;
+    const w=document.querySelector('.cwelcome');if(w)w.remove();
+    add('user',text);hist.push({role:'user',content:text});ci.value='';ci.style.height='auto';typing(true);
+    try{
+      const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:hist})});
+      const d=await r.json();typing(false);
+      const reply=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n')||d.error||"Sorry, try again?";
+      add('bot',reply);hist.push({role:'assistant',content:reply});
+    }catch(e){typing(false);add('bot',"I had trouble responding. Please try again.");}
+    busy=false;cs.disabled=false;ci.focus();}
+  cs.onclick=()=>send(ci.value);
+  ci.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(ci.value);}});
+  ci.addEventListener('input',()=>{ci.style.height='auto';ci.style.height=Math.min(ci.scrollHeight,100)+'px';});
+  document.getElementById('cchips').addEventListener('click',e=>{if(e.target.classList.contains('cchip'))send(e.target.textContent);});
+})();
+</script>
+</body>
+</html>
