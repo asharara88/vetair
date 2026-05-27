@@ -1,4 +1,8 @@
 // Vetair · status-watchdog-agent v1
+// Registry contract: lib/agents/status_watchdog.ts
+// Canonical prompt:  lib/prompts/status_watchdog.md
+// When you edit SYSTEM_PROMPT below, mirror the change into the markdown.
+//
 // Fires at the end of an orchestrator cycle (orchestrator calls this after its terminal).
 // Sweeps ALL open non-demo cases (not just the triggering case) — closes the
 // low-volume blind spot as much as an event-driven design can.

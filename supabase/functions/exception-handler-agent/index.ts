@@ -1,4 +1,8 @@
 // Vetair · exception-handler-agent v1
+// Registry contract: lib/agents/exception_handler.ts
+// Canonical prompt:  lib/prompts/exception_handler.md
+// When you edit SYSTEM_PROMPT below, mirror the change into the markdown.
+//
 // Fired on signal (from status_watchdog, or any agent that hits an exception).
 // Computes a remediation path for a case-level problem and routes it:
 //   - reroute_corridor / reschedule  → notification to operator with a concrete plan
