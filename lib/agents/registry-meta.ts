@@ -8,7 +8,11 @@ export type AgentType =
   | "document"
   | "compliance"
   | "auditor"
+  | "vet"
+  | "logistics"
+  | "endorsement"
   | "comms"
+  | "watchdog"
   | "synthesizer"
   | "specialist";
 
@@ -32,9 +36,13 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet: 5,
+  logistics: 6,
+  endorsement: 7,
+  comms: 8,
+  watchdog: 9,
+  synthesizer: 10,
+  specialist: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,9 +50,13 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  watchdog: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
+  vet: "neutral",
+  logistics: "neutral",
+  endorsement: "neutral",
   comms: "neutral",
 };
 
@@ -59,8 +71,16 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet:
+    "Vet network coordination. Matches the owner to an approved vet and proposes microchip / vaccine / titer / exam dates into the consensus timeline loop.",
+  logistics:
+    "Airline & crate. Selects an IATA-compliant route, sizes the crate (IATA LAR / CR-82), proposes flight dates, and flags temperature or breed embargoes.",
+  endorsement:
+    "Official endorsement. Times submission to the 7–10 day pre-flight window, files with MOCCAE / APHA / USDA-APHIS, and tracks the courier leg.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  watchdog:
+    "Read-only async monitor. Reasons about each stale case and routes to remediation, a human operator, or leaves it benign.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
