@@ -10,7 +10,9 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "watchdog"
+  | "exception";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,16 +34,20 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  watchdog: 5,
+  exception: 6,
+  comms: 7,
+  synthesizer: 8,
+  specialist: 9,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   orchestrator: "amber",
   synthesizer: "amber",
   specialist: "amber",
+  exception: "amber",
   auditor: "ping",
+  watchdog: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
@@ -65,6 +71,10 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  watchdog:
+    "Portfolio-level stale-case sweep. A deterministic filter flags cases whose silence exceeds an urgency-scaled threshold; Sonnet decides per case to dispatch the exception handler, notify a human operator, or mark it benign. Read-only on case state.",
+  exception:
+    "Recovery agent for flagged cases. Reads full case state, then computes the least-disruptive remediation: a concrete plan, a corridor reroute, an orchestrator re-evaluation, or human escalation.",
 };
 
 const FALLBACK_ORDER = 99;
