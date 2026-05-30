@@ -10,7 +10,11 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
+  | "audit";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,9 +36,13 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  synthesizer: 9,
+  specialist: 10,
+  audit: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,10 +50,14 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  audit: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
+  endorsement: "neutral",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -65,6 +77,14 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  vet_network:
+    "Matches the owner to an approved vet for microchip / rabies / titer / endorsement appointments and proposes booking slots.",
+  airline_crate:
+    "Selects an IATA-compliant route + crate (CR-82 sizing) for the pet, respecting temperature embargoes and carrier breed restrictions.",
+  endorsement:
+    "Schedules the MOCCAE / APHA endorsement inside the 10-day pre-flight window and tracks courier handover of the wet-signed packet.",
+  audit:
+    "Read-only watchdog. Sweeps every other agent's output for citation coverage, deterministic-vs-LLM disagreement, and SLA breach risk; flags but never blocks.",
 };
 
 const FALLBACK_ORDER = 99;

@@ -82,24 +82,33 @@ export async function verifyMetaSignature(
   if (!match) return false;
   const expectedHex = match[1].toLowerCase();
 
-  // Web Crypto API — available on Node 20+, Edge runtime, Deno
+  // Web Crypto API — available on Node 20+, Edge runtime, Deno.
+  const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
-    new TextEncoder().encode(secret),
+    encoder.encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign"],
   );
-  const sigBytes = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(rawBody));
-  const actualHex = Array.from(new Uint8Array(sigBytes))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+  const sigBytes = await crypto.subtle.sign("HMAC", key, encoder.encode(rawBody));
+  return constantTimeEqualHex(expectedHex, bytesToHex(new Uint8Array(sigBytes)));
+}
 
-  // Constant-time compare to resist timing attacks
-  if (expectedHex.length !== actualHex.length) return false;
+function bytesToHex(bytes: Uint8Array): string {
+  let out = "";
+  for (let i = 0; i < bytes.length; i++) {
+    out += bytes[i].toString(16).padStart(2, "0");
+  }
+  return out;
+}
+
+// Length-independent constant-time compare on hex strings. Resists timing attacks.
+function constantTimeEqualHex(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
   let diff = 0;
-  for (let i = 0; i < expectedHex.length; i++) {
-    diff |= expectedHex.charCodeAt(i) ^ actualHex.charCodeAt(i);
+  for (let i = 0; i < a.length; i++) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   }
   return diff === 0;
 }
