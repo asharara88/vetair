@@ -127,9 +127,9 @@ export async function POST(req: NextRequest) {
 async function handleInboundMessage(
   supabase: ReturnType<typeof serviceClient>,
   msg: MetaInboundMessage,
-  contacts: { profile?: { name?: string }; wa_id?: string }[],
+  _contacts: { profile?: { name?: string }; wa_id?: string }[],
 ) {
-  // Find owner by whatsapp_number (Meta sends E.164 without leading +)
+  // Meta sends E.164 without leading +; match on both stored forms.
   const waNumber = msg.from;
   const { data: owner } = await supabase
     .from("owners")
@@ -137,7 +137,6 @@ async function handleInboundMessage(
     .or(`whatsapp_number.eq.${waNumber},whatsapp_number.eq.+${waNumber}`)
     .maybeSingle();
 
-  // Find active case for that owner (most recent open case)
   let caseId: string | null = null;
   if (owner?.id) {
     const { data: activeCase } = await supabase
@@ -156,7 +155,7 @@ async function handleInboundMessage(
     msg.text?.body ??
     msg.image?.caption ??
     msg.document?.caption ??
-    (media ? `[${msg.type}]` : `[${msg.type}]`);
+    `[${msg.type}]`;
 
   const { data: inserted } = await supabase
     .from("comms_messages")

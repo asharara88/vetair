@@ -89,6 +89,19 @@ export const TERMINAL_TONE: Record<string, SignalTone> = {
   emit_extraction: "go",
   fail_synthesis: "stop",
   fail_extraction: "stop",
+  // vet_network
+  propose_appointment: "go",
+  no_match_available: "stop",
+  // airline_crate
+  propose_routing: "go",
+  no_route_available: "stop",
+  // endorsement
+  submit_to_authority: "go",
+  request_courier_pickup: "go",
+  packet_incomplete: "ping",
+  // audit
+  record_clean: "go",
+  flag_finding: "ping",
 };
 
 // Map an agent_runs row's (state, terminal_tool) to a pill tone + display label.
@@ -148,8 +161,12 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   document:            { label: "Document Team",        color: "#60a5fa", short: "DOC" },
   compliance:          { label: "Compliance Team",      color: "#34d399", short: "CMP" },
   auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
+  vet_network:         { label: "Vet Network",          color: "#60a5fa", short: "VET" },
+  airline_crate:       { label: "Airline & Crate",      color: "#60a5fa", short: "AIR" },
+  endorsement:         { label: "Endorsement Team",     color: "#60a5fa", short: "END" },
   comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
   synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
+  audit:               { label: "Quality Watchdog",     color: "#8b95a6", short: "WCH" },
 
   // Legacy / dramatized demo names
   intake_agent:        { label: "Intake Agent",         color: "#60a5fa", short: "INT" },
