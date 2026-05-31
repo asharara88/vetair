@@ -3,6 +3,11 @@
 // blocks free-text regulatory advice. Tone is warm, never breezy.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import {
+  COMMS_CHANNELS,
+  COMPLIANCE_DOCUMENT_KINDS,
+  REQUEST_DOCUMENT_CHANNELS,
+} from "./constants";
 
 export const COMMS: AgentDefinition = validateAgent({
   name: "comms",
@@ -42,7 +47,7 @@ export const COMMS: AgentDefinition = validateAgent({
         type: "object",
         properties: {
           case_id: { type: "string" },
-          channel: { type: "string", enum: ["whatsapp", "email", "sms"] },
+          channel: { type: "string", enum: [...COMMS_CHANNELS] },
           body: { type: "string" },
           cited_rules: {
             type: "array",
@@ -60,11 +65,8 @@ export const COMMS: AgentDefinition = validateAgent({
         type: "object",
         properties: {
           case_id: { type: "string" },
-          channel: { type: "string", enum: ["whatsapp", "email"] },
-          kind: {
-            type: "string",
-            enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement"],
-          },
+          channel: { type: "string", enum: [...REQUEST_DOCUMENT_CHANNELS] },
+          kind: { type: "string", enum: [...COMPLIANCE_DOCUMENT_KINDS] },
         },
         required: ["case_id", "channel", "kind"],
       },
