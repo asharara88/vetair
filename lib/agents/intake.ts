@@ -1,6 +1,7 @@
 // Intake — conversational onboarding via WhatsApp. One question per turn.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import { INTAKE_DOCUMENT_KINDS } from "./constants";
 
 export const INTAKE: AgentDefinition = validateAgent({
   name: "intake",
@@ -26,7 +27,7 @@ export const INTAKE: AgentDefinition = validateAgent({
       input_schema: {
         type: "object",
         properties: {
-          kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records"] },
+          kind: { type: "string", enum: [...INTAKE_DOCUMENT_KINDS] },
         },
         required: ["kind"],
       },
