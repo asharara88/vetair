@@ -1,13 +1,14 @@
 // Compliance (Primary) — reasons over case + rule graph and emits an assessment.
 
-import { type AgentDefinition, validateAgent } from "./types";
+import { type AgentDefinition, type AgentTool, validateAgent } from "./types";
+import { ASK_USER_FOR_INPUT_TOOL, requestDocumentTool } from "./tools";
 
-const ASSESSMENT_TOOL = {
+const ASSESSMENT_TOOL: AgentTool = {
   name: "emit_assessment",
   description:
     "Terminal: write the compliance assessment for this case. Every requirements_missing entry must cite a requirement_code from {{country_rules}}.",
   input_schema: {
-    type: "object" as const,
+    type: "object",
     properties: {
       verdict: { type: "string", enum: ["approved", "blocked", "pending"] },
       summary: { type: "string" },
@@ -29,12 +30,12 @@ const ASSESSMENT_TOOL = {
   },
 };
 
-const SHARED_READ_TOOLS = [
+const SHARED_READ_TOOLS: AgentTool[] = [
   {
     name: "read_country_rules",
     description: "Read the country_rules table filtered by corridor + species.",
     input_schema: {
-      type: "object" as const,
+      type: "object",
       properties: {
         origin: { type: "string" },
         destination: { type: "string" },
@@ -47,21 +48,31 @@ const SHARED_READ_TOOLS = [
     name: "read_documents",
     description: "Read all documents linked to a case (with extracted_fields).",
     input_schema: {
-      type: "object" as const,
+      type: "object",
       properties: { case_id: { type: "string" } },
       required: ["case_id"],
     },
   },
   {
     name: "run_deterministic",
-    description: "Run the deterministic TS evaluator for a single requirement_code. Authoritative on facts.",
+    description:
+      "Run the deterministic TS evaluator for a single requirement_code. Authoritative on facts.",
     input_schema: {
-      type: "object" as const,
+      type: "object",
       properties: { rule_code: { type: "string" } },
       required: ["rule_code"],
     },
   },
 ];
+
+const COMPLIANCE_DOC_KINDS = [
+  "rabies",
+  "microchip",
+  "passport",
+  "vet_records",
+  "import_permit",
+  "endorsement",
+] as const;
 
 export const COMPLIANCE: AgentDefinition = validateAgent({
   name: "compliance",
@@ -74,29 +85,10 @@ export const COMPLIANCE: AgentDefinition = validateAgent({
   tools: [
     ...SHARED_READ_TOOLS,
     ASSESSMENT_TOOL,
-    {
-      name: "request_document",
+    requestDocumentTool(COMPLIANCE_DOC_KINDS, {
       description: "Terminal: ask the owner via Comms for a missing document.",
-      input_schema: {
-        type: "object",
-        properties: {
-          kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement"] },
-        },
-        required: ["kind"],
-      },
-    },
-    {
-      name: "ask_user_for_input",
-      description: "Terminal: ask the owner via Comms for a missing fact (e.g. microchip date).",
-      input_schema: {
-        type: "object",
-        properties: {
-          field: { type: "string" },
-          question: { type: "string" },
-        },
-        required: ["field", "question"],
-      },
-    },
+    }),
+    ASK_USER_FOR_INPUT_TOOL,
   ],
   terminal_tools: ["emit_assessment", "request_document", "ask_user_for_input"],
   budget: { max_turns: 8, max_input_tokens: 60_000 },

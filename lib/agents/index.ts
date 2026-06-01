@@ -8,10 +8,26 @@ import { INTAKE } from "./intake";
 import { DOCUMENT } from "./document";
 import { COMPLIANCE } from "./compliance";
 import { AUDITOR } from "./auditor";
+import { WATCHDOG } from "./watchdog";
+import { VET_NETWORK } from "./vet-network";
+import { AIRLINE_CRATE } from "./airline-crate";
+import { ENDORSEMENT } from "./endorsement";
 import { COMMS } from "./comms";
 import { SYNTHESIZER } from "./synthesizer";
 
-export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
+export {
+  ORCHESTRATOR,
+  INTAKE,
+  DOCUMENT,
+  COMPLIANCE,
+  AUDITOR,
+  WATCHDOG,
+  VET_NETWORK,
+  AIRLINE_CRATE,
+  ENDORSEMENT,
+  COMMS,
+  SYNTHESIZER,
+};
 export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
 export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
 export {
@@ -26,6 +42,16 @@ export {
   type AgentType,
   type AgentTypeTone,
 } from "./registry-meta";
+export {
+  DOCUMENT_KINDS,
+  type DocumentKind,
+  requestDocumentTool,
+  ASK_USER_FOR_INPUT_TOOL,
+  ACKNOWLEDGE_AND_WAIT_TOOL,
+  READ_ASSESSMENT_TOOL,
+  READ_CASE_TOOL,
+  READ_PET_FACTS_TOOL,
+} from "./tools";
 
 export const STATIC_AGENTS: readonly AgentDefinition[] = [
   ORCHESTRATOR,
@@ -33,6 +59,10 @@ export const STATIC_AGENTS: readonly AgentDefinition[] = [
   DOCUMENT,
   COMPLIANCE,
   AUDITOR,
+  WATCHDOG,
+  VET_NETWORK,
+  AIRLINE_CRATE,
+  ENDORSEMENT,
   COMMS,
   SYNTHESIZER,
 ] as const;
