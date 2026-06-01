@@ -10,7 +10,9 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "watchdog"
+  | "exception_handler";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -35,6 +37,8 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   comms: 5,
   synthesizer: 6,
   specialist: 7,
+  watchdog: 8,
+  exception_handler: 9,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,6 +46,8 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  watchdog: "ping",
+  exception_handler: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
@@ -65,6 +71,10 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  watchdog:
+    "Sweeps open non-demo cases for staleness at the tail of every orchestrator cycle. Decides per stale case whether to dispatch the exception handler, notify the operator, or mark benign.",
+  exception_handler:
+    "Computes a remediation path for case-level exceptions. Prefers the least-disruptive fix: re-enqueue the orchestrator, emit a concrete plan for the operator, reroute the corridor, or escalate to human.",
 };
 
 const FALLBACK_ORDER = 99;
