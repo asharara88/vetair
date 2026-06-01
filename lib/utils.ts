@@ -73,22 +73,40 @@ export function modelFamily(model: string | null | undefined): string {
 export type SignalTone = "go" | "hold" | "stop" | "ping" | "amber" | "neutral";
 
 export const TERMINAL_TONE: Record<string, SignalTone> = {
+  // compliance
   emit_assessment: "go",
-  handoff_to_compliance: "go",
-  dispatch_to_agent: "amber",
-  ask_user_for_input: "ping",
-  close_case: "go",
   concur: "go",
   dissent: "stop",
+  // intake
+  handoff_to_compliance: "go",
+  // orchestrator
+  dispatch_to_agent: "amber",
+  close_case: "go",
   escalate_to_human: "stop",
-  register_specialist: "go",
-  send_reply: "neutral",
-  send_outbound: "neutral",
+  // shared
+  ask_user_for_input: "ping",
   request_document: "neutral",
   acknowledge_and_wait: "neutral",
+  send_reply: "neutral",
+  send_outbound: "neutral",
+  // document
   emit_extraction: "go",
-  fail_synthesis: "stop",
   fail_extraction: "stop",
+  // synthesizer
+  register_specialist: "go",
+  fail_synthesis: "stop",
+  // vet_network
+  propose_schedule: "go",
+  no_partner_vet_available: "stop",
+  // airline_crate
+  propose_routing: "go",
+  embargo_blocked: "stop",
+  // endorsement
+  endorsement_complete: "go",
+  endorsement_blocked: "stop",
+  // audit
+  post_finding: "ping",
+  all_clear: "go",
 };
 
 // Map an agent_runs row's (state, terminal_tool) to a pill tone + display label.
@@ -148,7 +166,11 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   document:            { label: "Document Team",        color: "#60a5fa", short: "DOC" },
   compliance:          { label: "Compliance Team",      color: "#34d399", short: "CMP" },
   auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
+  vet_network:         { label: "Vet Network",          color: "#60a5fa", short: "VET" },
+  airline_crate:       { label: "Airline & Crate",      color: "#60a5fa", short: "AIR" },
+  endorsement:         { label: "Endorsement",          color: "#60a5fa", short: "END" },
   comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
+  audit:               { label: "Audit",                color: "#8b95a6", short: "AUD" },
   synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
 
   // Legacy / dramatized demo names
