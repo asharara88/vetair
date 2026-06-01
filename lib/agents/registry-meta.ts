@@ -8,9 +8,13 @@ export type AgentType =
   | "document"
   | "compliance"
   | "auditor"
-  | "comms"
+  | "specialist"
   | "synthesizer"
-  | "specialist";
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
+  | "comms"
+  | "audit";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -26,15 +30,22 @@ export interface AgentRegistryRow {
   created_at?: string;
 }
 
+// Display order in the architecture roster — follows the case lifecycle:
+// orchestrator, intake → document → compliance → auditor / specialist /
+// synthesizer → vet network → airline & crate → endorsement → comms → audit.
 export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   orchestrator: 0,
   intake: 1,
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
+  specialist: 5,
   synthesizer: 6,
-  specialist: 7,
+  vet_network: 7,
+  airline_crate: 8,
+  endorsement: 9,
+  comms: 10,
+  audit: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,10 +53,14 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  audit: "ping",
   compliance: "go",
+  endorsement: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -65,6 +80,14 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  vet_network:
+    "Matches owner to an approved partner vet and books microchip / vaccine / titer / endorsement appointments. Proposes feasible dates into the timeline consensus loop.",
+  airline_crate:
+    "IATA Live Animal Regulations: CR-82 crate sizing, route + carrier selection, seasonal temperature embargo. Proposes flight dates into the consensus loop.",
+  endorsement:
+    "Manages the 7–10 day pre-flight endorsement window with the destination authority (MOCCAE, APHA, USDA-APHIS). Submits the packet and tracks the courier.",
+  audit:
+    "Read-only watchdog. Monitors every other agent's output for citation gaps, voice disagreement, SLA risk, and low-confidence extractions.",
 };
 
 const FALLBACK_ORDER = 99;
