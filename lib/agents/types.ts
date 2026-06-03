@@ -7,15 +7,19 @@ import type { AgentType } from "./registry-meta";
 
 // Anthropic tool manifest entry — kept loose to avoid pinning to a specific
 // SDK version. The shape matches the messages API tool definition.
+// `type: "object"` is intentionally a literal so the union narrows at call sites
+// without forcing every input_schema to repeat `as const`.
+export type ObjectSchema = {
+  type: "object";
+  properties: Record<string, unknown>;
+  required?: string[];
+  additionalProperties?: boolean;
+};
+
 export interface AgentTool {
   name: string;
   description: string;
-  input_schema: {
-    type: "object";
-    properties: Record<string, unknown>;
-    required?: string[];
-    additionalProperties?: boolean;
-  };
+  input_schema: ObjectSchema;
 }
 
 // Model handles match Anthropic's published model ids exactly.
