@@ -2,6 +2,7 @@
 // Reads the queue, decides which agent runs next, enforces the per-case budget.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import { ACKNOWLEDGE_AND_WAIT } from "./tools";
 
 export const ORCHESTRATOR: AgentDefinition = validateAgent({
   name: "orchestrator",
@@ -75,15 +76,7 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
         required: ["case_id", "outcome"],
       },
     },
-    {
-      name: "acknowledge_and_wait",
-      description: "Terminal: yield the loop without dispatch (e.g. waiting on owner reply).",
-      input_schema: {
-        type: "object",
-        properties: { reason: { type: "string" } },
-        required: ["reason"],
-      },
-    },
+    ACKNOWLEDGE_AND_WAIT,
   ],
   terminal_tools: ["dispatch_to_agent", "escalate_to_human", "close_case", "acknowledge_and_wait"],
   budget: { max_turns: 8, max_input_tokens: 80_000, max_dissent_rounds: 2 },
