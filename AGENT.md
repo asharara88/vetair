@@ -276,11 +276,14 @@ When continuing work on Vetair:
 ## 12. Session log (build progress)
 
 - **Session 1** (complete): Supabase project, 11-table schema, 37 country_rules across 5 corridor+species combos, 2 demo scripts (Sarah+Max blocked-then-resolved, James+Luna happy-path)
-- **Session 2** (in progress): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
-- **Session 3** (planned): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
-- **Session 4** (planned): WhatsApp Business API sandbox wiring
-- **Session 5** (planned): Full end-to-end dry run + polish
+- **Session 2** (complete): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
+- **Session 3** (complete): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
+- **Session 4** (complete): WhatsApp Business API sandbox wiring
+- **Session 5** (complete): `demo-stream` ↔ `whatsapp-send` wiring; live WhatsApp toggle
+- **Session 6** (complete): Home page rewrite, LiveReceipts, AutoRefresh, theater/factory/architecture pages
+- **Session 7** (complete): `lib/agents/` scaffold + per-agent files (orchestrator, intake, document, compliance, auditor, comms, synthesizer + specialist template), versioned prompts in `lib/prompts/`
+- **Session 8** (complete): Shared tool definitions in `lib/agents/tools-shared.ts` (eliminates `request_document` / `ask_user_for_input` / `acknowledge_and_wait` drift across 5 agents). Added the 4 specialist execution agents from §3: `vet_network`, `airline_crate`, `endorsement`, `audit`. Registry-meta + AGENT_META + terminal-tone map all updated. 11 static agents now register and validate at module load.
 
 ---
 
-*Last updated: Session 1 close. Bump this date whenever you add a major section.*
+*Last updated: Session 8 close.*
