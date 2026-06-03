@@ -1,7 +1,7 @@
 // Compliance Auditor — adversarial reviewer. Concur or dissent.
 
 import { type AgentDefinition, validateAgent } from "./types";
-import { COMPLIANCE_SHARED_READ_TOOLS } from "./compliance";
+import { COMPLIANCE_READ_TOOLS } from "./shared-tools";
 
 export const AUDITOR: AgentDefinition = validateAgent({
   name: "auditor",
@@ -12,10 +12,11 @@ export const AUDITOR: AgentDefinition = validateAgent({
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
   prompt_path: "lib/prompts/auditor.md",
   tools: [
-    ...COMPLIANCE_SHARED_READ_TOOLS,
+    ...COMPLIANCE_READ_TOOLS,
     {
       name: "concur",
-      description: "Terminal: agree with the primary assessment. Reasoning must enumerate the requirement_codes re-checked.",
+      description:
+        "Terminal: agree with the primary assessment. Reasoning must enumerate the requirement_codes re-checked.",
       input_schema: {
         type: "object",
         properties: { reasoning: { type: "string" } },
@@ -24,7 +25,8 @@ export const AUDITOR: AgentDefinition = validateAgent({
     },
     {
       name: "dissent",
-      description: "Terminal: disagree with the primary assessment. Each challenge must cite a requirement_code.",
+      description:
+        "Terminal: disagree with the primary assessment. Each challenge must cite a requirement_code.",
       input_schema: {
         type: "object",
         properties: {
