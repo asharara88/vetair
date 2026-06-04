@@ -8,10 +8,26 @@ import { INTAKE } from "./intake";
 import { DOCUMENT } from "./document";
 import { COMPLIANCE } from "./compliance";
 import { AUDITOR } from "./auditor";
+import { VET_NETWORK } from "./vet_network";
+import { AIRLINE_CRATE } from "./airline_crate";
+import { ENDORSEMENT } from "./endorsement";
 import { COMMS } from "./comms";
+import { AUDIT } from "./audit";
 import { SYNTHESIZER } from "./synthesizer";
 
-export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
+export {
+  ORCHESTRATOR,
+  INTAKE,
+  DOCUMENT,
+  COMPLIANCE,
+  AUDITOR,
+  VET_NETWORK,
+  AIRLINE_CRATE,
+  ENDORSEMENT,
+  COMMS,
+  AUDIT,
+  SYNTHESIZER,
+};
 export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
 export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
 export {
@@ -26,23 +42,31 @@ export {
   type AgentType,
   type AgentTypeTone,
 } from "./registry-meta";
+export {
+  COMPLIANCE_READ_TOOLS,
+  EMIT_ASSESSMENT_TOOL,
+  DOCUMENT_KINDS,
+  type DocumentKind,
+} from "./_shared";
 
+// Order matches the case lifecycle: orchestrator → intake → document →
+// compliance trio → procedure trio → comms → audit → synthesizer.
 export const STATIC_AGENTS: readonly AgentDefinition[] = [
   ORCHESTRATOR,
   INTAKE,
   DOCUMENT,
   COMPLIANCE,
   AUDITOR,
+  VET_NETWORK,
+  AIRLINE_CRATE,
+  ENDORSEMENT,
   COMMS,
+  AUDIT,
   SYNTHESIZER,
 ] as const;
 
-const BY_NAME: Record<string, AgentDefinition> = Object.fromEntries(
-  STATIC_AGENTS.map((a) => [a.name, a]),
-);
-
 export const STATIC_AGENTS_BY_NAME: Readonly<Record<string, AgentDefinition>> =
-  Object.freeze(BY_NAME);
+  Object.freeze(Object.fromEntries(STATIC_AGENTS.map((a) => [a.name, a])));
 
 /**
  * Resolve an agent definition by `agent_runs.agent_name`.
