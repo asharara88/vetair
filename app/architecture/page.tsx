@@ -107,6 +107,8 @@ export default async function Architecture() {
     { label: "Auditor", tone: "ping", mono: false },
     { label: "Specialist (synthesized)", tone: "amber", mono: false },
     { label: "Comms → owner", tone: "neutral", mono: true },
+    { label: "Status Watchdog (sweep)", tone: "amber", mono: false },
+    { label: "Exception Handler", tone: "ping", mono: false },
   ];
 
   return (
