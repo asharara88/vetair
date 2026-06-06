@@ -89,6 +89,21 @@ export const TERMINAL_TONE: Record<string, SignalTone> = {
   emit_extraction: "go",
   fail_synthesis: "stop",
   fail_extraction: "stop",
+  // execution agents (vet network, airline & crate, endorsement)
+  emit_plan: "go",
+  emit_routing: "go",
+  emit_status: "go",
+  fail_plan: "stop",
+  fail_routing: "stop",
+  fail_endorsement: "stop",
+  // watchdog + exception handler
+  dispatch_exception: "amber",
+  notify_operator: "ping",
+  mark_benign: "neutral",
+  emit_remediation_plan: "go",
+  reroute_corridor: "amber",
+  request_orchestrator_cycle: "amber",
+  fail_exception: "stop",
 };
 
 // Map an agent_runs row's (state, terminal_tool) to a pill tone + display label.
@@ -150,6 +165,11 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
   comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
   synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
+  vet_network:         { label: "Vet Network",          color: "#60a5fa", short: "VET" },
+  airline_crate:       { label: "Airline & Crate",      color: "#60a5fa", short: "AIR" },
+  endorsement:         { label: "Endorsement Team",     color: "#34d399", short: "END" },
+  status_watchdog:     { label: "Status Watchdog",      color: "#f87171", short: "WDG" },
+  exception_handler:   { label: "Exception Handler",    color: "#fbbe4c", short: "EXC" },
 
   // Legacy / dramatized demo names
   intake_agent:        { label: "Intake Agent",         color: "#60a5fa", short: "INT" },
