@@ -10,7 +10,12 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
+  | "watchdog"
+  | "exception_handler";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,20 +37,30 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
+  specialist: 5,
   synthesizer: 6,
-  specialist: 7,
+  vet_network: 7,
+  airline_crate: 8,
+  endorsement: 9,
+  comms: 10,
+  watchdog: 11,
+  exception_handler: 12,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   orchestrator: "amber",
   synthesizer: "amber",
   specialist: "amber",
+  exception_handler: "amber",
   auditor: "ping",
+  watchdog: "ping",
   compliance: "go",
+  endorsement: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -65,6 +80,16 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  vet_network:
+    "Matches the owner to an approved corridor vet. Schedules microchip / vaccine / titer / endorsement appointments inside the legal windows.",
+  airline_crate:
+    "Selects an IATA-LAR-compliant route, sizes the CR-82 crate from pet weight + breed, and checks live temperature embargoes per leg.",
+  endorsement:
+    "Locks the 10-day endorsement window, submits to MOCCAE / APHA / equivalent, and tracks the courier to the destination port-of-entry.",
+  watchdog:
+    "Async sweep. Flags stale non-terminal cases against a deadline-aware threshold and decides whether silence is a problem or expected.",
+  exception_handler:
+    "Computes a remediation path for case-level exceptions. Either re-enqueues the orchestrator, proposes a reroute, or escalates to a human.",
 };
 
 const FALLBACK_ORDER = 99;

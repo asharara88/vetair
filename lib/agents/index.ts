@@ -10,8 +10,26 @@ import { COMPLIANCE } from "./compliance";
 import { AUDITOR } from "./auditor";
 import { COMMS } from "./comms";
 import { SYNTHESIZER } from "./synthesizer";
+import { VET_NETWORK } from "./vet_network";
+import { AIRLINE_CRATE } from "./airline_crate";
+import { ENDORSEMENT } from "./endorsement";
+import { WATCHDOG } from "./watchdog";
+import { EXCEPTION_HANDLER } from "./exception_handler";
 
-export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
+export {
+  ORCHESTRATOR,
+  INTAKE,
+  DOCUMENT,
+  COMPLIANCE,
+  AUDITOR,
+  COMMS,
+  SYNTHESIZER,
+  VET_NETWORK,
+  AIRLINE_CRATE,
+  ENDORSEMENT,
+  WATCHDOG,
+  EXCEPTION_HANDLER,
+};
 export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
 export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
 export {
@@ -33,13 +51,25 @@ export const STATIC_AGENTS: readonly AgentDefinition[] = [
   DOCUMENT,
   COMPLIANCE,
   AUDITOR,
-  COMMS,
   SYNTHESIZER,
+  VET_NETWORK,
+  AIRLINE_CRATE,
+  ENDORSEMENT,
+  COMMS,
+  WATCHDOG,
+  EXCEPTION_HANDLER,
 ] as const;
 
-const BY_NAME: Record<string, AgentDefinition> = Object.fromEntries(
-  STATIC_AGENTS.map((a) => [a.name, a]),
-);
+const BY_NAME: Record<string, AgentDefinition> = (() => {
+  const map: Record<string, AgentDefinition> = {};
+  for (const a of STATIC_AGENTS) {
+    if (map[a.name]) {
+      throw new Error(`Duplicate static agent name: "${a.name}"`);
+    }
+    map[a.name] = a;
+  }
+  return map;
+})();
 
 export const STATIC_AGENTS_BY_NAME: Readonly<Record<string, AgentDefinition>> =
   Object.freeze(BY_NAME);
