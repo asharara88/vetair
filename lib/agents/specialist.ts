@@ -8,6 +8,7 @@ import {
   COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
 } from "./compliance";
+import { DOCUMENT_KINDS } from "./shared-tools";
 
 export interface SpecialistParams {
   country_code: string; // ISO-3166 alpha-2 uppercase
@@ -19,11 +20,11 @@ const TEMPLATE_TOOLS: AgentTool[] = [
   COMPLIANCE_ASSESSMENT_TOOL,
   {
     name: "request_document",
-    description: "Terminal: ask the owner via Comms for a missing document.",
+    description: "Terminal: ask the owner via Comms for a missing document. `confirm_destination` is used when the case's destination does not match this specialist's jurisdiction.",
     input_schema: {
       type: "object",
       properties: {
-        kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement", "confirm_destination"] },
+        kind: { type: "string", enum: [...DOCUMENT_KINDS, "confirm_destination"] },
       },
       required: ["kind"],
     },

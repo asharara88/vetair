@@ -89,6 +89,24 @@ export const TERMINAL_TONE: Record<string, SignalTone> = {
   emit_extraction: "go",
   fail_synthesis: "stop",
   fail_extraction: "stop",
+  // vet_network / airline_crate / endorsement
+  propose_appointments: "amber",
+  propose_routing: "amber",
+  propose_endorsement_appointment: "amber",
+  confirm_booking: "go",
+  submit_to_authority: "go",
+  track_courier: "neutral",
+  no_vet_available: "stop",
+  no_routing_available: "stop",
+  window_infeasible: "stop",
+  // audit / exception_handler
+  dispatch_exception: "amber",
+  notify_operator: "ping",
+  mark_benign: "neutral",
+  emit_remediation_plan: "go",
+  reroute_corridor: "amber",
+  request_orchestrator_cycle: "amber",
+  fail_exception: "stop",
 };
 
 // Map an agent_runs row's (state, terminal_tool) to a pill tone + display label.
@@ -148,7 +166,13 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   document:            { label: "Document Team",        color: "#60a5fa", short: "DOC" },
   compliance:          { label: "Compliance Team",      color: "#34d399", short: "CMP" },
   auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
+  vet_network:         { label: "Vet Network",          color: "#60a5fa", short: "VET" },
+  airline_crate:       { label: "Airline & Crate",      color: "#60a5fa", short: "AIR" },
+  endorsement:         { label: "Endorsement",          color: "#60a5fa", short: "END" },
   comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
+  audit:               { label: "Status Watchdog",      color: "#8b95a6", short: "WAT" },
+  exception_handler:   { label: "Exception Handler",    color: "#fbbe4c", short: "EXC" },
+  status_watchdog:     { label: "Status Watchdog",      color: "#8b95a6", short: "WAT" },
   synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
 
   // Legacy / dramatized demo names
