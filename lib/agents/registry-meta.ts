@@ -8,7 +8,12 @@ export type AgentType =
   | "document"
   | "compliance"
   | "auditor"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
   | "comms"
+  | "audit"
+  | "exception_handler"
   | "synthesizer"
   | "specialist";
 
@@ -32,19 +37,29 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  audit: 9,
+  exception_handler: 10,
+  synthesizer: 11,
+  specialist: 12,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   orchestrator: "amber",
   synthesizer: "amber",
   specialist: "amber",
+  exception_handler: "amber",
   auditor: "ping",
+  audit: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
+  endorsement: "neutral",
   comms: "neutral",
 };
 
@@ -59,8 +74,18 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Matches the owner to an approved vet and proposes appointment dates for microchip, vaccine, titer, and OV endorsement procedures.",
+  airline_crate:
+    "Picks route, airline and IATA-compliant crate. Reasons over LAR §1.3, CR-82 sizing, embargo windows and airline policy.",
+  endorsement:
+    "Owns the 7–10 day pre-flight endorsement window. Schedules OV appointments, prepares the authority package, tracks the courier.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  audit:
+    "Read-only watchdog. Sweeps non-terminal cases after each orchestrator cycle, distinguishes urgent stalls from benign quiet, and either notifies or dispatches the exception handler.",
+  exception_handler:
+    "Computes the least-disruptive remediation when a case hits an exception — re-evaluation, reroute, manual plan, or human escalation.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
