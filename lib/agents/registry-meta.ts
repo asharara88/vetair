@@ -10,7 +10,12 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "vet_network"
+  | "airline"
+  | "endorsement"
+  | "audit"
+  | "exception_handler";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,20 +37,30 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline: 6,
+  endorsement: 7,
+  comms: 8,
+  audit: 9,
+  exception_handler: 10,
+  synthesizer: 11,
+  specialist: 12,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   orchestrator: "amber",
   synthesizer: "amber",
   specialist: "amber",
+  exception_handler: "amber",
   auditor: "ping",
+  audit: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  airline: "neutral",
+  endorsement: "neutral",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -59,8 +74,18 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Matches the owner to an approved vet for microchip / vaccine / titer / endorsement appointments. Sequences procedures around country waiting windows.",
+  airline:
+    "IATA LAR + CR-82 crate sizing, route selection, temperature embargo windows. Picks the first feasible cargo path for the target date.",
+  endorsement:
+    "Owns the 7–10 day pre-flight endorsement window. Submits to MOCCAE / APHA, tracks the courier, blocks departure on missing stamps.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  audit:
+    "Read-only watchdog. Sweeps open cases for staleness, citation gaps, deterministic-vs-LLM divergence; routes real issues to the exception handler.",
+  exception_handler:
+    "Computes a remediation path when audit or another agent flags a problem. Re-enqueues the orchestrator, reroutes the corridor, or escalates to human.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
