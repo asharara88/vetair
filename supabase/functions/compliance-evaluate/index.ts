@@ -15,6 +15,15 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 
+// Pinned to the family aliases used everywhere else in the repo
+// (lib/agents/types.ts, demo-stream, status-watchdog-agent).
+const PRIMARY_MODEL = "claude-sonnet-4-6";
+const AUDITOR_MODEL = "claude-opus-4-7";
+
+// Per-million input / output token prices (USD), used for agent_logs.cost_usd.
+const SONNET_PRICE_PER_M = { input: 3, output: 15 } as const;
+const OPUS_PRICE_PER_M = { input: 15, output: 75 } as const;
+
 async function callClaude(apiKey: string, model: string, system: string, user: string): Promise<{ text: string; input_tokens: number; output_tokens: number }> {
   const res = await fetch(ANTHROPIC_URL, {
     method: "POST",
@@ -130,7 +139,7 @@ Deno.serve(async (req: Request) => {
   let primary: { verdict: "approved" | "blocked" | "pending"; earliest_legal_departure: string | null; rationale: string } = { verdict: "pending", earliest_legal_departure: null, rationale: "" };
   let primaryTokens = { input: 0, output: 0 };
   try {
-    const resp = await callClaude(apiKey, "claude-sonnet-4-20250514", PRIMARY_SYSTEM, caseContext);
+    const resp = await callClaude(apiKey, PRIMARY_MODEL, PRIMARY_SYSTEM, caseContext);
     primary = parseClaudeVerdict(resp.text);
     primaryTokens = { input: resp.input_tokens, output: resp.output_tokens };
   } catch (e) {
@@ -144,7 +153,7 @@ Deno.serve(async (req: Request) => {
   let auditorTokens = { input: 0, output: 0 };
   try {
     const primaryStatement = `PRIMARY AGENT VERDICT TO DISPROVE: ${primary.verdict} (earliest: ${primary.earliest_legal_departure ?? "n/a"})\nPrimary rationale: ${primary.rationale}\n\n${caseContext}`;
-    const resp = await callClaude(apiKey, "claude-opus-4-20250514", AUDITOR_SYSTEM, primaryStatement);
+    const resp = await callClaude(apiKey, AUDITOR_MODEL, AUDITOR_SYSTEM, primaryStatement);
     auditor = parseClaudeVerdict(resp.text);
     auditorTokens = { input: resp.input_tokens, output: resp.output_tokens };
   } catch (e) {
@@ -167,8 +176,8 @@ Deno.serve(async (req: Request) => {
     earliest_legal_departure: detAgg.earliest_legal_departure ?? primary.earliest_legal_departure ?? auditor.earliest_legal_departure,
     three_voices: {
       deterministic: { verdict: detAgg.verdict, earliest_legal_departure: detAgg.earliest_legal_departure, rationale: detRationale },
-      primary: { ...primary, model: "claude-sonnet-4-20250514" },
-      auditor: { ...auditor, model: "claude-opus-4-20250514" },
+      primary: { ...primary, model: PRIMARY_MODEL },
+      auditor: { ...auditor, model: AUDITOR_MODEL },
     },
   };
 
@@ -205,8 +214,8 @@ Deno.serve(async (req: Request) => {
   // Log agent calls
   await supabase.from("agent_logs").insert([
     { case_id, agent_name: "deterministic_engine", model: "ts-v1", latency_ms: 0, decision_summary: detRationale, confidence: 1.0, output_payload: { verdict: detAgg.verdict, earliest_legal_departure: detAgg.earliest_legal_departure } },
-    { case_id, agent_name: "compliance_primary", model: "claude-sonnet-4-20250514", input_tokens: primaryTokens.input, output_tokens: primaryTokens.output, cost_usd: (primaryTokens.input * 3 + primaryTokens.output * 15) / 1_000_000, latency_ms: primaryMs, decision_summary: primary.rationale.slice(0, 500), confidence: primary.verdict === "pending" ? 0.5 : 0.95, output_payload: primary },
-    { case_id, agent_name: "compliance_auditor", model: "claude-opus-4-20250514", input_tokens: auditorTokens.input, output_tokens: auditorTokens.output, cost_usd: (auditorTokens.input * 15 + auditorTokens.output * 75) / 1_000_000, latency_ms: auditorMs, decision_summary: auditor.rationale.slice(0, 500), confidence: 0.95, output_payload: auditor },
+    { case_id, agent_name: "compliance_primary", model: PRIMARY_MODEL, input_tokens: primaryTokens.input, output_tokens: primaryTokens.output, cost_usd: (primaryTokens.input * SONNET_PRICE_PER_M.input + primaryTokens.output * SONNET_PRICE_PER_M.output) / 1_000_000, latency_ms: primaryMs, decision_summary: primary.rationale.slice(0, 500), confidence: primary.verdict === "pending" ? 0.5 : 0.95, output_payload: primary },
+    { case_id, agent_name: "compliance_auditor", model: AUDITOR_MODEL, input_tokens: auditorTokens.input, output_tokens: auditorTokens.output, cost_usd: (auditorTokens.input * OPUS_PRICE_PER_M.input + auditorTokens.output * OPUS_PRICE_PER_M.output) / 1_000_000, latency_ms: auditorMs, decision_summary: auditor.rationale.slice(0, 500), confidence: 0.95, output_payload: auditor },
   ]);
 
   // Update case state based on final verdict
@@ -219,6 +228,6 @@ Deno.serve(async (req: Request) => {
     resolution,
     final_verdict: finalVerdict,
     case_state: nextState,
-    stats: { rules_evaluated: rules.length, primary_latency_ms: primaryMs, auditor_latency_ms: auditorMs, total_cost_usd: ((primaryTokens.input * 3 + primaryTokens.output * 15) + (auditorTokens.input * 15 + auditorTokens.output * 75)) / 1_000_000 },
+    stats: { rules_evaluated: rules.length, primary_latency_ms: primaryMs, auditor_latency_ms: auditorMs, total_cost_usd: ((primaryTokens.input * SONNET_PRICE_PER_M.input + primaryTokens.output * SONNET_PRICE_PER_M.output) + (auditorTokens.input * OPUS_PRICE_PER_M.input + auditorTokens.output * OPUS_PRICE_PER_M.output)) / 1_000_000 },
   });
 });

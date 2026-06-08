@@ -30,8 +30,8 @@ curl -X POST \
     "earliest_legal_departure": "YYYY-MM-DD" | null,
     "three_voices": {
       "deterministic": { "verdict": "...", "rationale": "..." },
-      "primary": { "verdict": "...", "rationale": "...", "model": "claude-sonnet-4-20250514" },
-      "auditor": { "verdict": "...", "rationale": "...", "model": "claude-opus-4-20250514" }
+      "primary": { "verdict": "...", "rationale": "...", "model": "claude-sonnet-4-6" },
+      "auditor": { "verdict": "...", "rationale": "...", "model": "claude-opus-4-7" }
     }
   },
   "case_state": "approved" | "blocked" | "assessment",
