@@ -276,11 +276,12 @@ When continuing work on Vetair:
 ## 12. Session log (build progress)
 
 - **Session 1** (complete): Supabase project, 11-table schema, 37 country_rules across 5 corridor+species combos, 2 demo scripts (Sarah+Max blocked-then-resolved, James+Luna happy-path)
-- **Session 2** (in progress): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
-- **Session 3** (planned): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
-- **Session 4** (planned): WhatsApp Business API sandbox wiring
-- **Session 5** (planned): Full end-to-end dry run + polish
+- **Session 2** (complete): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
+- **Session 3** (complete): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
+- **Session 4** (complete): WhatsApp Business API sandbox wiring
+- **Session 5** (complete): demo-stream → whatsapp-send wiring; real WhatsApps fire when whitelisted
+- **Session 6** (in progress): Static `lib/agents/` roster filled out — vet_network, airline_crate, endorsement, status_watchdog, exception_handler agent definitions + prompts added; AgentType extended; AGENT_META + TERMINAL_TONE updated for the new terminals
 
 ---
 
-*Last updated: Session 1 close. Bump this date whenever you add a major section.*
+*Last updated: Session 6 open. Bump this date whenever you add a major section.*

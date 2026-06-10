@@ -10,7 +10,12 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
+  | "watchdog"
+  | "exception";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,20 +37,30 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  specialist: 5,
+  vet_network: 6,
+  airline_crate: 7,
+  endorsement: 8,
+  comms: 9,
+  synthesizer: 10,
+  watchdog: 11,
+  exception: 12,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   orchestrator: "amber",
   synthesizer: "amber",
   specialist: "amber",
+  exception: "amber",
   auditor: "ping",
+  watchdog: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
+  endorsement: "neutral",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -65,6 +80,16 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  vet_network:
+    "Matches the owner to an approved vet in the residence country and books the microchip / vaccine / titer / endorsement appointments in the right order.",
+  airline_crate:
+    "Plans the route. IATA LAR carrier rules, CR-82 crate sizing from pet dims, embargo-aware itinerary proposal.",
+  endorsement:
+    "Owns the endorsement window. Confirms the appointment falls inside the destination's pre-flight window and tracks MOCCAE / APHA submission.",
+  watchdog:
+    "Read-only auditor that runs after every orchestrator cycle. Sweeps stale cases, decides whether silence is benign or a problem.",
+  exception:
+    "Fired on signal. Computes a remediation path for a stuck case and routes it — re-cycle the orchestrator, emit a plan, or hand to a human.",
 };
 
 const FALLBACK_ORDER = 99;
