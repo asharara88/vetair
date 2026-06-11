@@ -7,6 +7,7 @@ import { type AgentDefinition, type AgentTool, validateAgent } from "./types";
 import {
   COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
+  REQUEST_DOCUMENT_KINDS,
 } from "./compliance";
 
 export interface SpecialistParams {
@@ -14,21 +15,27 @@ export interface SpecialistParams {
   country_name: string;
 }
 
+// Specialists add `confirm_destination` to the document-kind enum — they use
+// it when the case's destination_country drifts from the specialist's scope.
+const SPECIALIST_REQUEST_DOCUMENT_TOOL: AgentTool = {
+  name: "request_document",
+  description: "Terminal: ask the owner via Comms for a missing document.",
+  input_schema: {
+    type: "object",
+    properties: {
+      kind: { type: "string", enum: [...REQUEST_DOCUMENT_KINDS, "confirm_destination"] },
+    },
+    required: ["kind"],
+  },
+};
+
 const TEMPLATE_TOOLS: AgentTool[] = [
   ...COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
-  {
-    name: "request_document",
-    description: "Terminal: ask the owner via Comms for a missing document.",
-    input_schema: {
-      type: "object",
-      properties: {
-        kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement", "confirm_destination"] },
-      },
-      required: ["kind"],
-    },
-  },
+  SPECIALIST_REQUEST_DOCUMENT_TOOL,
 ];
+
+const TERMINAL_TOOLS = ["emit_assessment", "request_document"] as const;
 
 export const SPECIALIST_TEMPLATE = {
   template_namespace: "compliance.specialist",
@@ -38,12 +45,23 @@ export const SPECIALIST_TEMPLATE = {
   required_params: ["country_code", "country_name"] as const,
   default_model: "claude-sonnet-4-6" as const,
   tools: TEMPLATE_TOOLS,
-  terminal_tools: ["emit_assessment", "request_document"],
+  terminal_tools: TERMINAL_TOOLS,
 };
+
+// Synthesized specialists follow the `{cc}_compliance_specialist` naming
+// convention. Used by resolveAgent() to route by-name lookups.
+const SPECIALIST_NAME_RE = /^[a-z]{2}_compliance_specialist$/;
+
+export function isSpecialistAgentName(name: string): boolean {
+  return SPECIALIST_NAME_RE.test(name);
+}
 
 // Build a concrete AgentDefinition for a synthesized specialist.
 // Called at dispatch time once the row in synthesized_specialists is loaded.
-export function buildSpecialist(params: SpecialistParams, model = SPECIALIST_TEMPLATE.default_model): AgentDefinition {
+export function buildSpecialist(
+  params: SpecialistParams,
+  model = SPECIALIST_TEMPLATE.default_model,
+): AgentDefinition {
   const cc = params.country_code.toUpperCase();
   return validateAgent({
     name: `${cc.toLowerCase()}_compliance_specialist`,
@@ -53,7 +71,7 @@ export function buildSpecialist(params: SpecialistParams, model = SPECIALIST_TEM
     description: `${params.country_name} compliance specialist. Inherits the compliance loop with ${cc}-specific nuance.`,
     prompt_path: SPECIALIST_TEMPLATE.prompt_path,
     tools: TEMPLATE_TOOLS,
-    terminal_tools: [...SPECIALIST_TEMPLATE.terminal_tools],
+    terminal_tools: [...TERMINAL_TOOLS],
     budget: { max_turns: 8, max_input_tokens: 60_000 },
   });
 }
