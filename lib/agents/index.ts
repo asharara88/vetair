@@ -10,9 +10,29 @@ import { COMPLIANCE } from "./compliance";
 import { AUDITOR } from "./auditor";
 import { COMMS } from "./comms";
 import { SYNTHESIZER } from "./synthesizer";
+import { AUDIT } from "./audit";
+import { STATUS_WATCHDOG } from "./status-watchdog";
+import { EXCEPTION_HANDLER } from "./exception-handler";
+import { isSpecialistAgentName } from "./specialist";
 
-export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
-export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
+export {
+  ORCHESTRATOR,
+  INTAKE,
+  DOCUMENT,
+  COMPLIANCE,
+  AUDITOR,
+  COMMS,
+  SYNTHESIZER,
+  AUDIT,
+  STATUS_WATCHDOG,
+  EXCEPTION_HANDLER,
+};
+export {
+  SPECIALIST_TEMPLATE,
+  buildSpecialist,
+  isSpecialistAgentName,
+  type SpecialistParams,
+} from "./specialist";
 export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
 export {
   AGENT_TYPE_BLURB,
@@ -35,14 +55,14 @@ export const STATIC_AGENTS: readonly AgentDefinition[] = [
   AUDITOR,
   COMMS,
   SYNTHESIZER,
+  AUDIT,
+  STATUS_WATCHDOG,
+  EXCEPTION_HANDLER,
 ] as const;
 
-const BY_NAME: Record<string, AgentDefinition> = Object.fromEntries(
-  STATIC_AGENTS.map((a) => [a.name, a]),
+export const STATIC_AGENTS_BY_NAME: Readonly<Record<string, AgentDefinition>> = Object.freeze(
+  Object.fromEntries(STATIC_AGENTS.map((a) => [a.name, a])),
 );
-
-export const STATIC_AGENTS_BY_NAME: Readonly<Record<string, AgentDefinition>> =
-  Object.freeze(BY_NAME);
 
 /**
  * Resolve an agent definition by `agent_runs.agent_name`.
@@ -53,4 +73,14 @@ export const STATIC_AGENTS_BY_NAME: Readonly<Record<string, AgentDefinition>> =
  */
 export function resolveStaticAgent(name: string): AgentDefinition | null {
   return STATIC_AGENTS_BY_NAME[name] ?? null;
+}
+
+/**
+ * Classify an agent name without resolving it. Useful for routing decisions
+ * (e.g. should the orchestrator hydrate a specialist from the DB?).
+ */
+export function classifyAgentName(name: string): "static" | "specialist" | "unknown" {
+  if (name in STATIC_AGENTS_BY_NAME) return "static";
+  if (isSpecialistAgentName(name)) return "specialist";
+  return "unknown";
 }

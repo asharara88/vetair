@@ -89,6 +89,19 @@ export const TERMINAL_TONE: Record<string, SignalTone> = {
   emit_extraction: "go",
   fail_synthesis: "stop",
   fail_extraction: "stop",
+  // Audit
+  post_finding: "ping",
+  audit_clean: "go",
+  // Status watchdog (per-case decisions are logged on agent_messages; sweep_complete is the run terminal)
+  dispatch_exception: "stop",
+  notify_operator: "ping",
+  mark_benign: "neutral",
+  sweep_complete: "go",
+  // Exception handler
+  emit_remediation_plan: "go",
+  reroute_corridor: "amber",
+  request_orchestrator_cycle: "amber",
+  fail_exception: "stop",
 };
 
 // Map an agent_runs row's (state, terminal_tool) to a pill tone + display label.
@@ -150,6 +163,9 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
   comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
   synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
+  audit:               { label: "Audit",                color: "#8b95a6", short: "ADT" },
+  status_watchdog:     { label: "Status Watchdog",      color: "#fbbe4c", short: "SWD" },
+  exception_handler:   { label: "Exception Handler",    color: "#f87171", short: "EXC" },
 
   // Legacy / dramatized demo names
   intake_agent:        { label: "Intake Agent",         color: "#60a5fa", short: "INT" },
