@@ -52,14 +52,34 @@ export interface AgentDefinition {
   budget: AgentBudget;
 }
 
-// Convenience: assert at module load that terminal_tools ⊆ tools.
+// Asserted at module load:
+//   1. terminal_tools ⊆ tools
+//   2. tool names are unique within the agent (Anthropic rejects duplicates)
+//   3. terminal_tools has no duplicates
 export function validateAgent(def: AgentDefinition): AgentDefinition {
-  const toolNames = new Set(def.tools.map((t) => t.name));
-  const missing = def.terminal_tools.filter((t) => !toolNames.has(t));
+  const seen = new Set<string>();
+  const dupes: string[] = [];
+  for (const t of def.tools) {
+    if (seen.has(t.name)) dupes.push(t.name);
+    else seen.add(t.name);
+  }
+  if (dupes.length > 0) {
+    throw new Error(
+      `Agent "${def.name}" has duplicate tool names: ${dupes.join(", ")}`,
+    );
+  }
+  const missing = def.terminal_tools.filter((t) => !seen.has(t));
   if (missing.length > 0) {
     throw new Error(
       `Agent "${def.name}" lists terminal tools not present in tools[]: ${missing.join(", ")}`,
     );
+  }
+  const termSet = new Set<string>();
+  for (const t of def.terminal_tools) {
+    if (termSet.has(t)) {
+      throw new Error(`Agent "${def.name}" lists "${t}" twice in terminal_tools.`);
+    }
+    termSet.add(t);
   }
   return def;
 }

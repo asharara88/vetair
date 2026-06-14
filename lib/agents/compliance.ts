@@ -1,6 +1,11 @@
 // Compliance (Primary) — reasons over case + rule graph and emits an assessment.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import {
+  ASK_USER_FOR_INPUT_TOOL,
+  COMPLIANCE_DOCUMENT_KINDS,
+  requestDocumentTool,
+} from "./shared-tools";
 
 const ASSESSMENT_TOOL = {
   name: "emit_assessment",
@@ -74,28 +79,14 @@ export const COMPLIANCE: AgentDefinition = validateAgent({
   tools: [
     ...SHARED_READ_TOOLS,
     ASSESSMENT_TOOL,
-    {
-      name: "request_document",
+    requestDocumentTool({
+      kinds: COMPLIANCE_DOCUMENT_KINDS,
       description: "Terminal: ask the owner via Comms for a missing document.",
-      input_schema: {
-        type: "object",
-        properties: {
-          kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement"] },
-        },
-        required: ["kind"],
-      },
-    },
+    }),
     {
-      name: "ask_user_for_input",
-      description: "Terminal: ask the owner via Comms for a missing fact (e.g. microchip date).",
-      input_schema: {
-        type: "object",
-        properties: {
-          field: { type: "string" },
-          question: { type: "string" },
-        },
-        required: ["field", "question"],
-      },
+      ...ASK_USER_FOR_INPUT_TOOL,
+      description:
+        "Terminal: ask the owner via Comms for a missing fact (e.g. microchip date).",
     },
   ],
   terminal_tools: ["emit_assessment", "request_document", "ask_user_for_input"],
