@@ -61,20 +61,24 @@ Posts findings back to Orchestrator, which can pause a case mid-flow.
 
 ## 3. Agent roster (V1)
 
-9 agents total. Each has a dedicated file in `lib/agents/`.
+11 static agents + 1 synthesized specialist template. Each has a dedicated file in `lib/agents/` and a versioned prompt at `lib/prompts/<name>.md`.
 
-| # | Agent | Model | File | Responsibility |
-|---|---|---|---|---|
-| 0 | **Orchestrator** | Sonnet 4 | `orchestrator.ts` | Case state machine, task dispatch, consensus mediation |
-| 1 | **Intake** | Haiku 4.5 | `intake.ts` | Conversational intake via WhatsApp, captures pet + intent, one question per turn |
-| 2 | **Document** | Sonnet 4 (vision) | `document.ts` | Reads uploaded docs natively (no OCR layer), extracts structured fields with JSON schema |
-| 3 | **Compliance** | Sonnet 4 | `compliance.ts` | Primary voice in the 3-voice spine |
-| 4 | **Compliance Auditor** | Opus 4.7 | `compliance_auditor.ts` | Adversarial voice in the 3-voice spine |
-| 5 | **Vet Network** | Haiku 4.5 | `vet_network.ts` | Matches owner to approved vet; books microchip/vaccine/titer/endorsement |
-| 6 | **Airline & Crate** | Sonnet 4 | `airline_crate.ts` | IATA LAR, CR-82 sizing, route selection, temperature embargo |
-| 7 | **Endorsement** | Sonnet 4 | `endorsement.ts` | 10-day window timing, MOCCAE/APHA submission, courier tracking |
-| 8 | **Comms** | Haiku 4.5 | `comms.ts` | WhatsApp outbound, emotional awareness, citation enforcement |
-| 9 | **Audit** | Haiku 4.5 | `audit.ts` | Read-only watchdog (see §2.3) |
+| # | Agent | Type | Model | File | Responsibility |
+|---|---|---|---|---|---|
+| 0 | **Orchestrator** | `orchestrator` | Sonnet 4.6 | `orchestrator.ts` | Case state machine, task dispatch, consensus mediation |
+| 1 | **Intake** | `intake` | Haiku 4.5 | `intake.ts` | Conversational intake via WhatsApp, captures pet + intent, one question per turn |
+| 2 | **Document** | `document` | Sonnet 4.6 (vision) | `document.ts` | Reads uploaded docs natively (no OCR layer), extracts structured fields with JSON schema |
+| 3 | **Compliance** | `compliance` | Sonnet 4.6 | `compliance.ts` | Primary voice in the 3-voice spine |
+| 4 | **Compliance Auditor** | `auditor` | Opus 4.7 | `auditor.ts` | Adversarial voice in the 3-voice spine |
+| 5 | **Vet Network** | `vet_network` | Haiku 4.5 | `vet_network.ts` | Matches owner to approved vet; books microchip / vaccine / titer / endorsement; proposes a chronologically valid timeline into the consensus round |
+| 6 | **Airline & Crate** | `airline_crate` | Sonnet 4.6 | `airline_crate.ts` | IATA LAR carrier selection, CR-82 crate sizing, temperature embargo screening; proposes a flight into the consensus round |
+| 7 | **Endorsement** | `endorsement` | Sonnet 4.6 | `endorsement.ts` | 7–10 day pre-flight window, MOCCAE / APHA / USDA-APHIS submission, courier tracking, packet completeness checks |
+| 8 | **Comms** | `comms` | Haiku 4.5 | `comms.ts` | WhatsApp outbound, emotional awareness, citation enforcement |
+| 9 | **Synthesizer** | `synthesizer` | Sonnet 4.6 | `synthesizer.ts` | Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country |
+| – | **Specialist** | `specialist` | (per-template) | `specialist.ts` | Synthesized at runtime — country-scoped compliance variant (e.g. `jp_compliance_specialist`) |
+| 10 | **Audit** | `audit` | Haiku 4.5 | `audit.ts` | Read-only watchdog (see §2.3) — citation gaps, deterministic-vs-LLM disagreement, SLA breach risk, low extraction confidence |
+
+The Compliance Auditor (`auditor`) and the Audit watchdog (`audit`) are **distinct agents** with different jobs. The Auditor is the adversarial voice in the compliance spine; the Audit watchdog is the meta-monitor over the whole pipeline.
 
 Plus a **deterministic TS engine** (not an agent, a set of functions) in `lib/compliance/evaluators.ts`.
 
@@ -276,11 +280,12 @@ When continuing work on Vetair:
 ## 12. Session log (build progress)
 
 - **Session 1** (complete): Supabase project, 11-table schema, 37 country_rules across 5 corridor+species combos, 2 demo scripts (Sarah+Max blocked-then-resolved, James+Luna happy-path)
-- **Session 2** (in progress): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
-- **Session 3** (planned): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
-- **Session 4** (planned): WhatsApp Business API sandbox wiring
-- **Session 5** (planned): Full end-to-end dry run + polish
+- **Session 2** (complete): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
+- **Session 3** (complete): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
+- **Session 4** (complete): WhatsApp Business API sandbox wiring + webhook signature verification
+- **Session 5** (complete): `demo-stream` → `whatsapp-send` wiring; dramatized + real modes share the same write path
+- **Session 6** (complete): Static agent roster brought to V1 completeness — `vet_network`, `airline_crate`, `endorsement`, and the `audit` watchdog added; registry-meta + AGENT_META + architecture dispatch chain refreshed; tightened the `AgentTool` typing in `compliance.ts` so the `as const` ceremony is gone.
 
 ---
 
-*Last updated: Session 1 close. Bump this date whenever you add a major section.*
+*Last updated: Session 6 close.*
