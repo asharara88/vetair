@@ -10,7 +10,11 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
+  | "audit";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,9 +36,13 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  audit: 9,
+  synthesizer: 10,
+  specialist: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,10 +50,14 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  audit: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
+  endorsement: "neutral",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -59,8 +71,16 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Matches owner to an approved partner vet. Proposes appointment dates for microchip, vaccine, titer, and endorsement steps.",
+  airline_crate:
+    "IATA LAR + CR-82 sizing + route selection. Proposes flights, flags temperature embargo windows, books cargo space.",
+  endorsement:
+    "Enforces the 10-day endorsement window. Schedules MOCCAE/APHA submission, tracks the courier, hands the document to the airline.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  audit:
+    "Read-only watchdog. Polices citation coverage, deterministic-vs-LLM disagreement, SLA breach risk, and low document confidence.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
