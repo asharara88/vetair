@@ -1,6 +1,10 @@
 // Compliance (Primary) — reasons over case + rule graph and emits an assessment.
 
-import { type AgentDefinition, validateAgent } from "./types";
+import {
+  type AgentDefinition,
+  validateAgent,
+  DOCUMENT_KIND_COMPLIANCE,
+} from "./types";
 
 const ASSESSMENT_TOOL = {
   name: "emit_assessment",
@@ -80,7 +84,7 @@ export const COMPLIANCE: AgentDefinition = validateAgent({
       input_schema: {
         type: "object",
         properties: {
-          kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement"] },
+          kind: { type: "string", enum: [...DOCUMENT_KIND_COMPLIANCE] },
         },
         required: ["kind"],
       },
