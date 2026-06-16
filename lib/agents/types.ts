@@ -63,3 +63,24 @@ export function validateAgent(def: AgentDefinition): AgentDefinition {
   }
   return def;
 }
+
+// Reused across operational agents (vet_network, airline_crate, endorsement,
+// audit) that need to inspect the case row before proposing or booking.
+export const READ_CASE_TOOL: AgentTool = {
+  name: "read_case",
+  description: "Read the case row by id, including state, corridor, target_date, and earliest_legal_departure.",
+  input_schema: {
+    type: "object",
+    properties: { case_id: { type: "string" } },
+    required: ["case_id"],
+  },
+};
+
+// Date window proposals shared by the consensus timeline loop (AGENT.md §2.2).
+// vet_network, airline_crate, and endorsement each propose dates against this
+// shape; the orchestrator runs the consensus round over the proposals.
+export const DATE_WINDOW_PROPERTIES = {
+  earliest_date: { type: "string", description: "ISO YYYY-MM-DD, inclusive." },
+  latest_date: { type: "string", description: "ISO YYYY-MM-DD, inclusive." },
+  preferred_date: { type: "string", description: "ISO YYYY-MM-DD, the agent's first pick." },
+} as const;
