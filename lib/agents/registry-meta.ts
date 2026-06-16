@@ -2,6 +2,8 @@
 // Single source of truth — referenced from the AgentRegistry panel on the
 // home page and the Architecture page roster.
 
+// Mirrors `agent_registry.agent_type` values in the live Supabase schema.
+// Keep names in sync — they're used as map keys against rows fetched from DB.
 export type AgentType =
   | "orchestrator"
   | "intake"
@@ -10,7 +12,13 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "status_watchdog"
+  | "exception_handler"
+  | "vet_network"
+  | "endorsement"
+  | "airline_crate"
+  | "service_acceptance";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -35,6 +43,12 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   comms: 5,
   synthesizer: 6,
   specialist: 7,
+  status_watchdog: 8,
+  exception_handler: 9,
+  vet_network: 10,
+  endorsement: 11,
+  airline_crate: 12,
+  service_acceptance: 13,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,10 +56,16 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  status_watchdog: "ping",
+  exception_handler: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  endorsement: "neutral",
+  airline_crate: "neutral",
+  service_acceptance: "neutral",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -65,6 +85,18 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  status_watchdog:
+    "Portfolio sweep at end of every orchestrator cycle. SQL pre-filter flags stale cases; Sonnet decides per-case whether silence is urgent or expected.",
+  exception_handler:
+    "On-signal remediation. Reads case state, picks the least-disruptive fix (re-enqueue, plan, reroute, or escalate) and routes it.",
+  vet_network:
+    "Books pre-flight vet visits and chases lab results. Simulation tier in V1 — concierge operator confirms each booking.",
+  endorsement:
+    "Coordinates government endorsement of the health certificate. Simulation tier in V1 — concierge handles the courier loop.",
+  airline_crate:
+    "Sizes the IATA-compliant crate and reserves cargo space. Simulation tier in V1 — concierge negotiates the booking.",
+  service_acceptance:
+    "Owner-facing terms acknowledgement before the case enters fulfillment. Haiku-tier resolution agent.",
 };
 
 const FALLBACK_ORDER = 99;
