@@ -5,30 +5,29 @@
 
 import { type AgentDefinition, type AgentTool, validateAgent } from "./types";
 import {
-  COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
-} from "./compliance";
+  COMPLIANCE_READ_TOOLS,
+  DOCUMENT_KINDS_FULL,
+  requestDocumentDispatchTool,
+} from "./shared-tools";
 
 export interface SpecialistParams {
   country_code: string; // ISO-3166 alpha-2 uppercase
   country_name: string;
 }
 
+const SPECIALIST_DOCUMENT_KINDS = [
+  ...DOCUMENT_KINDS_FULL,
+  "confirm_destination",
+] as const;
+
 const TEMPLATE_TOOLS: AgentTool[] = [
-  ...COMPLIANCE_SHARED_READ_TOOLS,
+  ...COMPLIANCE_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
-  {
-    name: "request_document",
-    description: "Terminal: ask the owner via Comms for a missing document.",
-    input_schema: {
-      type: "object",
-      properties: {
-        kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement", "confirm_destination"] },
-      },
-      required: ["kind"],
-    },
-  },
+  requestDocumentDispatchTool(SPECIALIST_DOCUMENT_KINDS, { terminal: true }),
 ];
+
+const TEMPLATE_TERMINAL_TOOLS = ["emit_assessment", "request_document"] as const;
 
 export const SPECIALIST_TEMPLATE = {
   template_namespace: "compliance.specialist",
@@ -38,12 +37,15 @@ export const SPECIALIST_TEMPLATE = {
   required_params: ["country_code", "country_name"] as const,
   default_model: "claude-sonnet-4-6" as const,
   tools: TEMPLATE_TOOLS,
-  terminal_tools: ["emit_assessment", "request_document"],
+  terminal_tools: TEMPLATE_TERMINAL_TOOLS,
 };
 
 // Build a concrete AgentDefinition for a synthesized specialist.
 // Called at dispatch time once the row in synthesized_specialists is loaded.
-export function buildSpecialist(params: SpecialistParams, model = SPECIALIST_TEMPLATE.default_model): AgentDefinition {
+export function buildSpecialist(
+  params: SpecialistParams,
+  model = SPECIALIST_TEMPLATE.default_model,
+): AgentDefinition {
   const cc = params.country_code.toUpperCase();
   return validateAgent({
     name: `${cc.toLowerCase()}_compliance_specialist`,
@@ -53,7 +55,7 @@ export function buildSpecialist(params: SpecialistParams, model = SPECIALIST_TEM
     description: `${params.country_name} compliance specialist. Inherits the compliance loop with ${cc}-specific nuance.`,
     prompt_path: SPECIALIST_TEMPLATE.prompt_path,
     tools: TEMPLATE_TOOLS,
-    terminal_tools: [...SPECIALIST_TEMPLATE.terminal_tools],
+    terminal_tools: [...TEMPLATE_TERMINAL_TOOLS],
     budget: { max_turns: 8, max_input_tokens: 60_000 },
   });
 }

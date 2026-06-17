@@ -61,22 +61,26 @@ Posts findings back to Orchestrator, which can pause a case mid-flow.
 
 ## 3. Agent roster (V1)
 
-9 agents total. Each has a dedicated file in `lib/agents/`.
+11 static agents + 1 runtime-synthesized template. Each has a dedicated file in `lib/agents/`, paired with a versioned prompt at `lib/prompts/{name}.md`.
 
 | # | Agent | Model | File | Responsibility |
 |---|---|---|---|---|
-| 0 | **Orchestrator** | Sonnet 4 | `orchestrator.ts` | Case state machine, task dispatch, consensus mediation |
+| 0 | **Orchestrator** | Sonnet 4.6 | `orchestrator.ts` | Case state machine, task dispatch, consensus mediation |
 | 1 | **Intake** | Haiku 4.5 | `intake.ts` | Conversational intake via WhatsApp, captures pet + intent, one question per turn |
-| 2 | **Document** | Sonnet 4 (vision) | `document.ts` | Reads uploaded docs natively (no OCR layer), extracts structured fields with JSON schema |
-| 3 | **Compliance** | Sonnet 4 | `compliance.ts` | Primary voice in the 3-voice spine |
-| 4 | **Compliance Auditor** | Opus 4.7 | `compliance_auditor.ts` | Adversarial voice in the 3-voice spine |
-| 5 | **Vet Network** | Haiku 4.5 | `vet_network.ts` | Matches owner to approved vet; books microchip/vaccine/titer/endorsement |
-| 6 | **Airline & Crate** | Sonnet 4 | `airline_crate.ts` | IATA LAR, CR-82 sizing, route selection, temperature embargo |
-| 7 | **Endorsement** | Sonnet 4 | `endorsement.ts` | 10-day window timing, MOCCAE/APHA submission, courier tracking |
-| 8 | **Comms** | Haiku 4.5 | `comms.ts` | WhatsApp outbound, emotional awareness, citation enforcement |
-| 9 | **Audit** | Haiku 4.5 | `audit.ts` | Read-only watchdog (see §2.3) |
+| 2 | **Document** | Sonnet 4.6 (vision) | `document.ts` | Reads uploaded docs natively (no OCR layer), extracts structured fields with JSON schema |
+| 3 | **Compliance** | Sonnet 4.6 | `compliance.ts` | Primary voice in the 3-voice spine |
+| 4 | **Compliance Auditor** | Opus 4.7 | `auditor.ts` | Adversarial voice in the 3-voice spine |
+| 5 | **Watchdog** | Haiku 4.5 | `watchdog.ts` | Read-only watchdog (see §2.3). Flags citation drift, voice disagreement, low-confidence extractions, SLA risk |
+| 6 | **Vet Network** | Haiku 4.5 | `vet_network.ts` | Matches owner to approved vet; books microchip/vaccine/titer/endorsement exam |
+| 7 | **Airline & Crate** | Sonnet 4.6 | `airline_crate.ts` | IATA LAR §3.2 sizing, route selection, breed-restriction + temperature embargo |
+| 8 | **Endorsement** | Sonnet 4.6 | `endorsement.ts` | Pre-flight window timing, MOCCAE/USDA-APHIS/APHA submission, courier tracking |
+| 9 | **Comms** | Haiku 4.5 | `comms.ts` | WhatsApp outbound, emotional awareness, citation enforcement |
+| 10 | **Synthesizer** | Sonnet 4.6 | `synthesizer.ts` | Compiles the specialist template into a runtime country-scoped agent |
+| T | **Specialist (template)** | Sonnet 4.6 | `specialist.ts` | Country-scoped compliance variant built per `synthesized_specialists` row |
 
 Plus a **deterministic TS engine** (not an agent, a set of functions) in `lib/compliance/evaluators.ts`.
+
+Shared tool schemas (`acknowledge_and_wait`, `ask_user_for_input`, `request_document`, the compliance read trio, the assessment emitter) live in `lib/agents/shared-tools.ts` so the contract changes in exactly one place.
 
 ---
 
@@ -280,6 +284,7 @@ When continuing work on Vetair:
 - **Session 3** (planned): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
 - **Session 4** (planned): WhatsApp Business API sandbox wiring
 - **Session 5** (planned): Full end-to-end dry run + polish
+- **Session 6** (complete): Hoist shared tool schemas to `lib/agents/shared-tools.ts`; finish the V1 roster by scaffolding the four missing agents (`watchdog`, `vet_network`, `airline_crate`, `endorsement`) with their prompts + tool manifests; register them in `registry-meta`, `index`, and the UI's `AGENT_META`
 
 ---
 
