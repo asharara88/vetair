@@ -37,12 +37,10 @@ export const STATIC_AGENTS: readonly AgentDefinition[] = [
   SYNTHESIZER,
 ] as const;
 
-const BY_NAME: Record<string, AgentDefinition> = Object.fromEntries(
-  STATIC_AGENTS.map((a) => [a.name, a]),
-);
-
 export const STATIC_AGENTS_BY_NAME: Readonly<Record<string, AgentDefinition>> =
-  Object.freeze(BY_NAME);
+  Object.freeze(
+    Object.fromEntries(STATIC_AGENTS.map((a) => [a.name, a])),
+  );
 
 /**
  * Resolve an agent definition by `agent_runs.agent_name`.
@@ -54,3 +52,22 @@ export const STATIC_AGENTS_BY_NAME: Readonly<Record<string, AgentDefinition>> =
 export function resolveStaticAgent(name: string): AgentDefinition | null {
   return STATIC_AGENTS_BY_NAME[name] ?? null;
 }
+
+export { renderPrompt, type PromptContext } from "./prompt";
+export {
+  BudgetTracker,
+  type BudgetUsage,
+  type BudgetExhaustion,
+} from "./budget";
+export {
+  runAgent,
+  type AgentInvoker,
+  type InvokerMessage,
+  type InvokerTurn,
+  type RunAgentArgs,
+  type RunResult,
+  type ToolCall,
+  type ToolHandler,
+  type ToolHandlers,
+  type ToolResult,
+} from "./runner";
