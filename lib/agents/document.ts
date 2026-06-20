@@ -3,6 +3,19 @@
 // dispatch it like any other agent, with structured emit_extraction output.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import { caseIdInput } from "./tool-schemas";
+
+const DOCUMENT_CLASSIFICATIONS = [
+  "rabies_certificate",
+  "microchip_record",
+  "health_certificate",
+  "import_permit",
+  "export_permit",
+  "vet_invoice",
+  "passport_id_page",
+  "pet_photo",
+  "unknown",
+] as const;
 
 export const DOCUMENT: AgentDefinition = validateAgent({
   name: "document",
@@ -15,7 +28,8 @@ export const DOCUMENT: AgentDefinition = validateAgent({
   tools: [
     {
       name: "read_document_blob",
-      description: "Read the binary content of an uploaded document by id (returns a base64 reference and mime type).",
+      description:
+        "Read the binary content of an uploaded document by id (returns a base64 reference and mime type).",
       input_schema: {
         type: "object",
         properties: { document_id: { type: "string" } },
@@ -24,12 +38,9 @@ export const DOCUMENT: AgentDefinition = validateAgent({
     },
     {
       name: "read_pet_facts",
-      description: "Read the case's pet row so you can flag mismatches between the document and the existing record.",
-      input_schema: {
-        type: "object",
-        properties: { case_id: { type: "string" } },
-        required: ["case_id"],
-      },
+      description:
+        "Read the case's pet row so you can flag mismatches between the document and the existing record.",
+      input_schema: caseIdInput(),
     },
     {
       name: "emit_extraction",
@@ -39,29 +50,18 @@ export const DOCUMENT: AgentDefinition = validateAgent({
         type: "object",
         properties: {
           document_id: { type: "string" },
-          classification: {
-            type: "string",
-            enum: [
-              "rabies_certificate",
-              "microchip_record",
-              "health_certificate",
-              "import_permit",
-              "export_permit",
-              "vet_invoice",
-              "passport_id_page",
-              "pet_photo",
-              "unknown",
-            ],
-          },
+          classification: { type: "string", enum: [...DOCUMENT_CLASSIFICATIONS] },
           confidence: { type: "number", minimum: 0, maximum: 1 },
           extracted_fields: {
             type: "object",
-            description: "Structured fields per the schema in the prompt. Use null for absent or illegible values.",
+            description:
+              "Structured fields per the schema in the prompt. Use null for absent or illegible values.",
           },
           mismatch_with_pet: {
             type: "array",
             items: { type: "string" },
-            description: "Fields that disagree with the existing pet row (e.g. microchip_id, date_of_birth).",
+            description:
+              "Fields that disagree with the existing pet row (e.g. microchip_id, date_of_birth).",
           },
         },
         required: ["document_id", "classification", "confidence", "extracted_fields"],
@@ -69,7 +69,8 @@ export const DOCUMENT: AgentDefinition = validateAgent({
     },
     {
       name: "fail_extraction",
-      description: "Terminal: abort. Use when the document is illegible, password-protected, or not a pet-relocation artifact.",
+      description:
+        "Terminal: abort. Use when the document is illegible, password-protected, or not a pet-relocation artifact.",
       input_schema: {
         type: "object",
         properties: {
