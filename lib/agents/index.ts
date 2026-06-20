@@ -1,19 +1,24 @@
-// Static agent registry — the static side of the MAS roster.
-// Synthesized specialists are *not* listed here; they live in the
-// synthesized_specialists table and are loaded on demand via buildSpecialist().
+// Public barrel for the MAS agent module.
+// All agent definitions, the static registry, and the dispatch helpers are
+// re-exported here so callers import from a single path: `@/lib/agents`.
 
-import type { AgentDefinition } from "./types";
-import { ORCHESTRATOR } from "./orchestrator";
-import { INTAKE } from "./intake";
-import { DOCUMENT } from "./document";
-import { COMPLIANCE } from "./compliance";
-import { AUDITOR } from "./auditor";
-import { COMMS } from "./comms";
-import { SYNTHESIZER } from "./synthesizer";
+export { ORCHESTRATOR } from "./orchestrator";
+export { INTAKE } from "./intake";
+export { DOCUMENT } from "./document";
+export { COMPLIANCE } from "./compliance";
+export { AUDITOR } from "./auditor";
+export { COMMS } from "./comms";
+export { SYNTHESIZER } from "./synthesizer";
 
-export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
-export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
+export {
+  SPECIALIST_TEMPLATE,
+  buildSpecialist,
+  specialistName,
+  type SpecialistParams,
+} from "./specialist";
+
 export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
+
 export {
   AGENT_TYPE_BLURB,
   AGENT_TYPE_ORDER,
@@ -27,30 +32,17 @@ export {
   type AgentTypeTone,
 } from "./registry-meta";
 
-export const STATIC_AGENTS: readonly AgentDefinition[] = [
-  ORCHESTRATOR,
-  INTAKE,
-  DOCUMENT,
-  COMPLIANCE,
-  AUDITOR,
-  COMMS,
-  SYNTHESIZER,
-] as const;
+export {
+  STATIC_AGENTS,
+  STATIC_AGENTS_BY_NAME,
+  resolveStaticAgent,
+} from "./registry-store";
 
-const BY_NAME: Record<string, AgentDefinition> = Object.fromEntries(
-  STATIC_AGENTS.map((a) => [a.name, a]),
-);
-
-export const STATIC_AGENTS_BY_NAME: Readonly<Record<string, AgentDefinition>> =
-  Object.freeze(BY_NAME);
-
-/**
- * Resolve an agent definition by `agent_runs.agent_name`.
- *
- * Returns `null` for synthesized specialists (whose names follow the
- * `{cc}_compliance_specialist` pattern) — those must be loaded from the
- * `synthesized_specialists` row and reconstructed via `buildSpecialist`.
- */
-export function resolveStaticAgent(name: string): AgentDefinition | null {
-  return STATIC_AGENTS_BY_NAME[name] ?? null;
-}
+export {
+  isSpecialistName,
+  parseSpecialistName,
+  resolveAgent,
+  terminalToolEffect,
+  isTerminalToolOf,
+  type TerminalEffect,
+} from "./dispatch";

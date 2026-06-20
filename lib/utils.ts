@@ -137,21 +137,41 @@ export function assessmentStateTone(state: string | null | undefined): SignalTon
 }
 
 // ---------- agent display metadata ----------
-// Covers BOTH the new MAS agent_registry agents (intake, compliance, auditor,
-// orchestrator, synthesizer, *_compliance_specialist) AND the legacy demo
+// Covers BOTH the new MAS agent_registry agents (derived from STATIC_AGENTS so
+// labels stay in sync with the agent definitions) AND the legacy demo
 // agent_logs names still emitted by the dramatized demo-stream pipeline.
 
-export const AGENT_META: Record<string, { label: string; color: string; short: string }> = {
-  // New MAS roster
-  orchestrator:        { label: "Case Coordinator",     color: "#fbbe4c", short: "ORC" },
-  intake:              { label: "Intake Team",          color: "#60a5fa", short: "INT" },
-  document:            { label: "Document Team",        color: "#60a5fa", short: "DOC" },
-  compliance:          { label: "Compliance Team",      color: "#34d399", short: "CMP" },
-  auditor:             { label: "Senior Auditor",       color: "#f87171", short: "AUD" },
-  comms:               { label: "Comms Team",           color: "#fbbe4c", short: "CMS" },
-  synthesizer:         { label: "Specialist Factory",   color: "#fbbe4c", short: "SYN" },
+import { STATIC_AGENTS, type AgentType } from "./agents";
+import { parseSpecialistName } from "./agents/dispatch";
 
-  // Legacy / dramatized demo names
+export interface AgentDisplayMeta {
+  label: string;
+  color: string;
+  short: string;
+}
+
+// Per-type UI traits. Static agents inherit color + short from their `type`.
+const AGENT_TYPE_DISPLAY: Record<AgentType, { color: string; short: string }> = {
+  orchestrator: { color: "#fbbe4c", short: "ORC" },
+  intake:       { color: "#60a5fa", short: "INT" },
+  document:     { color: "#60a5fa", short: "DOC" },
+  compliance:   { color: "#34d399", short: "CMP" },
+  auditor:      { color: "#f87171", short: "AUD" },
+  comms:        { color: "#fbbe4c", short: "CMS" },
+  synthesizer:  { color: "#fbbe4c", short: "SYN" },
+  specialist:   { color: "#fbbe4c", short: "SPC" },
+};
+
+const MAS_AGENT_META: Record<string, AgentDisplayMeta> = Object.fromEntries(
+  STATIC_AGENTS.map((a) => [
+    a.name,
+    { label: a.user_facing_label, ...AGENT_TYPE_DISPLAY[a.type] },
+  ]),
+);
+
+// Legacy / dramatized demo names — kept explicit because they don't map 1:1
+// to the static MAS roster (different labels, different shorts).
+const LEGACY_AGENT_META: Record<string, AgentDisplayMeta> = {
   intake_agent:        { label: "Intake Agent",         color: "#60a5fa", short: "INT" },
   document_agent:      { label: "Document Agent",       color: "#60a5fa", short: "DOC" },
   compliance_agent:    { label: "Compliance (Primary)", color: "#34d399", short: "C-1" },
@@ -165,12 +185,24 @@ export const AGENT_META: Record<string, { label: string; color: string; short: s
   audit_agent:         { label: "Audit",                color: "#8b95a6", short: "AUD" },
 };
 
-export function agentMeta(name: string) {
-  if (AGENT_META[name]) return AGENT_META[name];
+export const AGENT_META: Record<string, AgentDisplayMeta> = {
+  ...MAS_AGENT_META,
+  ...LEGACY_AGENT_META,
+};
+
+const FALLBACK_META: AgentDisplayMeta = { label: "", color: "#8b95a6", short: "" };
+
+export function agentMeta(name: string): AgentDisplayMeta {
+  const hit = AGENT_META[name];
+  if (hit) return hit;
   // Synthesized specialists arrive as e.g. "jp_compliance_specialist".
-  if (name.endsWith("_compliance_specialist")) {
-    const cc = name.slice(0, 2).toUpperCase();
-    return { label: `${cc} Specialist`, color: "#fbbe4c", short: cc };
+  const specialist = parseSpecialistName(name);
+  if (specialist) {
+    return {
+      label: `${specialist.country_code} Specialist`,
+      ...AGENT_TYPE_DISPLAY.specialist,
+      short: specialist.country_code,
+    };
   }
-  return { label: name, color: "#8b95a6", short: name.slice(0, 3).toUpperCase() };
+  return { ...FALLBACK_META, label: name, short: name.slice(0, 3).toUpperCase() };
 }
