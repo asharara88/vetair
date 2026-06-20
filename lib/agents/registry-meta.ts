@@ -8,7 +8,11 @@ export type AgentType =
   | "document"
   | "compliance"
   | "auditor"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
   | "comms"
+  | "audit"
   | "synthesizer"
   | "specialist";
 
@@ -32,19 +36,27 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  audit: 9,
+  synthesizer: 10,
+  specialist: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   orchestrator: "amber",
   synthesizer: "amber",
   specialist: "amber",
+  endorsement: "amber",
   auditor: "ping",
+  audit: "ping",
   compliance: "go",
   intake: "neutral",
   document: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
   comms: "neutral",
 };
 
@@ -59,8 +71,16 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Matches the case to an approved partner clinic and books required procedures. Procedure ordering follows the compliance timeline; no silent flight pushes.",
+  airline_crate:
+    "Picks an IATA-compliant flight, sizes the crate to CR-82, and checks temperature embargoes. Snub-nosed breeds trigger brachycephalic carrier filtering.",
+  endorsement:
+    "Government endorsement workflow (MOCCAE / APHA / USDA). Assembles the packet, submits inside the legal pre-flight window, tracks the courier.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  audit:
+    "Async read-only watchdog. Enforces 100% citation coverage, flags determinism disagreement, low-confidence evidence, and SLA breaches.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
