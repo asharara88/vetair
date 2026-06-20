@@ -1,6 +1,11 @@
 // Intake — conversational onboarding via WhatsApp. One question per turn.
 
 import { type AgentDefinition, validateAgent } from "./types";
+import {
+  ASK_USER_FOR_INPUT_TOOL,
+  CASE_ID_INPUT,
+  requestDocumentTool,
+} from "./shared-tools";
 
 export const INTAKE: AgentDefinition = validateAgent({
   name: "intake",
@@ -20,17 +25,10 @@ export const INTAKE: AgentDefinition = validateAgent({
         required: ["text"],
       },
     },
-    {
-      name: "request_document",
+    requestDocumentTool({
+      kinds: ["rabies", "microchip", "passport", "vet_records"],
       description: "Ask the owner to upload a specific document type.",
-      input_schema: {
-        type: "object",
-        properties: {
-          kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records"] },
-        },
-        required: ["kind"],
-      },
-    },
+    }),
     {
       name: "update_case_facts",
       description: "Patch the case row with confirmed owner-supplied fields.",
@@ -49,26 +47,11 @@ export const INTAKE: AgentDefinition = validateAgent({
         required: ["patch"],
       },
     },
-    {
-      name: "ask_user_for_input",
-      description: "Terminal: send a single-question prompt and yield until the owner replies.",
-      input_schema: {
-        type: "object",
-        properties: {
-          field: { type: "string" },
-          question: { type: "string" },
-        },
-        required: ["field", "question"],
-      },
-    },
+    ASK_USER_FOR_INPUT_TOOL,
     {
       name: "handoff_to_compliance",
       description: "Terminal: enqueue the compliance assessment task.",
-      input_schema: {
-        type: "object",
-        properties: { case_id: { type: "string" } },
-        required: ["case_id"],
-      },
+      input_schema: CASE_ID_INPUT,
     },
   ],
   terminal_tools: ["ask_user_for_input", "handoff_to_compliance"],

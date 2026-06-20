@@ -276,11 +276,13 @@ When continuing work on Vetair:
 ## 12. Session log (build progress)
 
 - **Session 1** (complete): Supabase project, 11-table schema, 37 country_rules across 5 corridor+species combos, 2 demo scripts (Sarah+Max blocked-then-resolved, James+Luna happy-path)
-- **Session 2** (in progress): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
-- **Session 3** (planned): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
-- **Session 4** (planned): WhatsApp Business API sandbox wiring
-- **Session 5** (planned): Full end-to-end dry run + polish
+- **Session 2** (complete): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
+- **Session 3** (complete): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
+- **Session 4** (complete): WhatsApp Business API sandbox wiring (verify webhook + outbound `whatsapp-send` edge function)
+- **Session 5** (complete): `demo-stream` → `whatsapp-send` wiring; `target_whatsapp_number` propagated through the proxy and ControlPanel UI
+- **Session 7** (complete): Static MAS agent registry — 7 agent definition files (orchestrator, intake, document, compliance, auditor, comms, synthesizer) + parameterized specialist template
+- **Session 8** (complete): Refactor + agent build-out — extracted shared tool helpers (`lib/agents/shared-tools.ts`); added the four remaining V1 agents (`vet_network`, `airline_crate`, `endorsement`, `audit`) with versioned prompts; registry-meta + AGENT_META + TERMINAL_TONE updated to render them in the UI
 
 ---
 
-*Last updated: Session 1 close. Bump this date whenever you add a major section.*
+*Last updated: Session 8 close.*
