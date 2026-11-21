@@ -10,10 +10,37 @@ import { COMPLIANCE } from "./compliance";
 import { AUDITOR } from "./auditor";
 import { COMMS } from "./comms";
 import { SYNTHESIZER } from "./synthesizer";
+import { VET_NETWORK } from "./vet-network";
+import { AIRLINE_CRATE } from "./airline-crate";
+import { ENDORSEMENT } from "./endorsement";
+import { STATUS_WATCHDOG } from "./status-watchdog";
+import { EXCEPTION_HANDLER } from "./exception-handler";
 
-export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
+export {
+  ORCHESTRATOR,
+  INTAKE,
+  DOCUMENT,
+  COMPLIANCE,
+  AUDITOR,
+  COMMS,
+  SYNTHESIZER,
+  VET_NETWORK,
+  AIRLINE_CRATE,
+  ENDORSEMENT,
+  STATUS_WATCHDOG,
+  EXCEPTION_HANDLER,
+};
 export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
 export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
+export {
+  ACKNOWLEDGE_AND_WAIT_TOOL,
+  ASK_USER_FOR_INPUT_TOOL,
+  COMPLIANCE_DOC_KINDS,
+  INTAKE_DOC_KINDS,
+  SPECIALIST_DOC_KINDS,
+  requestDocumentTool,
+  type DocKind,
+} from "./shared-tools";
 export {
   AGENT_TYPE_BLURB,
   AGENT_TYPE_ORDER,
@@ -35,6 +62,11 @@ export const STATIC_AGENTS: readonly AgentDefinition[] = [
   AUDITOR,
   COMMS,
   SYNTHESIZER,
+  VET_NETWORK,
+  AIRLINE_CRATE,
+  ENDORSEMENT,
+  STATUS_WATCHDOG,
+  EXCEPTION_HANDLER,
 ] as const;
 
 const BY_NAME: Record<string, AgentDefinition> = Object.fromEntries(
