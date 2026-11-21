@@ -10,7 +10,12 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
+  | "watchdog"
+  | "exception";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -35,6 +40,11 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   comms: 5,
   synthesizer: 6,
   specialist: 7,
+  vet_network: 8,
+  airline_crate: 9,
+  endorsement: 10,
+  watchdog: 11,
+  exception: 12,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -46,6 +56,11 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
+  vet_network: "neutral",
+  airline_crate: "neutral",
+  endorsement: "neutral",
+  watchdog: "ping",
+  exception: "ping",
 };
 
 export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
@@ -65,6 +80,16 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
     "Synthesized at runtime by the Synthesizer. Country-scoped compliance variant that inherits the compliance loop with a jurisdiction-specific prompt.",
+  vet_network:
+    "Matches the owner to an approved vet in the origin country and books the procedure chain. Proposes appointment dates for the timeline consensus round.",
+  airline_crate:
+    "Selects routing and an IATA LAR-compliant crate size. Enforces CR-82 breed restrictions and temperature embargo windows. Emits a booking proposal.",
+  endorsement:
+    "Books the 7–10 day pre-flight endorsement visit, submits to the destination authority (MOCCAE / APHIS / AHC), tracks the courier leg.",
+  watchdog:
+    "Portfolio-level sweep. Deterministic SQL finds stale non-terminal cases, Sonnet reasons case-by-case to dispatch, notify, or mark benign.",
+  exception:
+    "Computes a remediation path for a case-level exception. Prefers the least-disruptive fix: re-enqueue, remediation plan, reroute, or escalate.",
 };
 
 const FALLBACK_ORDER = 99;
