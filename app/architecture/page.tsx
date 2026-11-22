@@ -105,6 +105,10 @@ export default async function Architecture() {
     { label: "Intake", tone: "neutral", mono: false },
     { label: "Compliance", tone: "go", mono: false },
     { label: "Auditor", tone: "ping", mono: false },
+    { label: "Vet Network", tone: "neutral", mono: false },
+    { label: "Airline & Crate", tone: "neutral", mono: false },
+    { label: "Endorsement", tone: "neutral", mono: false },
+    { label: "Audit Watchdog", tone: "ping", mono: false },
     { label: "Specialist (synthesized)", tone: "amber", mono: false },
     { label: "Comms → owner", tone: "neutral", mono: true },
   ];
