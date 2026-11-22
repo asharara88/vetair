@@ -43,16 +43,21 @@ const READ_TOOLS: AgentTool[] = [
   {
     name: "compute_crate_size",
     description:
-      "Compute the IATA CR-82 crate code for a pet given measured body length (A), height at shoulder (B), width (C), and weight. Returns `crate_code` + interior dimensions in cm.",
+      "Compute the IATA CR-82 crate code using the four measurements the standard requires: A (nose-to-root-of-tail), B (elbow-to-floor), C (shoulder width), D (head-to-floor in natural standing position — tip of ear for erect-eared breeds), plus weight. Returns `crate_code` + interior dimensions in cm.",
     input_schema: {
       type: "object",
       properties: {
-        body_length_cm: { type: "number" },
-        shoulder_height_cm: { type: "number" },
-        width_cm: { type: "number" },
+        body_length_cm: { type: "number", description: "A — nose to root of tail." },
+        elbow_to_floor_cm: { type: "number", description: "B — elbow joint to floor; used in the A + ½B length formula." },
+        shoulder_width_cm: { type: "number", description: "C — width across the shoulders or widest point." },
+        head_to_floor_cm: {
+          type: "number",
+          description:
+            "D — top of head (or ear tip for erect-eared breeds) to floor in natural standing position. Interior height is derived from this, NEVER from shoulder height.",
+        },
         weight_kg: { type: "number" },
       },
-      required: ["body_length_cm", "shoulder_height_cm", "width_cm", "weight_kg"],
+      required: ["body_length_cm", "elbow_to_floor_cm", "shoulder_width_cm", "head_to_floor_cm", "weight_kg"],
     },
   },
   {
