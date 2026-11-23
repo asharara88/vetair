@@ -3,6 +3,10 @@
 // Sweeps ALL open non-demo cases (not just the triggering case) — closes the
 // low-volume blind spot as much as an event-driven design can.
 //
+// Registry mirror: lib/agents/status-watchdog.ts declares the tools, terminal
+// set, and budget this function enforces; lib/prompts/status-watchdog.md
+// mirrors SYSTEM_PROMPT below. Keep both sides in sync on tool changes.
+//
 // Design (per Ahmed 2026-05-20):
 //  - Deterministic SQL pre-filter finds STALE candidates cheaply (no LLM cost).
 //    Staleness = non-terminal assessment_state AND updated_at older than a

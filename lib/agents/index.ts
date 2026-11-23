@@ -10,8 +10,20 @@ import { COMPLIANCE } from "./compliance";
 import { AUDITOR } from "./auditor";
 import { COMMS } from "./comms";
 import { SYNTHESIZER } from "./synthesizer";
+import { STATUS_WATCHDOG } from "./status-watchdog";
+import { EXCEPTION_HANDLER } from "./exception-handler";
 
-export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
+export {
+  ORCHESTRATOR,
+  INTAKE,
+  DOCUMENT,
+  COMPLIANCE,
+  AUDITOR,
+  COMMS,
+  SYNTHESIZER,
+  STATUS_WATCHDOG,
+  EXCEPTION_HANDLER,
+};
 export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
 export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
 export {
@@ -35,6 +47,8 @@ export const STATIC_AGENTS: readonly AgentDefinition[] = [
   AUDITOR,
   COMMS,
   SYNTHESIZER,
+  STATUS_WATCHDOG,
+  EXCEPTION_HANDLER,
 ] as const;
 
 const BY_NAME: Record<string, AgentDefinition> = Object.fromEntries(
