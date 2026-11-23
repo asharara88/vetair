@@ -6,10 +6,13 @@
 //   - escalate_to_human              → hand off, stop automated handling
 //   - fail_exception                 → could not compute a remediation; log + escalate
 //
+// Registry mirror: lib/agents/exception-handler.ts declares the tools, terminal
+// set, and budget this function enforces; lib/prompts/exception-handler.md
+// mirrors SYSTEM_PROMPT below. Keep both sides in sync on tool changes.
+//
 // Follows orchestrator v9 conventions: agent_runs row per invocation, agent_turns
 // logging, agent_messages coordination, demo_mode skip, terminal-tool pattern,
-// fail-soft. Registry contract terminal_tools: emit_remediation_plan,
-// escalate_to_human, reroute_corridor, fail_exception.
+// fail-soft.
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";

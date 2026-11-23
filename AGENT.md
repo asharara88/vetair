@@ -276,11 +276,17 @@ When continuing work on Vetair:
 ## 12. Session log (build progress)
 
 - **Session 1** (complete): Supabase project, 11-table schema, 37 country_rules across 5 corridor+species combos, 2 demo scripts (Sarah+Max blocked-then-resolved, James+Luna happy-path)
-- **Session 2** (in progress): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
-- **Session 3** (planned): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
-- **Session 4** (planned): WhatsApp Business API sandbox wiring
-- **Session 5** (planned): Full end-to-end dry run + polish
+- **Session 2** (complete): Deterministic TS compliance engine + edge functions (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
+- **Session 3** (complete): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
+- **Session 4** (complete): WhatsApp Business API sandbox wiring (`whatsapp-send`, webhook, media persistence)
+- **Session 5** (complete): `demo-stream → whatsapp-send` wiring; target-number field; dramatized-mode fallback
+- **Session 6** (complete): UI redesign (comprehension-first landing, theme toggle, brand orange)
+- **Session 7** (complete): Scaffold `lib/agents/` + `lib/prompts/` registry — orchestrator, intake, document, compliance, auditor, comms, synthesizer, specialist template
+- **Session 8** (complete): Execution agents `status_watchdog` + `exception_handler` edge functions
+- **Session 9** (complete): Register `status_watchdog` + `exception_handler` in the static agent registry; add `watchdog`/`exception` agent types and prompt files; cross-reference edge functions to registry mirrors
+
+Note on the roster in §3: it is the V1 design target. The current runtime roster (what has `lib/agents/*.ts` and a live edge function) is the 7 static agents plus the specialist template and the 2 execution agents (`status_watchdog`, `exception_handler`). Vet Network, Airline & Crate, Endorsement, and the standalone Audit watchdog remain planned.
 
 ---
 
-*Last updated: Session 1 close. Bump this date whenever you add a major section.*
+*Last updated: Session 9. Bump this date whenever you add a major section.*
