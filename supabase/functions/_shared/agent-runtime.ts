@@ -36,7 +36,7 @@ interface Pricing {
 const PRICING: Record<string, Pricing> = {
   "claude-opus-4-7":   { input: 15.0, output: 75.0 },
   "claude-sonnet-4-6": { input:  3.0, output: 15.0 },
-  "claude-haiku-4-5":  { input:  0.80, output: 4.0 },
+  "claude-haiku-4-5":  { input:  1.0, output: 5.0 },
 };
 
 const FALLBACK_PRICING: Pricing = PRICING["claude-sonnet-4-6"];
