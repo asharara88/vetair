@@ -124,10 +124,13 @@ export async function POST(req: NextRequest) {
   return new Response("ok", { status: 200 });
 }
 
+// States for which an inbound message is intake's responsibility.
+const INTAKE_CASE_STATES = new Set(["draft", "intake"]);
+
 async function handleInboundMessage(
   supabase: ReturnType<typeof serviceClient>,
   msg: MetaInboundMessage,
-  contacts: { profile?: { name?: string }; wa_id?: string }[],
+  _contacts: { profile?: { name?: string }; wa_id?: string }[],
 ) {
   // Find owner by whatsapp_number (Meta sends E.164 without leading +)
   const waNumber = msg.from;
@@ -139,16 +142,20 @@ async function handleInboundMessage(
 
   // Find active case for that owner (most recent open case)
   let caseId: string | null = null;
+  let caseState: string | null = null;
+  let caseDemoMode = false;
   if (owner?.id) {
     const { data: activeCase } = await supabase
       .from("cases")
-      .select("id")
+      .select("id, state, demo_mode")
       .eq("owner_id", owner.id)
       .not("state", "in", "(closed,cancelled)")
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
     caseId = activeCase?.id ?? null;
+    caseState = activeCase?.state ?? null;
+    caseDemoMode = Boolean(activeCase?.demo_mode);
   }
 
   const media = extractInboundMedia(msg);
@@ -156,7 +163,7 @@ async function handleInboundMessage(
     msg.text?.body ??
     msg.image?.caption ??
     msg.document?.caption ??
-    (media ? `[${msg.type}]` : `[${msg.type}]`);
+    `[${msg.type}]`;
 
   const { data: inserted } = await supabase
     .from("comms_messages")
@@ -182,8 +189,35 @@ async function handleInboundMessage(
     .eq("whatsapp_message_id", msg.id)
     .eq("event_type", "message");
 
-  // TODO (Session 4.5): if media is present, enqueue a task_queue row for the
-  // Document Agent to run Claude Vision extraction. For now we only persist.
+  // Dispatch to the intake agent when this inbound belongs to an intake-stage
+  // case. Fire-and-forget: Meta must see a 200 inside a few seconds.
+  if (caseId && caseState && INTAKE_CASE_STATES.has(caseState) && !caseDemoMode) {
+    dispatchIntake(caseId, inserted?.id ?? null);
+  }
+
+  // TODO (Session 6b): if media is present, enqueue a document-extract task
+  // so the Document agent runs Claude Vision on it immediately (Meta signed
+  // URLs expire in ~5 min).
+}
+
+function dispatchIntake(caseId: string, inboundMessageId: string | null) {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceKey) return;
+  const url = `${SUPABASE_URL}/functions/v1/intake-agent`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 2000);
+  fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json", authorization: `Bearer ${serviceKey}` },
+    body: JSON.stringify({
+      case_id: caseId,
+      trigger: "inbound_message",
+      inbound_message_id: inboundMessageId,
+    }),
+    signal: controller.signal,
+  })
+    .catch(() => { /* fire-and-forget */ })
+    .finally(() => clearTimeout(timer));
 }
 
 async function handleStatusUpdate(
