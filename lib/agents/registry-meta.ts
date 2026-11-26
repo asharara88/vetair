@@ -9,6 +9,11 @@ export type AgentType =
   | "compliance"
   | "auditor"
   | "comms"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
+  | "watchdog"
+  | "exception_handler"
   | "synthesizer"
   | "specialist";
 
@@ -32,9 +37,14 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  watchdog: 9,
+  exception_handler: 10,
+  synthesizer: 11,
+  specialist: 12,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,7 +52,12 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  watchdog: "ping",
+  exception_handler: "ping",
   compliance: "go",
+  vet_network: "go",
+  airline_crate: "go",
+  endorsement: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
@@ -59,8 +74,18 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Matches the owner to an approved vet and proposes microchip / vaccine / titer / endorsement appointment dates for the consensus timeline.",
+  airline_crate:
+    "IATA LAR + CR-82 sizing, pet-friendly carrier selection, temperature embargo + layover rules. Proposes flight dates for the consensus timeline.",
+  endorsement:
+    "Enforces the 10-day pre-flight endorsement window, drafts MOCCAE/APHIS submissions, and tracks courier delivery of the stamped certificate.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  watchdog:
+    "Portfolio-level sweep of stale non-terminal cases. Deterministic SQL finds staleness; this agent decides to dispatch exception_handler, notify, or mark benign.",
+  exception_handler:
+    "Computes a remediation path for a flagged exception: re-enqueue the orchestrator, emit a human-actionable plan, reroute the corridor, or escalate.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:

@@ -2,7 +2,7 @@
 // Every customer-facing claim must trace back to a requirement_code; the prompt
 // blocks free-text regulatory advice. Tone is warm, never breezy.
 
-import { type AgentDefinition, validateAgent } from "./types";
+import { DOCUMENT_KINDS, type AgentDefinition, validateAgent } from "./types";
 
 export const COMMS: AgentDefinition = validateAgent({
   name: "comms",
@@ -17,7 +17,7 @@ export const COMMS: AgentDefinition = validateAgent({
       name: "read_recent_thread",
       description: "Read the last N messages on the owner's active thread, both directions.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           case_id: { type: "string" },
           limit: { type: "integer", minimum: 1, maximum: 30 },
@@ -27,9 +27,10 @@ export const COMMS: AgentDefinition = validateAgent({
     },
     {
       name: "read_assessment",
-      description: "Read the most recent compliance assessment for a case (verdict, summary, cited_rules, requirements_missing).",
+      description:
+        "Read the most recent compliance assessment for a case (verdict, summary, cited_rules, requirements_missing).",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { case_id: { type: "string" } },
         required: ["case_id"],
       },
@@ -39,7 +40,7 @@ export const COMMS: AgentDefinition = validateAgent({
       description:
         "Terminal: send a single owner-facing message. The body must be grounded in `cited_rules`; including a requirement_code that is not in the cited set is a hard error.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           case_id: { type: "string" },
           channel: { type: "string", enum: ["whatsapp", "email", "sms"] },
@@ -57,23 +58,21 @@ export const COMMS: AgentDefinition = validateAgent({
       name: "request_document",
       description: "Terminal: send the owner a templated request for a specific document type.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           case_id: { type: "string" },
           channel: { type: "string", enum: ["whatsapp", "email"] },
-          kind: {
-            type: "string",
-            enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement"],
-          },
+          kind: { type: "string", enum: [...DOCUMENT_KINDS] },
         },
         required: ["case_id", "channel", "kind"],
       },
     },
     {
       name: "acknowledge_and_wait",
-      description: "Terminal: yield without sending. Use when the assessment is final and no owner-facing nudge is needed.",
+      description:
+        "Terminal: yield without sending. Use when the assessment is final and no owner-facing nudge is needed.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { reason: { type: "string" } },
         required: ["reason"],
       },

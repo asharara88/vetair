@@ -8,12 +8,37 @@ import { INTAKE } from "./intake";
 import { DOCUMENT } from "./document";
 import { COMPLIANCE } from "./compliance";
 import { AUDITOR } from "./auditor";
+import { VET_NETWORK } from "./vet_network";
+import { AIRLINE_CRATE } from "./airline_crate";
+import { ENDORSEMENT } from "./endorsement";
 import { COMMS } from "./comms";
+import { STATUS_WATCHDOG } from "./status_watchdog";
+import { EXCEPTION_HANDLER } from "./exception_handler";
 import { SYNTHESIZER } from "./synthesizer";
 
-export { ORCHESTRATOR, INTAKE, DOCUMENT, COMPLIANCE, AUDITOR, COMMS, SYNTHESIZER };
+export {
+  ORCHESTRATOR,
+  INTAKE,
+  DOCUMENT,
+  COMPLIANCE,
+  AUDITOR,
+  VET_NETWORK,
+  AIRLINE_CRATE,
+  ENDORSEMENT,
+  COMMS,
+  STATUS_WATCHDOG,
+  EXCEPTION_HANDLER,
+  SYNTHESIZER,
+};
 export { SPECIALIST_TEMPLATE, buildSpecialist, type SpecialistParams } from "./specialist";
-export type { AgentDefinition, AgentTool, AgentBudget, ModelId } from "./types";
+export {
+  DOCUMENT_KINDS,
+  type DocumentKind,
+  type AgentDefinition,
+  type AgentTool,
+  type AgentBudget,
+  type ModelId,
+} from "./types";
 export {
   AGENT_TYPE_BLURB,
   AGENT_TYPE_ORDER,
@@ -33,7 +58,12 @@ export const STATIC_AGENTS: readonly AgentDefinition[] = [
   DOCUMENT,
   COMPLIANCE,
   AUDITOR,
+  VET_NETWORK,
+  AIRLINE_CRATE,
+  ENDORSEMENT,
   COMMS,
+  STATUS_WATCHDOG,
+  EXCEPTION_HANDLER,
   SYNTHESIZER,
 ] as const;
 

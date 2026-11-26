@@ -18,6 +18,19 @@ export interface AgentTool {
   };
 }
 
+// Canonical document kinds the owner may be asked to upload. Shared by
+// Intake, Compliance, Comms, and the synthesized specialists so their
+// request_document tools cannot drift.
+export const DOCUMENT_KINDS = [
+  "rabies",
+  "microchip",
+  "passport",
+  "vet_records",
+  "import_permit",
+  "endorsement",
+] as const;
+export type DocumentKind = (typeof DOCUMENT_KINDS)[number];
+
 // Model handles match Anthropic's published model ids exactly.
 // We pin the *family*; the dispatcher resolves the active alias at call time.
 export type ModelId =

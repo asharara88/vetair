@@ -3,11 +3,20 @@
 // with name `{country_code}_compliance_specialist` and parameters
 // { country_code, country_name } substituted into the prompt.
 
-import { type AgentDefinition, type AgentTool, validateAgent } from "./types";
+import {
+  DOCUMENT_KINDS,
+  type AgentDefinition,
+  type AgentTool,
+  validateAgent,
+} from "./types";
 import {
   COMPLIANCE_SHARED_READ_TOOLS,
   COMPLIANCE_ASSESSMENT_TOOL,
 } from "./compliance";
+
+// Specialists may additionally ask the owner to re-confirm the destination
+// (a common disambiguation when a case opens with an ambiguous country).
+const SPECIALIST_DOCUMENT_KINDS = [...DOCUMENT_KINDS, "confirm_destination"] as const;
 
 export interface SpecialistParams {
   country_code: string; // ISO-3166 alpha-2 uppercase
@@ -21,9 +30,9 @@ const TEMPLATE_TOOLS: AgentTool[] = [
     name: "request_document",
     description: "Terminal: ask the owner via Comms for a missing document.",
     input_schema: {
-      type: "object",
+      type: "object" as const,
       properties: {
-        kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records", "import_permit", "endorsement", "confirm_destination"] },
+        kind: { type: "string", enum: [...SPECIALIST_DOCUMENT_KINDS] },
       },
       required: ["kind"],
     },
