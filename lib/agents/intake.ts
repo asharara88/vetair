@@ -2,6 +2,10 @@
 
 import { type AgentDefinition, validateAgent } from "./types";
 
+// Intake can only ask the owner for the four docs it understands at
+// onboarding. Downstream compliance opens the full DOCUMENT_KINDS set.
+const INTAKE_DOCUMENT_KINDS = ["rabies", "microchip", "passport", "vet_records"] as const;
+
 export const INTAKE: AgentDefinition = validateAgent({
   name: "intake",
   type: "intake",
@@ -15,7 +19,7 @@ export const INTAKE: AgentDefinition = validateAgent({
       name: "send_reply",
       description: "Send a free-form WhatsApp reply on the active thread.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { text: { type: "string" } },
         required: ["text"],
       },
@@ -24,9 +28,9 @@ export const INTAKE: AgentDefinition = validateAgent({
       name: "request_document",
       description: "Ask the owner to upload a specific document type.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
-          kind: { type: "string", enum: ["rabies", "microchip", "passport", "vet_records"] },
+          kind: { type: "string", enum: [...INTAKE_DOCUMENT_KINDS] },
         },
         required: ["kind"],
       },
@@ -35,7 +39,7 @@ export const INTAKE: AgentDefinition = validateAgent({
       name: "update_case_facts",
       description: "Patch the case row with confirmed owner-supplied fields.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { patch: { type: "object" } },
         required: ["patch"],
       },
@@ -44,7 +48,7 @@ export const INTAKE: AgentDefinition = validateAgent({
       name: "update_pet_facts",
       description: "Patch the pet row with confirmed owner-supplied fields.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { patch: { type: "object" } },
         required: ["patch"],
       },
@@ -53,7 +57,7 @@ export const INTAKE: AgentDefinition = validateAgent({
       name: "ask_user_for_input",
       description: "Terminal: send a single-question prompt and yield until the owner replies.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           field: { type: "string" },
           question: { type: "string" },
@@ -65,7 +69,7 @@ export const INTAKE: AgentDefinition = validateAgent({
       name: "handoff_to_compliance",
       description: "Terminal: enqueue the compliance assessment task.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { case_id: { type: "string" } },
         required: ["case_id"],
       },

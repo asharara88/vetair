@@ -61,7 +61,7 @@ Posts findings back to Orchestrator, which can pause a case mid-flow.
 
 ## 3. Agent roster (V1)
 
-9 agents total. Each has a dedicated file in `lib/agents/`.
+12 agents total. Each has a dedicated file in `lib/agents/`. Shared helpers in `lib/agents/types.ts` (incl. `DOCUMENT_KINDS`) and `lib/agents/registry-meta.ts`.
 
 | # | Agent | Model | File | Responsibility |
 |---|---|---|---|---|
@@ -69,12 +69,14 @@ Posts findings back to Orchestrator, which can pause a case mid-flow.
 | 1 | **Intake** | Haiku 4.5 | `intake.ts` | Conversational intake via WhatsApp, captures pet + intent, one question per turn |
 | 2 | **Document** | Sonnet 4 (vision) | `document.ts` | Reads uploaded docs natively (no OCR layer), extracts structured fields with JSON schema |
 | 3 | **Compliance** | Sonnet 4 | `compliance.ts` | Primary voice in the 3-voice spine |
-| 4 | **Compliance Auditor** | Opus 4.7 | `compliance_auditor.ts` | Adversarial voice in the 3-voice spine |
-| 5 | **Vet Network** | Haiku 4.5 | `vet_network.ts` | Matches owner to approved vet; books microchip/vaccine/titer/endorsement |
-| 6 | **Airline & Crate** | Sonnet 4 | `airline_crate.ts` | IATA LAR, CR-82 sizing, route selection, temperature embargo |
-| 7 | **Endorsement** | Sonnet 4 | `endorsement.ts` | 10-day window timing, MOCCAE/APHA submission, courier tracking |
+| 4 | **Compliance Auditor** | Opus 4.7 | `auditor.ts` | Adversarial voice in the 3-voice spine |
+| 5 | **Vet Network** | Haiku 4.5 | `vet_network.ts` | Matches owner to approved vet; proposes microchip/vaccine/titer/endorsement dates for the consensus timeline |
+| 6 | **Airline & Crate** | Sonnet 4 | `airline_crate.ts` | IATA LAR, CR-82 sizing, route selection, temperature embargo; proposes flight dates for consensus |
+| 7 | **Endorsement** | Sonnet 4 | `endorsement.ts` | 10-day window timing, MOCCAE/APHIS submission, courier tracking |
 | 8 | **Comms** | Haiku 4.5 | `comms.ts` | WhatsApp outbound, emotional awareness, citation enforcement |
-| 9 | **Audit** | Haiku 4.5 | `audit.ts` | Read-only watchdog (see §2.3) |
+| 9 | **Status Watchdog** | Sonnet 4 | `status_watchdog.ts` + `supabase/functions/status-watchdog-agent/` | Portfolio sweep — deterministic staleness filter + per-case LLM triage (see §2.3) |
+| 10 | **Exception Handler** | Sonnet 4 | `exception_handler.ts` + `supabase/functions/exception-handler-agent/` | Computes a remediation path for flagged exceptions: re-enqueue, plan, reroute, or escalate |
+| 11 | **Synthesizer** | Sonnet 4 | `synthesizer.ts` + `specialist.ts` | Compiles a parameterized template into a runtime country-scoped specialist |
 
 Plus a **deterministic TS engine** (not an agent, a set of functions) in `lib/compliance/evaluators.ts`.
 
@@ -276,11 +278,14 @@ When continuing work on Vetair:
 ## 12. Session log (build progress)
 
 - **Session 1** (complete): Supabase project, 11-table schema, 37 country_rules across 5 corridor+species combos, 2 demo scripts (Sarah+Max blocked-then-resolved, James+Luna happy-path)
-- **Session 2** (in progress): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
-- **Session 3** (planned): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
-- **Session 4** (planned): WhatsApp Business API sandbox wiring
-- **Session 5** (planned): Full end-to-end dry run + polish
+- **Session 2** (complete): Deterministic TS compliance engine + Edge Function (`compliance-evaluate`, `compliance-audit`, `demo-stream`)
+- **Session 3** (complete): Next.js UI scaffold — demo control panel, agent chatter stream, three-voice panel, WhatsApp panel
+- **Session 4** (complete): Shared helpers + agent scaffolding under `lib/agents/` + versioned prompts under `lib/prompts/`
+- **Session 5** (complete): WhatsApp Business API sandbox wiring
+- **Session 7** (complete): Comms + Document agents; tighten typed helpers
+- **Session 8** (complete): `status_watchdog` + `exception_handler` edge functions
+- **Session 9** (complete): Roster completion — `vet_network`, `airline_crate`, `endorsement`, and TS registry entries for `status_watchdog` + `exception_handler`. Shared `DOCUMENT_KINDS` enum. Registry-meta extended with `watchdog`, `exception_handler`, `vet_network`, `airline_crate`, `endorsement` types + tones + blurbs. All tool schemas normalized to `type: "object" as const`.
 
 ---
 
-*Last updated: Session 1 close. Bump this date whenever you add a major section.*
+*Last updated: Session 9 close.*

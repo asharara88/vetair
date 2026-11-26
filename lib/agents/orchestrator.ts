@@ -15,13 +15,13 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
     {
       name: "list_active_agents",
       description: "Read the agent_registry table for all active agents (active dispatch targets).",
-      input_schema: { type: "object", properties: {} },
+      input_schema: { type: "object" as const, properties: {} },
     },
     {
       name: "read_case",
       description: "Read a case row by id, including state and budget counters.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { case_id: { type: "string" } },
         required: ["case_id"],
       },
@@ -30,7 +30,7 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
       name: "read_recent_runs",
       description: "Read the last N agent_runs for a case to inspect dispatch history.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           case_id: { type: "string" },
           limit: { type: "integer", minimum: 1, maximum: 50 },
@@ -42,7 +42,7 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
       name: "dispatch_to_agent",
       description: "Enqueue a task targeting another active agent.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           agent_name: { type: "string" },
           case_id: { type: "string" },
@@ -53,9 +53,10 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
     },
     {
       name: "escalate_to_human",
-      description: "Route the case to the human break-glass queue. Use when budget is exhausted or the auditor has dissented twice.",
+      description:
+        "Route the case to the human break-glass queue. Use when budget is exhausted or the auditor has dissented twice.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           case_id: { type: "string" },
           reason: { type: "string" },
@@ -67,7 +68,7 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
       name: "close_case",
       description: "Terminal: close the case with a final outcome.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           case_id: { type: "string" },
           outcome: { type: "string", enum: ["approved", "blocked", "cancelled"] },
@@ -79,7 +80,7 @@ export const ORCHESTRATOR: AgentDefinition = validateAgent({
       name: "acknowledge_and_wait",
       description: "Terminal: yield the loop without dispatch (e.g. waiting on owner reply).",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { reason: { type: "string" } },
         required: ["reason"],
       },

@@ -15,18 +15,20 @@ export const DOCUMENT: AgentDefinition = validateAgent({
   tools: [
     {
       name: "read_document_blob",
-      description: "Read the binary content of an uploaded document by id (returns a base64 reference and mime type).",
+      description:
+        "Read the binary content of an uploaded document by id (returns a base64 reference and mime type).",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { document_id: { type: "string" } },
         required: ["document_id"],
       },
     },
     {
       name: "read_pet_facts",
-      description: "Read the case's pet row so you can flag mismatches between the document and the existing record.",
+      description:
+        "Read the case's pet row so you can flag mismatches between the document and the existing record.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { case_id: { type: "string" } },
         required: ["case_id"],
       },
@@ -36,7 +38,7 @@ export const DOCUMENT: AgentDefinition = validateAgent({
       description:
         "Terminal: write the structured extraction. `confidence` must reflect document legibility, not your faith in the model. Hand-written or partially obscured documents cap at 0.9.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           document_id: { type: "string" },
           classification: {
@@ -69,9 +71,10 @@ export const DOCUMENT: AgentDefinition = validateAgent({
     },
     {
       name: "fail_extraction",
-      description: "Terminal: abort. Use when the document is illegible, password-protected, or not a pet-relocation artifact.",
+      description:
+        "Terminal: abort. Use when the document is illegible, password-protected, or not a pet-relocation artifact.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           document_id: { type: "string" },
           reason: { type: "string" },

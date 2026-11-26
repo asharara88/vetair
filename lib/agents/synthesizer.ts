@@ -15,13 +15,13 @@ export const SYNTHESIZER: AgentDefinition = validateAgent({
     {
       name: "list_templates",
       description: "Read the agent_templates table.",
-      input_schema: { type: "object", properties: {} },
+      input_schema: { type: "object" as const, properties: {} },
     },
     {
       name: "read_template",
       description: "Read a template by id, including required_params and tool manifest.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { template_id: { type: "string" } },
         required: ["template_id"],
       },
@@ -30,7 +30,7 @@ export const SYNTHESIZER: AgentDefinition = validateAgent({
       name: "find_specialist",
       description: "Look up an existing synthesized_specialists row by template_id + params hash.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           template_id: { type: "string" },
           params_hash: { type: "string" },
@@ -40,9 +40,10 @@ export const SYNTHESIZER: AgentDefinition = validateAgent({
     },
     {
       name: "register_specialist",
-      description: "Terminal: insert a new synthesized_specialists row. Dedup is enforced at row level via params_hash.",
+      description:
+        "Terminal: insert a new synthesized_specialists row. Dedup is enforced at row level via params_hash.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           template_id: { type: "string" },
           params: { type: "object" },
@@ -58,7 +59,7 @@ export const SYNTHESIZER: AgentDefinition = validateAgent({
       name: "fail_synthesis",
       description: "Terminal: abort. Use when required params are missing or the loop is unproductive.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { reason: { type: "string" } },
         required: ["reason"],
       },

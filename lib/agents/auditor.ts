@@ -15,18 +15,20 @@ export const AUDITOR: AgentDefinition = validateAgent({
     ...COMPLIANCE_SHARED_READ_TOOLS,
     {
       name: "concur",
-      description: "Terminal: agree with the primary assessment. Reasoning must enumerate the requirement_codes re-checked.",
+      description:
+        "Terminal: agree with the primary assessment. Reasoning must enumerate the requirement_codes re-checked.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: { reasoning: { type: "string" } },
         required: ["reasoning"],
       },
     },
     {
       name: "dissent",
-      description: "Terminal: disagree with the primary assessment. Each challenge must cite a requirement_code.",
+      description:
+        "Terminal: disagree with the primary assessment. Each challenge must cite a requirement_code.",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           reasoning: { type: "string" },
           challenges: {
