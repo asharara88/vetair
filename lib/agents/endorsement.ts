@@ -76,7 +76,7 @@ export const ENDORSEMENT: AgentDefinition = validateAgent({
     {
       name: "schedule_courier",
       description:
-        "Terminal: physical courier pickup required (hard-copy wet-signed certificate). Books the courier and returns a pickup window.",
+        "Non-terminal: book a physical courier pickup for a hard-copy wet-signed certificate. Required before `submit_to_authority` when the authority's channel is `courier`. Returns a pickup window; continue the loop to call `submit_to_authority` after.",
       input_schema: {
         type: "object",
         properties: {
@@ -125,7 +125,6 @@ export const ENDORSEMENT: AgentDefinition = validateAgent({
   ],
   terminal_tools: [
     "submit_to_authority",
-    "schedule_courier",
     "wait_for_health_certificate",
     "escalate_window_missed",
   ],
