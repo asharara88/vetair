@@ -10,7 +10,12 @@ export type AgentType =
   | "auditor"
   | "comms"
   | "synthesizer"
-  | "specialist";
+  | "specialist"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
+  | "watchdog"
+  | "exception_handler";
 
 export type AgentTypeTone = "amber" | "go" | "ping" | "neutral";
 
@@ -32,17 +37,27 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  watchdog: 9,
+  exception_handler: 10,
+  synthesizer: 11,
+  specialist: 12,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   orchestrator: "amber",
   synthesizer: "amber",
   specialist: "amber",
+  exception_handler: "amber",
   auditor: "ping",
+  watchdog: "ping",
   compliance: "go",
+  vet_network: "go",
+  airline_crate: "go",
+  endorsement: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
@@ -59,8 +74,18 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Matches the owner to an approved vet and books the microchip, vaccine, titer, or endorsement appointment implied by the compliance plan.",
+  airline_crate:
+    "IATA LAR, CR-82 sizing, route selection, and temperature-embargo arithmetic. Proposes a feasible cargo booking window.",
+  endorsement:
+    "Sequences the 7–10 day endorsement window: MOCCAE/APHA submission timing, courier handoff, status polling.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  watchdog:
+    "Read-only async sweep. Flags stale cases by urgency, citation gaps, deterministic/LLM disagreement, and SLA breach risk.",
+  exception_handler:
+    "Called when an agent or the watchdog surfaces an exception. Computes the least-disruptive remediation path and routes it.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
