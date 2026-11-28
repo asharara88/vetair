@@ -8,7 +8,11 @@ export type AgentType =
   | "document"
   | "compliance"
   | "auditor"
+  | "vet_network"
+  | "airline_crate"
+  | "endorsement"
   | "comms"
+  | "audit"
   | "synthesizer"
   | "specialist";
 
@@ -32,9 +36,13 @@ export const AGENT_TYPE_ORDER: Record<AgentType, number> = {
   document: 2,
   compliance: 3,
   auditor: 4,
-  comms: 5,
-  synthesizer: 6,
-  specialist: 7,
+  vet_network: 5,
+  airline_crate: 6,
+  endorsement: 7,
+  comms: 8,
+  audit: 9,
+  synthesizer: 10,
+  specialist: 11,
 };
 
 export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
@@ -42,7 +50,11 @@ export const AGENT_TYPE_TONE: Record<AgentType, AgentTypeTone> = {
   synthesizer: "amber",
   specialist: "amber",
   auditor: "ping",
+  audit: "ping",
   compliance: "go",
+  vet_network: "go",
+  airline_crate: "go",
+  endorsement: "go",
   intake: "neutral",
   document: "neutral",
   comms: "neutral",
@@ -59,8 +71,16 @@ export const AGENT_TYPE_BLURB: Record<AgentType, string> = {
     "Primary compliance voice. Reasons over case data + country rules; emits an assessment with citations and missing requirements.",
   auditor:
     "Adversarial reviewer. Re-reads the compliance assessment with reverse framing and either concurs or dissents with challenges.",
+  vet_network:
+    "Matches the owner to an approved vet near their residence and books the forward procedures — microchip, primary rabies, titer draw, OV endorsement appointment.",
+  airline_crate:
+    "Picks a route and CR-82 compliant crate. Applies IATA LAR, breed carrier bans, and temperature embargoes; proposes a flight + crate with citations.",
+  endorsement:
+    "Runs the 7–10 day pre-flight endorsement window: OV health certificate issuance, MOCCAE/APHA/DEFRA/APHIS submission, courier return to the airport.",
   comms:
     "Outbound owner communication. Citation-enforced WhatsApp + email; never invents requirements, always grounds in cited rules.",
+  audit:
+    "Read-only portfolio watchdog. Flags citation gaps, deterministic/LLM disagreements, SLA risk, and low-confidence extractions. Never mutates case data.",
   synthesizer:
     "Self-extension. Compiles a parameterized template into a runtime specialist when a case opens for an uncovered country.",
   specialist:
